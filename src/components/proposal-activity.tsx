@@ -1,31 +1,19 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { getProposalAnalytics } from '#/lib/analytics/proposal-analytics'
 import { formatDuration } from '#/lib/analytics/intent'
+import { SECTION_LABELS, queryKeys } from '#/constants'
 import type {
   PageAttention,
   ProposalAnalytics,
   RecipientActivity,
   VisitActivity,
 } from '#/lib/analytics/proposal-analytics'
-import type { PageSection } from '#/lib/supabase/types'
 
 export const proposalAnalyticsQuery = (id: string) =>
   queryOptions({
-    queryKey: ['proposal-analytics', id],
+    queryKey: queryKeys.proposalAnalytics(id),
     queryFn: () => getProposalAnalytics({ data: { id } }),
   })
-
-const SECTION_LABELS: Record<PageSection, string> = {
-  cover: 'Cover',
-  summary: 'Summary',
-  scope: 'Scope',
-  timeline: 'Timeline',
-  pricing: 'Pricing',
-  terms: 'Terms',
-  case_study: 'Case study',
-  team: 'Team',
-  other: '',
-}
 
 function formatRelative(iso: string | null): string {
   if (!iso) return '—'
@@ -98,7 +86,8 @@ function PageAttentionChart({ pages }: { pages: Array<PageAttention> }) {
           const seconds = page.engagedMs / 1000
           const pct = (page.engagedMs / max) * 100
           const isPricing = page.section === 'pricing'
-          const label = SECTION_LABELS[page.section]
+          // 'other' is the untagged default; leave the suffix off for it.
+          const label = page.section === 'other' ? '' : SECTION_LABELS[page.section]
           return (
             <li key={page.pageNumber} className="flex items-center gap-3">
               <span className="w-24 shrink-0 text-xs text-neutral-500">

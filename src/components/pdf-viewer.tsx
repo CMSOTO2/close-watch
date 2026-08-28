@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { startTracker } from '#/lib/analytics/tracker'
+import { PDF_WORKER_SRC } from '#/constants'
 
 type Props = {
   pdfUrl: string
@@ -28,10 +29,7 @@ export function PdfViewer({ pdfUrl, visitId, token }: Props) {
 
     async function render() {
       const pdfjs = await import('pdfjs-dist')
-      pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-        'pdfjs-dist/build/pdf.worker.min.mjs',
-        import.meta.url,
-      ).toString()
+      pdfjs.GlobalWorkerOptions.workerSrc = new URL(PDF_WORKER_SRC, import.meta.url).toString()
 
       const doc = await pdfjs.getDocument({ url: pdfUrl }).promise
       const container = containerRef.current

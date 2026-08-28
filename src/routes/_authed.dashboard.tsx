@@ -2,10 +2,11 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { formatDuration } from '#/lib/analytics/intent'
 import { getProposalSummaries } from '#/lib/analytics/summaries'
+import { queryKeys } from '#/constants'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
 
 const summariesQuery = queryOptions({
-  queryKey: ['proposal-summaries'],
+  queryKey: queryKeys.proposalSummaries,
   queryFn: () => getProposalSummaries(),
 })
 

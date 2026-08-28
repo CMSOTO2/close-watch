@@ -3,20 +3,16 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
+import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, PDF_WORKER_SRC, queryKeys } from '#/constants'
 
 export const Route = createFileRoute('/_authed/proposals/new')({
   component: NewProposal,
 })
 
-const MAX_BYTES = 10 * 1024 * 1024
-
 /** Reads the page count from the chosen PDF without a full render. */
 async function readPageCount(file: File): Promise<number> {
   const pdfjs = await import('pdfjs-dist')
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.mjs',
-    import.meta.url,
-  ).toString()
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(PDF_WORKER_SRC, import.meta.url).toString()
 
   const data = new Uint8Array(await file.arrayBuffer())
   const loadingTask = pdfjs.getDocument({ data })
@@ -53,7 +49,7 @@ function NewProposal() {
 
         await createProposal({ data })
 
-        await queryClient.invalidateQueries({ queryKey: ['proposal-summaries'] })
+        await queryClient.invalidateQueries({ queryKey: queryKeys.proposalSummaries })
         await router.navigate({ to: '/dashboard' })
       } catch (err) {
         setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Try again.')
@@ -147,10 +143,10 @@ function NewProposal() {
             onChange: ({ value }) =>
               !value
                 ? 'Choose a PDF to upload'
-                : value.type !== 'application/pdf'
+                : value.type !== PDF_MIME
                   ? 'File must be a PDF'
-                  : value.size > MAX_BYTES
-                    ? 'PDF must be 10 MB or smaller'
+                  : value.size > PDF_MAX_BYTES
+                    ? `PDF must be ${PDF_MAX_MB} MB or smaller`
                     : undefined,
           }}
         >
@@ -158,7 +154,7 @@ function NewProposal() {
             <Field label="Proposal PDF" field={field}>
               <input
                 type="file"
-                accept="application/pdf"
+                accept={PDF_MIME}
                 onChange={(e) => field.handleChange(e.target.files?.[0] ?? null)}
                 className="block w-full text-sm text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-neutral-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-neutral-700"
               />

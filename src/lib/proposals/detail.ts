@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
-import { publicEnv } from '#/env'
+import { shareUrl } from '#/constants'
 import type { PageSection, ProposalStatus } from '#/lib/supabase/types'
 
 export type ProposalPage = {
@@ -32,10 +32,6 @@ export type ProposalDetail = {
   createdAt: string
   pages: Array<ProposalPage>
   shareLinks: Array<ShareLink>
-}
-
-function shareUrl(token: string): string {
-  return `${publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')}/p/${token}`
 }
 
 export const getProposalDetail = createServerFn({ method: 'GET' })

@@ -2,19 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
-import { publicEnv } from '#/env'
-
-const PAGE_SECTIONS = [
-  'cover',
-  'summary',
-  'scope',
-  'timeline',
-  'pricing',
-  'terms',
-  'case_study',
-  'team',
-  'other',
-] as const
+import { PAGE_SECTIONS, shareUrl } from '#/constants'
 
 function newToken(): string {
   // URL-safe, unguessable. 18 bytes -> 24 chars, plenty of entropy for a link
@@ -53,7 +41,7 @@ export const createShareLink = createServerFn({ method: 'POST' })
     return {
       id: link.id,
       token: link.token,
-      url: `${publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')}/p/${link.token}`,
+      url: shareUrl(link.token),
     }
   })
 

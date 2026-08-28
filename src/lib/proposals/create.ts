@@ -1,9 +1,13 @@
 import { createServerFn } from '@tanstack/react-start'
 import { randomUUID } from 'node:crypto'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
-
-const MAX_BYTES = 10 * 1024 * 1024
-const MAX_PAGES = 500
+import {
+  PDF_MAX_BYTES,
+  PDF_MAX_MB,
+  PDF_MAX_PAGES,
+  PDF_MIME,
+  PROPOSALS_BUCKET,
+} from '#/constants'
 
 export type CreateProposalResult = { id: string }
 
@@ -27,8 +31,8 @@ export const createProposal = createServerFn({ method: 'POST' })
 
     const file = data.get('file')
     if (!(file instanceof File) || file.size === 0) throw new Error('A PDF file is required')
-    if (file.type !== 'application/pdf') throw new Error('File must be a PDF')
-    if (file.size > MAX_BYTES) throw new Error('PDF must be 10 MB or smaller')
+    if (file.type !== PDF_MIME) throw new Error('File must be a PDF')
+    if (file.size > PDF_MAX_BYTES) throw new Error(`PDF must be ${PDF_MAX_MB} MB or smaller`)
 
     const title = String(data.get('title') ?? '').trim()
     const clientName = String(data.get('clientName') ?? '').trim()
@@ -36,7 +40,7 @@ export const createProposal = createServerFn({ method: 'POST' })
     if (!clientName) throw new Error('Client name is required')
 
     const pageCount = Number(data.get('pageCount'))
-    if (!Number.isInteger(pageCount) || pageCount < 1 || pageCount > MAX_PAGES) {
+    if (!Number.isInteger(pageCount) || pageCount < 1 || pageCount > PDF_MAX_PAGES) {
       throw new Error('Could not read the PDF page count')
     }
 
@@ -73,15 +77,14 @@ export const createProposal = createServerFn({ method: 'POST' })
     const proposalId = randomUUID()
     const storagePath = `${auth.user.id}/${proposalId}.pdf`
 
-    const { error: uploadError } = await supabase.storage
-      .from('proposals')
-      .upload(storagePath, data.bytes, { contentType: 'application/pdf', upsert: false })
+    const { error: uploadError } = await supabase.storage.from(PROPOSALS_BUCKET)
+      .upload(storagePath, data.bytes, { contentType: PDF_MIME, upsert: false })
     if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
 
     // From here on, roll the storage object back if a write fails so we never
     // leave an orphaned file the user cannot see or reach.
     const cleanup = async () => {
-      await supabase.storage.from('proposals').remove([storagePath])
+      await supabase.storage.from(PROPOSALS_BUCKET).remove([storagePath])
     }
 
     const { error: proposalError } = await supabase.from('proposals').insert({

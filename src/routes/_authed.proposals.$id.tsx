@@ -9,11 +9,12 @@ import {
   setPageSection,
 } from '#/lib/proposals/mutations'
 import { ProposalActivity, proposalAnalyticsQuery } from '#/components/proposal-activity'
+import { SECTION_LABELS, queryKeys } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
 
 const detailQuery = (id: string) =>
   queryOptions({
-    queryKey: ['proposal', id],
+    queryKey: queryKeys.proposal(id),
     queryFn: () => getProposalDetail({ data: { id } }),
   })
 
@@ -35,18 +36,6 @@ export const Route = createFileRoute('/_authed/proposals/$id')({
     </div>
   ),
 })
-
-const SECTION_LABELS: Record<PageSection, string> = {
-  cover: 'Cover',
-  summary: 'Summary',
-  scope: 'Scope',
-  timeline: 'Timeline',
-  pricing: 'Pricing',
-  terms: 'Terms',
-  case_study: 'Case study',
-  team: 'Team',
-  other: 'Other',
-}
 
 function ProposalDetail() {
   const { id } = Route.useParams()
@@ -89,7 +78,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ['proposal', proposalId] })
+  const refresh = () => queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) })
 
   const form = useForm({
     defaultValues: { recipientName: '', recipientEmail: '' },
@@ -250,7 +239,7 @@ function PageTags({ proposalId }: { proposalId: string }) {
     setSavingPage(pageNumber)
     try {
       await setPageSection({ data: { proposalId, pageNumber, section } })
-      await queryClient.invalidateQueries({ queryKey: ['proposal', proposalId] })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) })
     } finally {
       setSavingPage(null)
     }
