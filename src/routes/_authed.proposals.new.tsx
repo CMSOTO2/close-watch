@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_authed/proposals/new')({
   component: NewProposal,
 })
 
-const MAX_BYTES = 25 * 1024 * 1024
+const MAX_BYTES = 10 * 1024 * 1024
 
 /** Reads the page count from the chosen PDF without a full render. */
 async function readPageCount(file: File): Promise<number> {
@@ -150,7 +150,7 @@ function NewProposal() {
                 : value.type !== 'application/pdf'
                   ? 'File must be a PDF'
                   : value.size > MAX_BYTES
-                    ? 'PDF must be 25 MB or smaller'
+                    ? 'PDF must be 10 MB or smaller'
                     : undefined,
           }}
         >

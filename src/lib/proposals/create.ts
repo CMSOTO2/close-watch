@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { randomUUID } from 'node:crypto'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 
-const MAX_BYTES = 25 * 1024 * 1024
+const MAX_BYTES = 10 * 1024 * 1024
 const MAX_PAGES = 500
 
 export type CreateProposalResult = { id: string }
@@ -28,7 +28,7 @@ export const createProposal = createServerFn({ method: 'POST' })
     const file = data.get('file')
     if (!(file instanceof File) || file.size === 0) throw new Error('A PDF file is required')
     if (file.type !== 'application/pdf') throw new Error('File must be a PDF')
-    if (file.size > MAX_BYTES) throw new Error('PDF must be 25 MB or smaller')
+    if (file.size > MAX_BYTES) throw new Error('PDF must be 10 MB or smaller')
 
     const title = String(data.get('title') ?? '').trim()
     const clientName = String(data.get('clientName') ?? '').trim()
