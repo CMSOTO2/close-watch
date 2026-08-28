@@ -66,6 +66,11 @@ function ProposalRow({ proposal }: { proposal: ProposalSummary }) {
 
   return (
     <li className="py-4">
+      <Link
+        to="/proposals/$id"
+        params={{ id: proposal.id }}
+        className="block -mx-2 rounded-md px-2 py-1 hover:bg-neutral-50"
+      >
       <div className="flex items-baseline justify-between gap-4">
         <div>
           <p className="font-medium">{proposal.clientName}</p>
@@ -89,6 +94,7 @@ function ProposalRow({ proposal }: { proposal: ProposalSummary }) {
           ))}
         </ul>
       )}
+      </Link>
     </li>
   )
 }
