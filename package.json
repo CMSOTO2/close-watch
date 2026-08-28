@@ -19,6 +19,7 @@
     "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
+    "@tanstack/react-form-start": "^1.33.5",
     "@tanstack/react-query": "latest",
     "@tanstack/react-query-devtools": "latest",
     "@tanstack/react-router": "latest",
