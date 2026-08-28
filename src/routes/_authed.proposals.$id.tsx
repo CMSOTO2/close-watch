@@ -8,6 +8,7 @@ import {
   revokeShareLink,
   setPageSection,
 } from '#/lib/proposals/mutations'
+import { ProposalActivity, proposalAnalyticsQuery } from '#/components/proposal-activity'
 import type { PageSection } from '#/lib/supabase/types'
 
 const detailQuery = (id: string) =>
@@ -18,7 +19,10 @@ const detailQuery = (id: string) =>
 
 export const Route = createFileRoute('/_authed/proposals/$id')({
   loader: async ({ context, params }) => {
-    const proposal = await context.queryClient.query(detailQuery(params.id))
+    const [proposal] = await Promise.all([
+      context.queryClient.query(detailQuery(params.id)),
+      context.queryClient.query(proposalAnalyticsQuery(params.id)),
+    ])
     if (!proposal) throw notFound()
   },
   component: ProposalDetail,
@@ -71,6 +75,7 @@ function ProposalDetail() {
       </div>
 
       <ShareLinks proposalId={id} />
+      <ProposalActivity proposalId={id} />
       <PageTags proposalId={id} />
     </div>
   )
