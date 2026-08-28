@@ -11,7 +11,7 @@ import type { Database } from './types'
 export function getSupabaseServerClient() {
   return createServerClient<Database>(
     publicEnv.VITE_SUPABASE_URL,
-    publicEnv.VITE_SUPABASE_ANON_KEY,
+    publicEnv.VITE_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
@@ -31,14 +31,15 @@ export function getSupabaseServerClient() {
 }
 
 /**
- * Bypasses RLS. Only two callers should ever exist: the public viewer loader
+ * Bypasses RLS (the secret key replaces the legacy service_role key). Only
+ * two callers should ever exist: the public viewer loader
  * and the tracking ingest endpoint, both of which authorise by share token
  * before touching anything.
  */
 export function getSupabaseAdminClient() {
   return createClient<Database>(
     publicEnv.VITE_SUPABASE_URL,
-    serverEnv().SUPABASE_SERVICE_ROLE_KEY,
+    serverEnv().SUPABASE_SECRET_KEY,
     { auth: { persistSession: false, autoRefreshToken: false } },
   )
 }

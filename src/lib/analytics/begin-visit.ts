@@ -25,8 +25,8 @@ export type VisitContext = {
 
 /**
  * Opens (or resumes) a viewing session for a share token and hands the client
- * everything it needs to render. Runs only on the server: the anon key never
- * sees these tables.
+ * everything it needs to render. Runs only on the server: the publishable key
+ * never sees these tables.
  */
 export const beginVisit = createServerFn({ method: 'GET' })
   .validator(z.object({ token: z.string().min(8).max(128) }))

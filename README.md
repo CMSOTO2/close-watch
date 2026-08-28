@@ -14,8 +14,11 @@ cp .env.example .env
 
 Create a Supabase project, then fill in `.env`:
 
-- `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from Project settings → API
-- `SUPABASE_SERVICE_ROLE_KEY` from the same page. Server only, never prefixed with `VITE_`
+- `VITE_SUPABASE_URL` from Project settings → API
+- `VITE_SUPABASE_PUBLISHABLE_KEY` — the `sb_publishable_…` key. Safe in the browser
+  because RLS is on every table
+- `SUPABASE_SECRET_KEY` — the `sb_secret_…` key. Server only, never prefixed with
+  `VITE_`, and it bypasses RLS entirely
 - `IP_HASH_SALT` any long random string
 
 Apply the schema, either with `supabase db push` or by pasting the two files in

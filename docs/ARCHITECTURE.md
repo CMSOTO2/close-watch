@@ -14,7 +14,7 @@ src/
   env.ts                      zod-validated env, split public/server
   lib/
     supabase/
-      client.ts               browser client (anon key)
+      client.ts               browser client (publishable key)
       server.ts               request-scoped client + admin client
       types.ts                schema types, regenerate with the Supabase CLI
     analytics/
