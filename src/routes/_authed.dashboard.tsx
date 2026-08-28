@@ -10,7 +10,7 @@ const summariesQuery = queryOptions({
 })
 
 export const Route = createFileRoute('/_authed/dashboard')({
-  loader: ({ context }) => context.queryClient.ensureQueryData(summariesQuery),
+  loader: ({ context }) => context.queryClient.query(summariesQuery),
   component: Dashboard,
 })
 
@@ -24,15 +24,26 @@ function Dashboard() {
     <div className="mx-auto max-w-3xl px-6 py-10">
       <div className="flex items-baseline justify-between">
         <h1 className="text-xl font-semibold">Proposals</h1>
-        <Link to="/dashboard" className="text-sm text-neutral-500 hover:text-neutral-900">
+        <Link
+          to="/proposals/new"
+          className="text-sm text-neutral-500 hover:text-neutral-900"
+        >
           New proposal
         </Link>
       </div>
 
       {sorted.length === 0 ? (
-        <p className="mt-10 text-sm text-neutral-500">
-          Upload a proposal to get a tracked link.
-        </p>
+        <div className="mt-10">
+          <p className="text-sm text-neutral-500">
+            Upload a proposal to get a tracked link.
+          </p>
+          <Link
+            to="/proposals/new"
+            className="mt-4 inline-block rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
+          >
+            Upload a proposal
+          </Link>
+        </div>
       ) : (
         <ul className="mt-6 divide-y divide-neutral-200">
           {sorted.map((p) => (
