@@ -39,6 +39,13 @@ export const SECTION_LABELS: Record<PageSection, string> = {
 }
 
 // --- Share links ------------------------------------------------------------
+/**
+ * How long a new share link stays valid before it auto-expires. A link is a
+ * capability URL (anyone holding it can view), so an expiry caps the damage
+ * from a forwarded or leaked link. Owners can still revoke sooner.
+ */
+export const SHARE_LINK_TTL_DAYS = 60
+
 /** Full public viewer URL for a share token. */
 export function shareUrl(token: string): string {
   return `${publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')}/p/${token}`

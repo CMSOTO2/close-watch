@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
-import { PAGE_SECTIONS, PROPOSALS_BUCKET, shareUrl } from '#/constants'
+import { PAGE_SECTIONS, PROPOSALS_BUCKET, SHARE_LINK_TTL_DAYS, shareUrl } from '#/constants'
 
 function newToken(): string {
   // URL-safe, unguessable. 18 bytes -> 24 chars, plenty of entropy for a link
@@ -23,6 +23,8 @@ export const createShareLink = createServerFn({ method: 'POST' })
     const supabase = getSupabaseServerClient()
     const token = newToken()
 
+    const expiresAt = new Date(Date.now() + SHARE_LINK_TTL_DAYS * 24 * 60 * 60 * 1000)
+
     // RLS's insert check confirms the caller owns the proposal; a foreign id
     // is rejected rather than silently linked.
     const { data: link, error } = await supabase
@@ -32,6 +34,7 @@ export const createShareLink = createServerFn({ method: 'POST' })
         token,
         recipient_name: data.recipientName || null,
         recipient_email: data.recipientEmail || null,
+        expires_at: expiresAt.toISOString(),
       })
       .select('id, token')
       .maybeSingle()

@@ -13,6 +13,8 @@ export const Route = createFileRoute('/p/$token')({
       { title: loaderData?.title ?? 'Proposal' },
       // Keep share links out of search results.
       { name: 'robots', content: 'noindex, nofollow' },
+      // Never put the secret token in a Referer header sent to another origin.
+      { name: 'referrer', content: 'no-referrer' },
     ],
   }),
   component: ViewerPage,

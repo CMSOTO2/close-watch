@@ -39,6 +39,23 @@ export const Route = createFileRoute('/_authed/proposals/$id')({
   ),
 })
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
+/** Human-readable expiry for an active share link. `soon` flags the last week. */
+function expiryInfo(iso: string): { label: string; soon: boolean } {
+  const days = Math.ceil((new Date(iso).getTime() - Date.now()) / DAY_MS)
+  const soon = days <= 7
+  if (days <= 0) return { label: 'Expires today', soon: true }
+  if (days === 1) return { label: 'Expires tomorrow', soon: true }
+  if (days <= 30) return { label: `Expires in ${days} days`, soon }
+  const date = new Date(iso).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+  return { label: `Expires ${date}`, soon: false }
+}
+
 function ProposalDetail() {
   const { id } = Route.useParams()
   const router = useRouter()
@@ -167,6 +184,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
             const revoked = link.revokedAt != null
             const expired = link.expiresAt != null && new Date(link.expiresAt) < new Date()
             const dead = revoked || expired
+            const expiry = !dead && link.expiresAt ? expiryInfo(link.expiresAt) : null
             return (
               <li
                 key={link.id}
@@ -179,6 +197,12 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
                   <p className={`truncate text-xs ${dead ? 'text-neutral-400 line-through' : 'text-neutral-500'}`}>
                     {link.url}
                   </p>
+                  {expiry && (
+                    <p className={`text-xs ${expiry.soon ? 'text-amber-600' : 'text-neutral-400'}`}>
+                      {expiry.label}
+                      {expiry.soon && ' — send a fresh link if this deal is still live'}
+                    </p>
+                  )}
                 </div>
                 {dead ? (
                   <span className="text-xs text-neutral-400">{revoked ? 'revoked' : 'expired'}</span>
