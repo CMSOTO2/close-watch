@@ -47,14 +47,17 @@ export function parseUserAgent(ua: string | undefined): DeviceInfo {
       ? 'mobile'
       : 'desktop'
 
+  // Order matters twice over. iPhone and iPad UAs both contain "like Mac OS X",
+  // so iOS must be tested before macOS or every mobile viewer reads as a Mac.
+  // Android UAs contain "Linux", so Android must come before Linux.
   const os = /windows nt/i.test(s)
     ? 'Windows'
-    : /mac os x/i.test(s)
-      ? 'macOS'
-      : /android/i.test(s)
-        ? 'Android'
-        : /iphone|ipad|ipod/i.test(s)
-          ? 'iOS'
+    : /iphone|ipad|ipod/i.test(s)
+      ? 'iOS'
+      : /mac os x/i.test(s)
+        ? 'macOS'
+        : /android/i.test(s)
+          ? 'Android'
           : /linux/i.test(s)
             ? 'Linux'
             : 'Unknown'
