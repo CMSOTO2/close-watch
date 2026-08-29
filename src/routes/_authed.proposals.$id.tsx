@@ -10,6 +10,7 @@ import {
   setPageSection,
 } from '#/lib/proposals/mutations'
 import { ProposalActivity, proposalAnalyticsQuery } from '#/components/proposal-activity'
+import { ConfirmDialog } from '#/components/confirm-dialog'
 import { SECTION_LABELS, queryKeys } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
 
@@ -44,14 +45,12 @@ function ProposalDetail() {
   const queryClient = useQueryClient()
   const { data: proposal } = useSuspenseQuery(detailQuery(id))
   const [deleting, setDeleting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   // notFound in the loader means this is always present past that point.
   if (!proposal) return null
 
-  async function onDelete() {
-    if (!window.confirm('Delete this proposal? Its link and all tracking data are removed for good.')) {
-      return
-    }
+  async function runDelete() {
     setDeleting(true)
     try {
       await deleteProposal({ data: { id } })
@@ -59,6 +58,7 @@ function ProposalDetail() {
       await router.navigate({ to: '/dashboard' })
     } catch {
       setDeleting(false)
+      setConfirmOpen(false)
     }
   }
 
@@ -69,13 +69,25 @@ function ProposalDetail() {
           ← Proposals
         </Link>
         <button
-          onClick={onDelete}
+          onClick={() => setConfirmOpen(true)}
           disabled={deleting}
           className="text-sm text-neutral-400 hover:text-red-600 disabled:opacity-50"
         >
-          {deleting ? 'Deleting…' : 'Delete'}
+          Delete
         </button>
       </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete proposal?"
+        message="Its share link and all tracking data are removed for good."
+        confirmLabel="Delete"
+        busyLabel="Deleting…"
+        destructive
+        busy={deleting}
+        onConfirm={runDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
 
       <div className="mt-4">
         <h1 className="text-xl font-semibold">{proposal.clientName}</h1>
