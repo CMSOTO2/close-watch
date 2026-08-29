@@ -8,8 +8,6 @@ export const PDF_MAX_MB = 10
 export const PDF_MAX_BYTES = PDF_MAX_MB * 1024 * 1024
 export const PDF_MAX_PAGES = 500
 export const PDF_MIME = 'application/pdf'
-/** Passed through `new URL(..., import.meta.url)` where pdfjs is loaded. */
-export const PDF_WORKER_SRC = 'pdfjs-dist/build/pdf.worker.min.mjs'
 
 // --- Storage ----------------------------------------------------------------
 /** Private bucket holding proposal PDFs. Distinct from the `proposals` table. */

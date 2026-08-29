@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
-import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, PDF_WORKER_SRC, queryKeys } from '#/constants'
+import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, queryKeys } from '#/constants'
 
 export const Route = createFileRoute('/_authed/proposals/new')({
   component: NewProposal,
@@ -11,8 +11,7 @@ export const Route = createFileRoute('/_authed/proposals/new')({
 
 /** Reads the page count from the chosen PDF without a full render. */
 async function readPageCount(file: File): Promise<number> {
-  const pdfjs = await import('pdfjs-dist')
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(PDF_WORKER_SRC, import.meta.url).toString()
+  const { pdfjs } = await import('#/lib/pdf')
 
   const data = new Uint8Array(await file.arrayBuffer())
   const loadingTask = pdfjs.getDocument({ data })

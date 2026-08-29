@@ -35,9 +35,11 @@ function ViewerPage() {
   return (
     <div className="min-h-screen bg-neutral-100">
       <header className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex max-w-4xl items-baseline justify-between px-4 py-3">
-          <span className="text-sm font-medium">{title}</span>
-          {senderName && <span className="text-xs text-neutral-500">from {senderName}</span>}
+        <div className="mx-auto flex max-w-4xl items-baseline justify-between gap-3 px-4 py-3">
+          <span className="min-w-0 truncate text-sm font-medium">{title}</span>
+          {senderName && (
+            <span className="shrink-0 text-xs text-neutral-500">from {senderName}</span>
+          )}
         </div>
       </header>
       <PdfViewer pdfUrl={pdfUrl} visitId={visitId} token={token} />
