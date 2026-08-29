@@ -12,27 +12,46 @@
 ```
 src/
   env.ts                      zod-validated env, split public/server
+  constants.ts                shared constants (upload caps, bucket, sections, query keys)
+  router.tsx                  router + query client wiring
   lib/
+    pdf.ts                    pdfjs worker setup, shared by viewer and upload
     supabase/
       client.ts               browser client (publishable key)
       server.ts               request-scoped client + admin client
       types.ts                schema types, regenerate with the Supabase CLI
+    proposals/
+      create.ts               server fn: upload PDF, create proposal
+      detail.ts               server fn: single proposal for the owner
+      mutations.ts            server fns: share links, page sections, delete
     analytics/
       bots.ts                 email-scanner detection, UA parsing
       tracker.ts              viewer-side engagement tracking
       begin-visit.ts          server fn: opens a viewing session
       summaries.ts            server fn: dashboard aggregation
+      proposal-analytics.ts   server fn: per-proposal activity
       intent.ts               buying-intent scoring
     auth.ts                   session lookup
+  components/
+    auth/
+      login-form.tsx          sign-in/up form: password, magic link, Google
+      google-button.tsx       Google OAuth button
+      auth-field.tsx          shared input + error line
+      validation.ts           zod schemas for the auth forms
+    pdf-viewer.tsx            client-side pdfjs renderer
+    proposal-activity.tsx     per-proposal activity panel
+    confirm-dialog.tsx        modal used for destructive actions
   routes/
     index.tsx                 landing
-    login.tsx                 magic link
-    auth.callback.ts          PKCE code exchange
-    _authed.tsx               auth guard
+    login.tsx                 login route shell (renders components/auth)
+    auth.callback.ts          PKCE code exchange (magic link and OAuth)
+    _authed.tsx               auth guard + header/sign out
     _authed.dashboard.tsx     proposal list
+    _authed.proposals.new.tsx     upload + create
+    _authed.proposals.$id.tsx     proposal detail, share links, activity
     p.$token.tsx              public viewer
     api/track.$visitId.ts     engagement ingest
-supabase/migrations/          schema, RLS, ingest function
+supabase/migrations/          schema, RLS, ingest function, share-link lock, bucket limit
 ```
 
 ## How tracking works

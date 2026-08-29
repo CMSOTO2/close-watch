@@ -20,14 +20,22 @@ Create a Supabase project, then fill in `.env`:
 - `SUPABASE_SECRET_KEY` — the `sb_secret_…` key. Server only, never prefixed with
   `VITE_`, and it bypasses RLS entirely
 - `IP_HASH_SALT` any long random string
+- `VITE_PUBLIC_URL` the public origin used to build share links (defaults to
+  `http://localhost:3000`)
 
-Apply the schema, either with `supabase db push` or by pasting the two files in
+To let returning users sign in with Google, enable the Google provider under
+Authentication → Providers in the Supabase dashboard and add
+`<project-url>/auth/v1/callback` to the authorised redirect URIs of your Google
+OAuth client. Magic-link sign-in works without this.
+
+Apply the schema with `supabase db push`, or paste the files in
 `supabase/migrations/` into the SQL editor in order.
 
 ```bash
 pnpm dev        # http://localhost:3000
 pnpm build
 pnpm lint
+pnpm test
 ```
 
 Once your project exists, replace the hand-written schema types:
@@ -38,8 +46,10 @@ pnpm dlx supabase gen types typescript --project-id <ref> > src/lib/supabase/typ
 
 ## What is here
 
-Auth, the public tracked viewer, engagement ingest, intent scoring, and the dashboard
-list. Upload and share-link creation are the next things to build.
+Magic-link and Google sign-in, PDF upload to private storage, per-recipient share
+links, the public tracked viewer, engagement ingest, intent scoring, and the dashboard
+with per-proposal detail and activity analytics. The "first qualified open" email
+notification is the main piece still to build.
 
 Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing anything under
 `src/lib/analytics/`. The tracking rules there are the reason the numbers can be trusted,
