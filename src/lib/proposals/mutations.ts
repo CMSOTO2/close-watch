@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
-import { PAGE_SECTIONS, shareUrl } from '#/constants'
+import { PAGE_SECTIONS, PROPOSALS_BUCKET, shareUrl } from '#/constants'
 
 function newToken(): string {
   // URL-safe, unguessable. 18 bytes -> 24 chars, plenty of entropy for a link
@@ -80,4 +80,31 @@ export const setPageSection = createServerFn({ method: 'POST' })
 
     if (error) throw new Error(error.message)
     return { pageNumber: data.pageNumber, section: data.section }
+  })
+
+/**
+ * Permanently deletes a proposal: the row (which cascades to pages, links,
+ * visits and events) and its stored PDF. RLS scopes both to the owner.
+ */
+export const deleteProposal = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid() }))
+  .handler(async ({ data }): Promise<{ id: string }> => {
+    const supabase = getSupabaseServerClient()
+
+    // Read the storage path before the row is gone; a foreign id returns null.
+    const { data: proposal } = await supabase
+      .from('proposals')
+      .select('storage_path')
+      .eq('id', data.id)
+      .maybeSingle()
+    if (!proposal) throw new Error('Proposal not found')
+
+    // Delete the row first: it is the RLS-guarded source of truth. If the file
+    // removal then fails we are left with an unreachable orphan, not a dangling
+    // row pointing at a missing file.
+    const { error } = await supabase.from('proposals').delete().eq('id', data.id)
+    if (error) throw new Error(error.message)
+
+    await supabase.storage.from(PROPOSALS_BUCKET).remove([proposal.storage_path])
+    return { id: data.id }
   })

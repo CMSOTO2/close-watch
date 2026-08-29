@@ -1,10 +1,11 @@
-import { Link, createFileRoute, notFound } from '@tanstack/react-router'
+import { Link, createFileRoute, notFound, useRouter } from '@tanstack/react-router'
 import { queryOptions, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { getProposalDetail } from '#/lib/proposals/detail'
 import {
   createShareLink,
+  deleteProposal,
   revokeShareLink,
   setPageSection,
 } from '#/lib/proposals/mutations'
@@ -39,16 +40,42 @@ export const Route = createFileRoute('/_authed/proposals/$id')({
 
 function ProposalDetail() {
   const { id } = Route.useParams()
+  const router = useRouter()
+  const queryClient = useQueryClient()
   const { data: proposal } = useSuspenseQuery(detailQuery(id))
+  const [deleting, setDeleting] = useState(false)
 
   // notFound in the loader means this is always present past that point.
   if (!proposal) return null
 
+  async function onDelete() {
+    if (!window.confirm('Delete this proposal? Its link and all tracking data are removed for good.')) {
+      return
+    }
+    setDeleting(true)
+    try {
+      await deleteProposal({ data: { id } })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.proposalSummaries })
+      await router.navigate({ to: '/dashboard' })
+    } catch {
+      setDeleting(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
-      <Link to="/dashboard" className="text-sm text-neutral-500 hover:text-neutral-900">
-        ← Proposals
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link to="/dashboard" className="text-sm text-neutral-500 hover:text-neutral-900">
+          ← Proposals
+        </Link>
+        <button
+          onClick={onDelete}
+          disabled={deleting}
+          className="text-sm text-neutral-400 hover:text-red-600 disabled:opacity-50"
+        >
+          {deleting ? 'Deleting…' : 'Delete'}
+        </button>
+      </div>
 
       <div className="mt-4">
         <h1 className="text-xl font-semibold">{proposal.clientName}</h1>
