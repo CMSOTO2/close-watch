@@ -5,7 +5,7 @@
 - TanStack Start (React 19, SSR) with TanStack Router and TanStack Query
 - TypeScript, Tailwind v4, shadcn/ui
 - Supabase for Postgres, Auth, and Storage
-- Netlify for hosting
+- Cloudflare for hosting
 
 ## Layout
 

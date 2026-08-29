@@ -16,7 +16,6 @@
   "chosenAddOns": [
     "tanstack-query",
     "shadcn",
-    "eslint",
-    "netlify"
+    "eslint"
   ]
 }
