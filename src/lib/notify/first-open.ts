@@ -54,7 +54,7 @@ export async function notifyFirstOpen(supabase: AdminClient, visitId: string): P
       apiKey: RESEND_API_KEY,
       from: EMAIL_FROM ?? 'Closewatch <onboarding@resend.dev>',
       to: owner.email,
-      subject: `${who} opened ${claimed.title}`,
+      subject: `${who} opened "${claimed.title}" proposal`,
       proposalTitle: claimed.title,
       clientName: claimed.client_name,
       who,
