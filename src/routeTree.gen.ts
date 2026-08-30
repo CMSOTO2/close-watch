@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed.dashboard'
+import { Route as AuthedSettingsRouteImport } from './routes/_authed.settings'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as AuthedProposalsIdRouteImport } from './routes/_authed.proposals.$id'
@@ -36,6 +37,11 @@ const LoginRoute = LoginRouteImport.update({
 const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedSettingsRoute = AuthedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/dashboard': typeof AuthedDashboardRoute
+  '/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   '/_authed': typeof AuthedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
+  '/_authed/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
   '/_authed/proposals/$id': typeof AuthedProposalsIdRoute
@@ -102,6 +111,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard'
+    | '/settings'
     | '/auth/callback'
     | '/p/$token'
     | '/proposals/$id'
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/dashboard'
+    | '/settings'
     | '/auth/callback'
     | '/p/$token'
     | '/proposals/$id'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
     | '/_authed'
     | '/login'
     | '/_authed/dashboard'
+    | '/_authed/settings'
     | '/auth/callback'
     | '/p/$token'
     | '/_authed/proposals/$id'
@@ -169,6 +181,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedDashboardRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/settings': {
+      id: '/_authed/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthedSettingsRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -209,12 +228,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthedRouteChildren {
   AuthedDashboardRoute: typeof AuthedDashboardRoute
+  AuthedSettingsRoute: typeof AuthedSettingsRoute
   AuthedProposalsIdRoute: typeof AuthedProposalsIdRoute
   AuthedProposalsNewRoute: typeof AuthedProposalsNewRoute
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDashboardRoute: AuthedDashboardRoute,
+  AuthedSettingsRoute: AuthedSettingsRoute,
   AuthedProposalsIdRoute: AuthedProposalsIdRoute,
   AuthedProposalsNewRoute: AuthedProposalsNewRoute,
 }

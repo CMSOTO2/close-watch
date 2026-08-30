@@ -30,6 +30,9 @@ function AuthedLayout() {
           </Link>
           <div className="flex items-center gap-3">
             {user.email && <span className="text-xs text-neutral-500">{user.email}</span>}
+            <Link to="/settings" className="text-sm text-neutral-500 hover:text-neutral-900">
+              Settings
+            </Link>
             <button
               onClick={signOut}
               className="text-sm text-neutral-500 hover:text-neutral-900"

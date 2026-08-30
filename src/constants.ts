@@ -53,6 +53,7 @@ export function shareUrl(token: string): string {
 
 // --- React Query keys -------------------------------------------------------
 export const queryKeys = {
+  profile: ['profile'] as const,
   proposalSummaries: ['proposal-summaries'] as const,
   proposal: (id: string) => ['proposal', id] as const,
   proposalAnalytics: (id: string) => ['proposal-analytics', id] as const,
