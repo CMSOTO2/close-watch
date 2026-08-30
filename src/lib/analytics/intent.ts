@@ -16,6 +16,10 @@ export type IntentInput = {
   reachedLastPage: boolean
   firstVisitAt: Date | null
   lastVisitAt: Date | null
+  /** Someone saved a copy of the PDF. */
+  downloaded?: boolean
+  /** Someone printed the PDF. */
+  printed?: boolean
 }
 
 export type IntentSignal = { label: string; points: number }
@@ -63,6 +67,12 @@ export function scoreIntent(input: IntentInput): IntentResult {
   else if (pricingSec >= 15) add(10, `${formatDuration(pricingSec)} on pricing`)
 
   if (input.reachedLastPage) add(8, 'Reached the last page')
+
+  // Took it offline. Downloading or printing is a deliberate step past reading —
+  // saving a copy to keep, or printing to mark up or bring into a meeting. Both
+  // are strong action signals; printing is the more committed of the two.
+  if (input.printed) add(18, 'Printed it')
+  if (input.downloaded) add(15, 'Downloaded a copy')
 
   // Return visit on a later day. Same-session re-reads are already covered by
   // visit count; a genuine return means they went away and came back.

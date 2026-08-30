@@ -45,6 +45,14 @@ describe('scoreIntent', () => {
     expect(deepOverShort.signals).toContainEqual({ label: 'Read closely (60s per page)', points: 20 })
   })
 
+  it('rewards taking the proposal offline, printing above downloading', () => {
+    const printed = scoreIntent({ ...base, printed: true })
+    const downloaded = scoreIntent({ ...base, downloaded: true })
+    expect(printed.signals).toContainEqual({ label: 'Printed it', points: 18 })
+    expect(downloaded.signals).toContainEqual({ label: 'Downloaded a copy', points: 15 })
+    expect(printed.score).toBeGreaterThan(downloaded.score)
+  })
+
   it('sums signals into a warm band with the reasons attached', () => {
     // Opened 3 times (15) + 40s on pricing (18) = 33 -> warm.
     const r = scoreIntent({ ...base, qualifiedVisits: 3, pricingEngagedMs: 40_000 })

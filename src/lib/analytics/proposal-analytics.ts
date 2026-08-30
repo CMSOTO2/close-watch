@@ -3,38 +3,6 @@ import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import type { PageSection } from '#/lib/supabase/types'
 
-/**
- * One distinct person who read a recipient's link. Index 1 is the named
- * recipient (the first device to open it); index 2+ are people it was forwarded
- * to. We can't know a forwardee's name — only their device and how they read —
- * so a stable ordinal lets the UI track a specific forwardee across return
- * visits without inventing an identity.
- */
-export type ReaderActivity = {
-  index: number
-  isForward: boolean
-  opens: number
-  totalEngagedMs: number
-  lastOpenedAt: string | null
-  device: string | null
-  events: Array<string>
-}
-
-export type RecipientActivity = {
-  shareLinkId: string
-  label: string
-  revoked: boolean
-  visits: number
-  viewers: number
-  forwarded: boolean
-  /** Distinct people it reached beyond the named recipient. */
-  forwardViewers: number
-  totalEngagedMs: number
-  lastOpenedAt: string | null
-  /** The recipient and every forwardee, recipient first. */
-  readers: Array<ReaderActivity>
-}
-
 export type PageAttention = {
   pageNumber: number
   section: PageSection
@@ -66,7 +34,6 @@ export type ProposalAnalytics = {
     downloads: number
     prints: number
   }
-  recipients: Array<RecipientActivity>
   pages: Array<PageAttention>
   visits: Array<VisitActivity>
 }
@@ -170,55 +137,6 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
       eventsByVisit.get(e.visit_id)!.add(label)
     }
 
-    // Per-recipient rollup, with a node per distinct reader so the UI can
-    // connect a forwarded read back to the recipient it came from.
-    const recipients: Array<RecipientActivity> = (links ?? []).map((link) => {
-      const own = humanQualified.filter((v) => v.share_link_id === link.id)
-      const byViewer = new Map<string, typeof own>()
-      for (const v of own) {
-        const arr = byViewer.get(v.visitor_id) ?? []
-        arr.push(v)
-        byViewer.set(v.visitor_id, arr)
-      }
-
-      const readers: Array<ReaderActivity> = [...byViewer.entries()]
-        .map(([visitorId, vs]) => {
-          const index = viewerIndexOf(link.id, visitorId)
-          // Device and last-open come from this reader's most recent visit.
-          const latest = [...vs].sort(
-            (a, b) => new Date(b.last_seen_at).getTime() - new Date(a.last_seen_at).getTime(),
-          )[0]
-          const evts = new Set<string>()
-          for (const v of vs) for (const l of eventsByVisit.get(v.id) ?? []) evts.add(l)
-          // `latest` is always defined: byViewer only holds visitors with visits.
-          return {
-            index,
-            isForward: index > 1,
-            opens: vs.length,
-            totalEngagedMs: vs.reduce((sum, v) => sum + v.engaged_ms, 0),
-            lastOpenedAt: new Date(latest.last_seen_at).toISOString(),
-            device: deviceLabel(latest.browser, latest.os),
-            events: [...evts],
-          }
-        })
-        .sort((a, b) => a.index - b.index)
-
-      const viewers = byViewer.size
-      const seen = own.map((v) => new Date(v.last_seen_at).getTime())
-      return {
-        shareLinkId: link.id,
-        label: link.recipient_name ?? link.recipient_email ?? 'Untitled recipient',
-        revoked: link.revoked_at != null,
-        visits: own.length,
-        viewers,
-        forwarded: viewers > 1,
-        forwardViewers: Math.max(0, viewers - 1),
-        totalEngagedMs: own.reduce((sum, v) => sum + v.engaged_ms, 0),
-        lastOpenedAt: seen.length ? new Date(Math.max(...seen)).toISOString() : null,
-        readers,
-      }
-    })
-
     // Per-page attention, restricted to qualified human reads.
     const engagedByPage = new Map<number, number>()
     const viewsByPage = new Map<number, number>()
@@ -268,7 +186,6 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
         downloads,
         prints,
       },
-      recipients,
       pages: pageAttention,
       visits: visitActivity,
     }

@@ -6,8 +6,6 @@ import { SECTION_LABELS, queryKeys } from '#/constants'
 import type {
   PageAttention,
   ProposalAnalytics,
-  ReaderActivity,
-  RecipientActivity,
   VisitActivity,
 } from '#/lib/analytics/proposal-analytics'
 
@@ -50,7 +48,6 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
         <>
           <StatTiles totals={totals} />
           <PageAttentionChart pages={data.pages} />
-          <Recipients recipients={data.recipients} />
           <RecentVisits visits={data.visits} />
         </>
       )}
@@ -115,12 +112,6 @@ function PageAttentionChart({ pages }: { pages: Array<PageAttention> }) {
   )
 }
 
-/** "3 opens · 5m 12s", or "opened once · 12s" when it's a single read. */
-function readerSummary(r: ReaderActivity): string {
-  const opens = r.opens === 1 ? 'opened once' : `${r.opens} opens`
-  return `${opens} · ${formatDuration(r.totalEngagedMs / 1000)}`
-}
-
 function EventBadges({ events }: { events: Array<string> }) {
   return (
     <>
@@ -130,71 +121,6 @@ function EventBadges({ events }: { events: Array<string> }) {
         </Badge>
       ))}
     </>
-  )
-}
-
-function Recipients({ recipients }: { recipients: Array<RecipientActivity> }) {
-  const opened = recipients.filter((r) => r.visits > 0)
-  if (opened.length === 0) return null
-
-  return (
-    <div className="mt-8">
-      <h3 className="text-xs font-medium text-neutral-500">Recipients &amp; forwards</h3>
-      <ul className="mt-3 space-y-5">
-        {opened.map((r) => {
-          // `opened` guarantees visits > 0, so readers is never empty.
-          const recipient = r.readers.find((x) => x.index === 1) ?? r.readers[0]
-          const forwardees = r.readers.filter((x) => x.isForward)
-          return (
-            <li key={r.shareLinkId}>
-              {/* The named recipient. */}
-              <div className="flex items-baseline justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-neutral-800">
-                    {r.label}
-                    {r.revoked && <Badge className="bg-neutral-100 text-neutral-500">revoked</Badge>}
-                    <EventBadges events={recipient.events} />
-                  </p>
-                  <p className="text-xs text-neutral-500">{readerSummary(recipient)}</p>
-                </div>
-                <span className="shrink-0 text-xs text-neutral-400">
-                  {formatRelative(recipient.lastOpenedAt)}
-                </span>
-              </div>
-
-              {/* People it was forwarded to, branching off the recipient. */}
-              {forwardees.length > 0 && (
-                <>
-                  <p className="mt-2 text-xs font-medium text-amber-700">
-                    Forwarded to {forwardees.length} {forwardees.length === 1 ? 'person' : 'people'}
-                  </p>
-                  <ul className="mt-1.5 space-y-2 border-l border-neutral-200 pl-4">
-                    {forwardees.map((f) => (
-                      <li key={f.index} className="flex items-baseline justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="flex items-center gap-1 truncate text-sm text-neutral-700">
-                            <CornerDownRight className="size-3.5 shrink-0 text-neutral-400" aria-hidden />
-                            <span>Reader {f.index}</span>
-                            <span className="truncate text-neutral-400">
-                              · {f.device ?? 'unknown device'}
-                            </span>
-                            <EventBadges events={f.events} />
-                          </p>
-                          <p className="text-xs text-neutral-500">{readerSummary(f)}</p>
-                        </div>
-                        <span className="shrink-0 text-xs text-neutral-400">
-                          {formatRelative(f.lastOpenedAt)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </li>
-          )
-        })}
-      </ul>
-    </div>
   )
 }
 

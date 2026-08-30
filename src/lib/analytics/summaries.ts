@@ -62,6 +62,23 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
         .map((p) => `${p.proposal_id}:${p.page_number}`),
     )
 
+    // Which proposals were downloaded or printed, from events on their qualified
+    // visits. Both are buying signals that feed the intent score below.
+    const visitIds = (visits ?? []).map((v) => v.id)
+    const { data: events } = visitIds.length
+      ? await supabase.from('events').select('visit_id, type').in('visit_id', visitIds)
+      : { data: [] as Array<{ visit_id: string; type: string }> }
+
+    const visitProposal = new Map((visits ?? []).map((v) => [v.id, v.proposal_id]))
+    const downloadedProposals = new Set<string>()
+    const printedProposals = new Set<string>()
+    for (const e of events ?? []) {
+      const proposalId = visitProposal.get(e.visit_id)
+      if (!proposalId) continue
+      if (e.type === 'download') downloadedProposals.add(proposalId)
+      else if (e.type === 'print') printedProposals.add(proposalId)
+    }
+
     return proposals.map((p) => {
       const own = (visits ?? []).filter((v) => v.proposal_id === p.id)
       const ownPages = (pageViews ?? []).filter((pv) => pv.proposal_id === p.id)
@@ -96,6 +113,8 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
           reachedLastPage: ownPages.some((pv) => pv.page_number === p.page_count),
           firstVisitAt: startTimes.length ? new Date(Math.min(...startTimes)) : null,
           lastVisitAt: startTimes.length ? new Date(Math.max(...startTimes)) : null,
+          downloaded: downloadedProposals.has(p.id),
+          printed: printedProposals.has(p.id),
         }),
       }
     })
