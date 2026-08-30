@@ -16,14 +16,21 @@ import {
 } from '#/components/dashboard/sorting'
 import type { HeatFilter, SortKey } from '#/components/dashboard/sorting'
 
+// refetchOnMount: 'always' — the first render right after login can run its
+// SSR fetch before the Supabase session is fully in play, caching an empty
+// list that is then served as fresh until a mutation invalidates it. Forcing a
+// mount refetch (which carries the now-present auth cookie) repopulates the
+// list on the client without waiting for the user to create a proposal.
 const summariesQuery = queryOptions({
   queryKey: queryKeys.proposalSummaries,
   queryFn: () => getProposalSummaries(),
+  refetchOnMount: 'always',
 })
 
 const securedQuery = queryOptions({
   queryKey: queryKeys.securedTotals,
   queryFn: () => getSecuredTotals(),
+  refetchOnMount: 'always',
 })
 
 export const Route = createFileRoute('/_authed/dashboard')({
