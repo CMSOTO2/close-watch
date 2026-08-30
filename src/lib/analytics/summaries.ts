@@ -4,6 +4,45 @@ import { scoreIntent } from './intent'
 import type { IntentResult } from './intent'
 import type { ProposalStatus } from '#/lib/supabase/types'
 
+export type SecuredTotal = {
+  currency: string
+  allTimeCents: number
+  last30Cents: number
+}
+
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
+
+/**
+ * How much the owner has secured in won proposals — all-time and in the last
+ * thirty days — grouped by currency so mixed currencies are never summed
+ * together. `outcome_at` (set when a proposal is marked paid) drives the window.
+ */
+export const getSecuredTotals = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<Array<SecuredTotal>> => {
+    const supabase = getSupabaseServerClient()
+    const { data } = await supabase
+      .from('proposals')
+      .select('deal_value_cents, currency, outcome_at')
+      .eq('status', 'won')
+
+    const cutoff = Date.now() - THIRTY_DAYS_MS
+    const byCurrency = new Map<string, { allTimeCents: number; last30Cents: number }>()
+    for (const p of data ?? []) {
+      if (p.deal_value_cents == null) continue
+      const entry = byCurrency.get(p.currency) ?? { allTimeCents: 0, last30Cents: 0 }
+      entry.allTimeCents += p.deal_value_cents
+      if (p.outcome_at && new Date(p.outcome_at).getTime() >= cutoff) {
+        entry.last30Cents += p.deal_value_cents
+      }
+      byCurrency.set(p.currency, entry)
+    }
+
+    return [...byCurrency.entries()]
+      .map(([currency, v]) => ({ currency, ...v }))
+      .sort((a, b) => b.allTimeCents - a.allTimeCents)
+  },
+)
+
 export type ProposalSummary = {
   id: string
   title: string

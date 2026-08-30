@@ -35,6 +35,7 @@ export type ProposalDetail = {
   dealValueCents: number | null
   currency: string
   createdAt: string
+  outcomeAt: string | null
   owner: ProposalOwner
   pages: Array<ProposalPage>
   shareLinks: Array<ShareLink>
@@ -50,7 +51,7 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
     const { data: proposal } = await supabase
       .from('proposals')
       .select(
-        'id, title, client_name, status, page_count, deal_value_cents, currency, created_at, owner_id',
+        'id, title, client_name, status, page_count, deal_value_cents, currency, created_at, outcome_at, owner_id',
       )
       .eq('id', data.id)
       .maybeSingle()
@@ -86,6 +87,7 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
       dealValueCents: proposal.deal_value_cents,
       currency: proposal.currency,
       createdAt: proposal.created_at,
+      outcomeAt: proposal.outcome_at,
       owner: {
         name: owner?.company_name ?? owner?.full_name ?? null,
         email: owner?.email ?? null,

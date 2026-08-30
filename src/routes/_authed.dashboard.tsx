@@ -1,22 +1,33 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { formatDuration } from '#/lib/analytics/intent'
-import { getProposalSummaries } from '#/lib/analytics/summaries'
+import { getProposalSummaries, getSecuredTotals } from '#/lib/analytics/summaries'
+import { formatMoney } from '#/lib/utils'
 import { queryKeys } from '#/constants'
-import type { ProposalSummary } from '#/lib/analytics/summaries'
+import type { ProposalSummary, SecuredTotal } from '#/lib/analytics/summaries'
 
 const summariesQuery = queryOptions({
   queryKey: queryKeys.proposalSummaries,
   queryFn: () => getProposalSummaries(),
 })
 
+const securedQuery = queryOptions({
+  queryKey: queryKeys.securedTotals,
+  queryFn: () => getSecuredTotals(),
+})
+
 export const Route = createFileRoute('/_authed/dashboard')({
-  loader: ({ context }) => context.queryClient.query(summariesQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.query(summariesQuery),
+      context.queryClient.query(securedQuery),
+    ]),
   component: Dashboard,
 })
 
 function Dashboard() {
   const { data } = useSuspenseQuery(summariesQuery)
+  const { data: secured } = useSuspenseQuery(securedQuery)
 
   // Hottest first. The point of opening this page is knowing who to call.
   const sorted = [...data].sort((a, b) => b.intent.score - a.intent.score)
@@ -32,6 +43,8 @@ function Dashboard() {
           New proposal
         </Link>
       </div>
+
+      <SecuredBanner secured={secured} />
 
       {sorted.length === 0 ? (
         <div className="mt-10">
@@ -52,6 +65,27 @@ function Dashboard() {
           ))}
         </ul>
       )}
+    </div>
+  )
+}
+
+function SecuredBanner({ secured }: { secured: Array<SecuredTotal> }) {
+  const withValue = secured.filter((s) => s.allTimeCents > 0)
+  if (withValue.length === 0) return null
+
+  const allTime = withValue.map((s) => formatMoney(s.allTimeCents, s.currency)).join(' · ')
+  const last30 = withValue
+    .filter((s) => s.last30Cents > 0)
+    .map((s) => formatMoney(s.last30Cents, s.currency))
+    .join(' · ')
+
+  return (
+    <div className="mt-6 rounded-xl border border-green-200 bg-green-50 px-5 py-4">
+      <p className="text-xs font-medium uppercase tracking-wide text-green-700/70">
+        Secured with Closewatch
+      </p>
+      <p className="mt-1 text-2xl font-semibold text-green-700">{allTime}</p>
+      {last30 && <p className="mt-0.5 text-sm text-green-600">+{last30} in the last 30 days</p>}
     </div>
   )
 }

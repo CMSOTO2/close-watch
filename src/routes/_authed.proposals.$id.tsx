@@ -6,11 +6,14 @@ import { getProposalDetail } from '#/lib/proposals/detail'
 import {
   createShareLink,
   deleteProposal,
+  markProposalWon,
+  reopenProposal,
   revokeShareLink,
   setPageSection,
 } from '#/lib/proposals/mutations'
 import { ProposalActivity, proposalAnalyticsQuery } from '#/components/proposal-activity'
 import { ConfirmDialog } from '#/components/confirm-dialog'
+import { formatMoney } from '#/lib/utils'
 import { SECTION_LABELS, queryKeys } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
 
@@ -122,10 +125,74 @@ function ProposalDetail() {
         </p>
       </div>
 
+      <Outcome proposalId={id} />
       <ShareLinks proposalId={id} />
       <ProposalActivity proposalId={id} />
       <PageTags proposalId={id} />
     </div>
+  )
+}
+
+function Outcome({ proposalId }: { proposalId: string }) {
+  const queryClient = useQueryClient()
+  const { data: proposal } = useSuspenseQuery(detailQuery(proposalId))
+  const [busy, setBusy] = useState(false)
+
+  if (!proposal) return null
+  const won = proposal.status === 'won'
+
+  async function run(fn: () => Promise<unknown>) {
+    setBusy(true)
+    try {
+      await fn()
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.proposalSummaries }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.securedTotals }),
+      ])
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (won) {
+    const markedOn = proposal.outcomeAt
+      ? new Date(proposal.outcomeAt).toLocaleDateString(undefined, {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        })
+      : null
+    return (
+      <div className="mt-6 flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+        <div>
+          <p className="text-sm font-medium text-green-700">
+            Paid &amp; finalized
+            {proposal.dealValueCents != null && (
+              <> · {formatMoney(proposal.dealValueCents, proposal.currency)}</>
+            )}
+          </p>
+          {markedOn && <p className="text-xs text-green-600/80">Marked {markedOn}</p>}
+        </div>
+        <button
+          onClick={() => run(() => reopenProposal({ data: { id: proposalId } }))}
+          disabled={busy}
+          className="text-xs text-green-700 hover:underline disabled:opacity-50"
+        >
+          Reopen
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <button
+      onClick={() => run(() => markProposalWon({ data: { id: proposalId } }))}
+      disabled={busy}
+      className="mt-6 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+    >
+      {busy ? 'Saving…' : 'Mark as paid & finalized'}
+    </button>
   )
 }
 
@@ -343,16 +410,4 @@ function PageTags({ proposalId }: { proposalId: string }) {
       </ul>
     </section>
   )
-}
-
-function formatMoney(cents: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 0,
-    }).format(cents / 100)
-  } catch {
-    return `${(cents / 100).toFixed(0)} ${currency}`
-  }
 }

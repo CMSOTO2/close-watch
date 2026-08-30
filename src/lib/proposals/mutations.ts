@@ -86,6 +86,35 @@ export const setPageSection = createServerFn({ method: 'POST' })
   })
 
 /**
+ * Marks a proposal paid and finalized (status "won"). `outcome_at` is what the
+ * dashboard's "secured" totals sum, and the last-30-days figure reads from.
+ */
+export const markProposalWon = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid() }))
+  .handler(async ({ data }): Promise<{ id: string }> => {
+    const supabase = getSupabaseServerClient()
+    const { error } = await supabase
+      .from('proposals')
+      .update({ status: 'won', outcome_at: new Date().toISOString() })
+      .eq('id', data.id)
+    if (error) throw new Error(error.message)
+    return { id: data.id }
+  })
+
+/** Reopens a finalized proposal back to "sent" and clears its outcome. */
+export const reopenProposal = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid() }))
+  .handler(async ({ data }): Promise<{ id: string }> => {
+    const supabase = getSupabaseServerClient()
+    const { error } = await supabase
+      .from('proposals')
+      .update({ status: 'sent', outcome_at: null })
+      .eq('id', data.id)
+    if (error) throw new Error(error.message)
+    return { id: data.id }
+  })
+
+/**
  * Permanently deletes a proposal: the row (which cascades to pages, links,
  * visits and events) and its stored PDF. RLS scopes both to the owner.
  */
