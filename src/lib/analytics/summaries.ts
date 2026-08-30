@@ -50,6 +50,9 @@ export type ProposalSummary = {
   status: ProposalStatus
   pageCount: number
   createdAt: string
+  dealValueCents: number | null
+  currency: string
+  outcomeAt: string | null
   qualifiedVisits: number
   distinctViewers: number
   totalEngagedMs: number
@@ -70,7 +73,9 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
 
     const { data: proposals } = await supabase
       .from('proposals')
-      .select('id, title, client_name, status, page_count, created_at')
+      .select(
+        'id, title, client_name, status, page_count, created_at, deal_value_cents, currency, outcome_at',
+      )
       .neq('status', 'archived')
       .order('created_at', { ascending: false })
 
@@ -138,6 +143,9 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
         status: p.status,
         pageCount: p.page_count,
         createdAt: p.created_at,
+        dealValueCents: p.deal_value_cents,
+        currency: p.currency,
+        outcomeAt: p.outcome_at,
         qualifiedVisits: own.length,
         distinctViewers,
         totalEngagedMs,

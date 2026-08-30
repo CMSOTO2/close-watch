@@ -90,7 +90,7 @@ export const setPageSection = createServerFn({ method: 'POST' })
  * dashboard's "secured" totals sum, and the last-30-days figure reads from.
  */
 export const markProposalWon = createServerFn({ method: 'POST' })
-  .validator(z.object({ id: z.uuid() }))
+  .validator(z.object({ id: z.uuid(), revokeLinks: z.boolean().default(false) }))
   .handler(async ({ data }): Promise<{ id: string }> => {
     const supabase = getSupabaseServerClient()
     const { error } = await supabase
@@ -98,6 +98,17 @@ export const markProposalWon = createServerFn({ method: 'POST' })
       .update({ status: 'won', outcome_at: new Date().toISOString() })
       .eq('id', data.id)
     if (error) throw new Error(error.message)
+
+    // Optional: cut off further access on close. Off by default, because the
+    // link is often the very document the client just paid for.
+    if (data.revokeLinks) {
+      await supabase
+        .from('share_links')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('proposal_id', data.id)
+        .is('revoked_at', null)
+    }
+
     return { id: data.id }
   })
 

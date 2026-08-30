@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import { formatDuration } from '#/lib/analytics/intent'
 import { getProposalSummaries, getSecuredTotals } from '#/lib/analytics/summaries'
 import { formatMoney } from '#/lib/utils'
@@ -25,12 +26,20 @@ export const Route = createFileRoute('/_authed/dashboard')({
   component: Dashboard,
 })
 
+const isClosed = (p: ProposalSummary) => p.status === 'won' || p.status === 'lost'
+
 function Dashboard() {
   const { data } = useSuspenseQuery(summariesQuery)
   const { data: secured } = useSuspenseQuery(securedQuery)
+  const [tab, setTab] = useState<'active' | 'closed'>('active')
 
-  // Hottest first. The point of opening this page is knowing who to call.
-  const sorted = [...data].sort((a, b) => b.intent.score - a.intent.score)
+  // Active: open deals, hottest first — the point of this page is who to call.
+  // Closed: most recently finalized first.
+  const active = data.filter((p) => !isClosed(p)).sort((a, b) => b.intent.score - a.intent.score)
+  const closed = data
+    .filter(isClosed)
+    .sort((a, b) => (b.outcomeAt ?? '').localeCompare(a.outcomeAt ?? ''))
+  const list = tab === 'active' ? active : closed
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
@@ -46,7 +55,7 @@ function Dashboard() {
 
       <SecuredBanner secured={secured} />
 
-      {sorted.length === 0 ? (
+      {data.length === 0 ? (
         <div className="mt-10">
           <p className="text-sm text-neutral-500">
             Upload a proposal to get a tracked link.
@@ -59,13 +68,92 @@ function Dashboard() {
           </Link>
         </div>
       ) : (
-        <ul className="mt-6 divide-y divide-neutral-200">
-          {sorted.map((p) => (
-            <ProposalRow key={p.id} proposal={p} />
-          ))}
-        </ul>
+        <>
+          <div className="mt-6 flex w-fit gap-1 rounded-lg bg-neutral-100 p-1 text-sm">
+            <TabButton active={tab === 'active'} onClick={() => setTab('active')} label="Active" count={active.length} />
+            <TabButton active={tab === 'closed'} onClick={() => setTab('closed')} label="Closed" count={closed.length} />
+          </div>
+
+          {list.length === 0 ? (
+            <p className="mt-8 text-sm text-neutral-500">
+              {tab === 'active' ? 'No open proposals — every deal is closed.' : 'No closed deals yet.'}
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-neutral-200">
+              {list.map((p) =>
+                tab === 'active' ? (
+                  <ProposalRow key={p.id} proposal={p} />
+                ) : (
+                  <ClosedRow key={p.id} proposal={p} />
+                ),
+              )}
+            </ul>
+          )}
+        </>
       )}
     </div>
+  )
+}
+
+function TabButton({
+  active,
+  onClick,
+  label,
+  count,
+}: {
+  active: boolean
+  onClick: () => void
+  label: string
+  count: number
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`rounded-md px-3 py-1 font-medium transition ${
+        active ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-800'
+      }`}
+    >
+      {label} <span className="tabular-nums text-neutral-400">{count}</span>
+    </button>
+  )
+}
+
+function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
+  const won = proposal.status === 'won'
+  const date = proposal.outcomeAt
+    ? new Date(proposal.outcomeAt).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : null
+
+  return (
+    <li className="py-4">
+      <Link
+        to="/proposals/$id"
+        params={{ id: proposal.id }}
+        className="-mx-2 block rounded-md px-2 py-1 hover:bg-neutral-50"
+      >
+        <div className="flex items-baseline justify-between gap-4">
+          <div className="min-w-0">
+            <p className="truncate font-medium">{proposal.clientName}</p>
+            <p className="truncate text-sm text-neutral-500">{proposal.title}</p>
+          </div>
+          <div className="shrink-0 text-right">
+            {proposal.dealValueCents != null && (
+              <p className={`text-sm font-medium ${won ? 'text-green-700' : 'text-neutral-500'}`}>
+                {formatMoney(proposal.dealValueCents, proposal.currency)}
+              </p>
+            )}
+            <p className="text-xs text-neutral-400">
+              {won ? 'Won' : 'Lost'}
+              {date && ` · ${date}`}
+            </p>
+          </div>
+        </div>
+      </Link>
+    </li>
   )
 }
 

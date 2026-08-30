@@ -137,6 +137,7 @@ function Outcome({ proposalId }: { proposalId: string }) {
   const queryClient = useQueryClient()
   const { data: proposal } = useSuspenseQuery(detailQuery(proposalId))
   const [busy, setBusy] = useState(false)
+  const [revokeLinks, setRevokeLinks] = useState(false)
 
   if (!proposal) return null
   const won = proposal.status === 'won'
@@ -186,13 +187,24 @@ function Outcome({ proposalId }: { proposalId: string }) {
   }
 
   return (
-    <button
-      onClick={() => run(() => markProposalWon({ data: { id: proposalId } }))}
-      disabled={busy}
-      className="mt-6 inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
-    >
-      {busy ? 'Saving…' : 'Mark as paid & finalized'}
-    </button>
+    <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+      <button
+        onClick={() => run(() => markProposalWon({ data: { id: proposalId, revokeLinks } }))}
+        disabled={busy}
+        className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+      >
+        {busy ? 'Saving…' : 'Mark as paid & finalized'}
+      </button>
+      <label className="inline-flex items-center gap-1.5 text-xs text-neutral-500">
+        <input
+          type="checkbox"
+          checked={revokeLinks}
+          onChange={(e) => setRevokeLinks(e.target.checked)}
+          className="rounded border-neutral-300"
+        />
+        Also revoke share links
+      </label>
+    </div>
   )
 }
 
