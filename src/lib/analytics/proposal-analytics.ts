@@ -3,6 +3,23 @@ import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import type { PageSection } from '#/lib/supabase/types'
 
+/**
+ * One distinct person who read a recipient's link. Index 1 is the named
+ * recipient (the first device to open it); index 2+ are people it was forwarded
+ * to. We can't know a forwardee's name — only their device and how they read —
+ * so a stable ordinal lets the UI track a specific forwardee across return
+ * visits without inventing an identity.
+ */
+export type ReaderActivity = {
+  index: number
+  isForward: boolean
+  opens: number
+  totalEngagedMs: number
+  lastOpenedAt: string | null
+  device: string | null
+  events: Array<string>
+}
+
 export type RecipientActivity = {
   shareLinkId: string
   label: string
@@ -10,8 +27,12 @@ export type RecipientActivity = {
   visits: number
   viewers: number
   forwarded: boolean
+  /** Distinct people it reached beyond the named recipient. */
+  forwardViewers: number
   totalEngagedMs: number
   lastOpenedAt: string | null
+  /** The recipient and every forwardee, recipient first. */
+  readers: Array<ReaderActivity>
 }
 
 export type PageAttention = {
@@ -29,6 +50,8 @@ export type VisitActivity = {
   recipientLabel: string
   isReturn: boolean
   isForward: boolean
+  /** 1 = named recipient, 2+ = the Nth distinct forwardee on this link. */
+  viewerIndex: number
   events: Array<string>
 }
 
@@ -40,6 +63,8 @@ export type ProposalAnalytics = {
     firstOpenedAt: string | null
     lastOpenedAt: string | null
     botVisits: number
+    downloads: number
+    prints: number
   }
   recipients: Array<RecipientActivity>
   pages: Array<PageAttention>
@@ -116,21 +141,69 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
       return l?.recipient_name ?? l?.recipient_email ?? 'Untitled recipient'
     }
 
-    // The first visitor to open a link is the original recipient; any other
-    // visitor on the same link is a forward.
-    const originalVisitor = new Map<string, string>()
-    for (const v of [...humanQualified].sort(
-      (a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime(),
-    )) {
-      if (!originalVisitor.has(v.share_link_id)) {
-        originalVisitor.set(v.share_link_id, v.visitor_id)
-      }
+    // Order the distinct people who opened each link by first appearance. Index
+    // 1 is the named recipient; 2+ are the people it was forwarded to.
+    const firstSeen = new Map<string, number>()
+    for (const v of humanQualified) {
+      const key = `${v.share_link_id}:${v.visitor_id}`
+      const t = new Date(v.started_at).getTime()
+      if (!firstSeen.has(key) || t < firstSeen.get(key)!) firstSeen.set(key, t)
+    }
+    const viewerIndexByLink = new Map<string, Map<string, number>>()
+    for (const link of links ?? []) {
+      const ids = [
+        ...new Set(
+          humanQualified.filter((v) => v.share_link_id === link.id).map((v) => v.visitor_id),
+        ),
+      ].sort((a, b) => firstSeen.get(`${link.id}:${a}`)! - firstSeen.get(`${link.id}:${b}`)!)
+      viewerIndexByLink.set(link.id, new Map(ids.map((id, i) => [id, i + 1])))
+    }
+    const viewerIndexOf = (linkId: string, visitorId: string) =>
+      viewerIndexByLink.get(linkId)?.get(visitorId) ?? 1
+
+    // Events per visit, deduped to labels.
+    const eventsByVisit = new Map<string, Set<string>>()
+    for (const e of events ?? []) {
+      const label = EVENT_LABELS[e.type]
+      if (!label) continue
+      if (!eventsByVisit.has(e.visit_id)) eventsByVisit.set(e.visit_id, new Set())
+      eventsByVisit.get(e.visit_id)!.add(label)
     }
 
-    // Per-recipient rollup.
+    // Per-recipient rollup, with a node per distinct reader so the UI can
+    // connect a forwarded read back to the recipient it came from.
     const recipients: Array<RecipientActivity> = (links ?? []).map((link) => {
       const own = humanQualified.filter((v) => v.share_link_id === link.id)
-      const viewers = new Set(own.map((v) => v.visitor_id)).size
+      const byViewer = new Map<string, typeof own>()
+      for (const v of own) {
+        const arr = byViewer.get(v.visitor_id) ?? []
+        arr.push(v)
+        byViewer.set(v.visitor_id, arr)
+      }
+
+      const readers: Array<ReaderActivity> = [...byViewer.entries()]
+        .map(([visitorId, vs]) => {
+          const index = viewerIndexOf(link.id, visitorId)
+          // Device and last-open come from this reader's most recent visit.
+          const latest = [...vs].sort(
+            (a, b) => new Date(b.last_seen_at).getTime() - new Date(a.last_seen_at).getTime(),
+          )[0]
+          const evts = new Set<string>()
+          for (const v of vs) for (const l of eventsByVisit.get(v.id) ?? []) evts.add(l)
+          // `latest` is always defined: byViewer only holds visitors with visits.
+          return {
+            index,
+            isForward: index > 1,
+            opens: vs.length,
+            totalEngagedMs: vs.reduce((sum, v) => sum + v.engaged_ms, 0),
+            lastOpenedAt: new Date(latest.last_seen_at).toISOString(),
+            device: deviceLabel(latest.browser, latest.os),
+            events: [...evts],
+          }
+        })
+        .sort((a, b) => a.index - b.index)
+
+      const viewers = byViewer.size
       const seen = own.map((v) => new Date(v.last_seen_at).getTime())
       return {
         shareLinkId: link.id,
@@ -139,8 +212,10 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
         visits: own.length,
         viewers,
         forwarded: viewers > 1,
+        forwardViewers: Math.max(0, viewers - 1),
         totalEngagedMs: own.reduce((sum, v) => sum + v.engaged_ms, 0),
         lastOpenedAt: seen.length ? new Date(Math.max(...seen)).toISOString() : null,
+        readers,
       }
     })
 
@@ -159,15 +234,6 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
       viewCount: viewsByPage.get(p.page_number) ?? 0,
     }))
 
-    // Events per visit, deduped to labels.
-    const eventsByVisit = new Map<string, Set<string>>()
-    for (const e of events ?? []) {
-      const label = EVENT_LABELS[e.type]
-      if (!label) continue
-      if (!eventsByVisit.has(e.visit_id)) eventsByVisit.set(e.visit_id, new Set())
-      eventsByVisit.get(e.visit_id)!.add(label)
-    }
-
     const visitActivity: Array<VisitActivity> = humanQualified.map((v) => ({
       id: v.id,
       startedAt: v.started_at,
@@ -175,12 +241,21 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
       device: deviceLabel(v.browser, v.os),
       recipientLabel: linkLabel(v.share_link_id),
       isReturn: v.visit_seq > 1,
-      isForward: originalVisitor.get(v.share_link_id) !== v.visitor_id,
+      isForward: viewerIndexOf(v.share_link_id, v.visitor_id) > 1,
+      viewerIndex: viewerIndexOf(v.share_link_id, v.visitor_id),
       events: [...(eventsByVisit.get(v.id) ?? [])],
     }))
 
     const starts = humanQualified.map((v) => new Date(v.started_at).getTime())
     const seenAll = humanQualified.map((v) => new Date(v.last_seen_at).getTime())
+
+    // Total download / print actions across qualified human reads.
+    let downloads = 0
+    let prints = 0
+    for (const e of events ?? []) {
+      if (e.type === 'download') downloads++
+      else if (e.type === 'print') prints++
+    }
 
     return {
       totals: {
@@ -190,6 +265,8 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
         firstOpenedAt: starts.length ? new Date(Math.min(...starts)).toISOString() : null,
         lastOpenedAt: seenAll.length ? new Date(Math.max(...seenAll)).toISOString() : null,
         botVisits: visits.filter((v) => v.is_bot).length,
+        downloads,
+        prints,
       },
       recipients,
       pages: pageAttention,

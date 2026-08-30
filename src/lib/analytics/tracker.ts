@@ -145,6 +145,15 @@ export function startTracker({ visitId, token, getPageElements }: TrackerOptions
       queuedEvents.push({ type: 'download', page: currentPage })
       flush(false)
     },
+    /**
+     * Call when the reader hits the print button. The browser's own Ctrl+P is
+     * already caught by the beforeprint listener; this covers the in-app button,
+     * which prints an off-screen iframe and so never fires beforeprint here.
+     */
+    recordPrint() {
+      queuedEvents.push({ type: 'print', page: currentPage })
+      flush(false)
+    },
     stop() {
       if (stopped) return
       stopped = true
