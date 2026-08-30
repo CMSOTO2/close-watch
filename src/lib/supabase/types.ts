@@ -40,6 +40,7 @@ type ProposalRow = {
   page_count: number
   status: ProposalStatus
   outcome_at: string | null
+  first_open_notified_at: string | null
   created_at: string
   updated_at: string
 }

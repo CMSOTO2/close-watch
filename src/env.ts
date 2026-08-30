@@ -15,6 +15,10 @@ export const publicEnv = publicSchema.parse({
 const serverSchema = z.object({
   SUPABASE_SECRET_KEY: z.string().startsWith('sb_secret_'),
   IP_HASH_SALT: z.string().min(8),
+  // Optional: email notifications are disabled until a Resend key is set, so the
+  // app runs fine locally and in CI without one.
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().optional(),
 })
 
 let cached: z.infer<typeof serverSchema> | null = null
@@ -24,6 +28,8 @@ export function serverEnv() {
   cached ??= serverSchema.parse({
     SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
     IP_HASH_SALT: process.env.IP_HASH_SALT,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    EMAIL_FROM: process.env.EMAIL_FROM,
   })
   return cached
 }

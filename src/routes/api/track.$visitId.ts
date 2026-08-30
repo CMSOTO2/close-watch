@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 import { getSupabaseAdminClient } from '#/lib/supabase/server'
+import { notifyFirstOpen } from '#/lib/notify/first-open'
 
 /**
  * Engagement ingest for the public viewer.
@@ -82,6 +83,14 @@ export const Route = createFileRoute('/api/track/$visitId')({
               payload: (e.payload ?? null) as never,
             })),
           )
+        }
+
+        // The engagement above may have just crossed the qualification line.
+        // Best-effort and self-guarding; must never break the 204.
+        try {
+          await notifyFirstOpen(supabase, visitId.data)
+        } catch {
+          // A notification hiccup is never the viewer's problem.
         }
 
         return noContent()
