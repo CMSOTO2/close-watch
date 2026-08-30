@@ -22,6 +22,10 @@ Create a Supabase project, then fill in `.env`:
 - `IP_HASH_SALT` any long random string
 - `VITE_PUBLIC_URL` the public origin used to build share links (defaults to
   `http://localhost:3000`)
+- `RESEND_API_KEY` (optional) the `re_…` key from Resend. The first-qualified-open
+  email stays disabled until this is set. `EMAIL_FROM` sets the sender and defaults
+  to `onboarding@resend.dev`, which only delivers to your own Resend account address
+  until you verify a domain
 
 To let returning users sign in with Google, enable the Google provider under
 Authentication → Providers in the Supabase dashboard and add
@@ -46,10 +50,13 @@ pnpm dlx supabase gen types typescript --project-id <ref> > src/lib/supabase/typ
 
 ## What is here
 
-Magic-link and Google sign-in, PDF upload to private storage, per-recipient share
-links, the public tracked viewer, engagement ingest, intent scoring, and the dashboard
-with per-proposal detail and activity analytics. The "first qualified open" email
-notification is the main piece still to build.
+Magic-link and Google sign-in, a profile for your sender name, PDF upload to private
+storage, per-recipient share links, the public tracked viewer with download and print,
+engagement ingest (including download and print events), intent scoring, the dashboard
+with per-proposal detail and activity analytics, and the first-qualified-open email.
+
+That is the full MVP. See [docs/PRODUCTION.md](docs/PRODUCTION.md) for what is left
+between this and a launch you would show a customer.
 
 Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing anything under
 `src/lib/analytics/`. The tracking rules there are the reason the numbers can be trusted,
@@ -60,5 +67,6 @@ and they are easy to break by accident.
 - [Positioning](docs/POSITIONING.md) — market, competitors, target customer, pricing
 - [MVP](docs/MVP.md) — scope, what is deliberately excluded, sequencing
 - [Architecture](docs/ARCHITECTURE.md) — stack, tracking design, security model
+- [Production](docs/PRODUCTION.md) — the checklist before a real launch
 - [Launch](docs/LAUNCH.md) — validation, first hundred users, failure modes
 - [Naming](docs/NAMING.md) — candidates and how to rename
