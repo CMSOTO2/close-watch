@@ -3,5 +3,9 @@
   "name": "tanstack-start-app",
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry"
+  "main": "@tanstack/react-start/server-entry",
+  // Serve the app and /p/:token from the production domain. Provisioned on
+  // `wrangler deploy`; requires the getclosewatch.com zone in this Cloudflare
+  // account (it is, via Cloudflare Registrar).
+  "routes": [{ "pattern": "getclosewatch.com", "custom_domain": true }]
 }
