@@ -116,6 +116,9 @@ function ProposalDetail() {
           )}
           {' · '}
           {proposal.status}
+          {(proposal.owner.name ?? proposal.owner.email) && (
+            <> · Sent by {proposal.owner.name ?? proposal.owner.email}</>
+          )}
         </p>
       </div>
 

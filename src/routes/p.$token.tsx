@@ -44,7 +44,7 @@ function ViewerPage() {
           )}
         </div>
       </header>
-      <PdfViewer pdfUrl={pdfUrl} visitId={visitId} token={token} />
+      <PdfViewer pdfUrl={pdfUrl} visitId={visitId} token={token} title={title} />
     </div>
   )
 }

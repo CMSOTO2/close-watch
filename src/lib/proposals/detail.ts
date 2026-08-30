@@ -21,6 +21,11 @@ export type ShareLink = {
   createdAt: string
 }
 
+export type ProposalOwner = {
+  name: string | null
+  email: string | null
+}
+
 export type ProposalDetail = {
   id: string
   title: string
@@ -30,6 +35,7 @@ export type ProposalDetail = {
   dealValueCents: number | null
   currency: string
   createdAt: string
+  owner: ProposalOwner
   pages: Array<ProposalPage>
   shareLinks: Array<ShareLink>
 }
@@ -44,14 +50,21 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
     const { data: proposal } = await supabase
       .from('proposals')
       .select(
-        'id, title, client_name, status, page_count, deal_value_cents, currency, created_at',
+        'id, title, client_name, status, page_count, deal_value_cents, currency, created_at, owner_id',
       )
       .eq('id', data.id)
       .maybeSingle()
 
     if (!proposal) return null
 
-    const [{ data: pages }, { data: links }] = await Promise.all([
+    const [{ data: owner }, { data: pages }, { data: links }] = await Promise.all([
+      // The owner is always the signed-in user (RLS scopes proposals to them),
+      // so the "own profile" policy lets this read through.
+      supabase
+        .from('profiles')
+        .select('full_name, company_name, email')
+        .eq('id', proposal.owner_id)
+        .maybeSingle(),
       supabase
         .from('proposal_pages')
         .select('page_number, section, label')
@@ -73,6 +86,10 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
       dealValueCents: proposal.deal_value_cents,
       currency: proposal.currency,
       createdAt: proposal.created_at,
+      owner: {
+        name: owner?.company_name ?? owner?.full_name ?? null,
+        email: owner?.email ?? null,
+      },
       pages: (pages ?? []).map((p) => ({
         pageNumber: p.page_number,
         section: p.section,
