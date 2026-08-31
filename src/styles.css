@@ -15,49 +15,62 @@
    primitive inherits the identity without being restyled.
    ============================================================ */
 :root {
-  --canvas: #fbfaf8;
+  /* Light is a warm ground with white cards lifted off it, not white on white.
+     The old canvas sat 1.7 L* under --surface, so nothing read as raised and
+     the accents had no field to sit against; this is 4.8, comfortably past
+     dark mode's own 3.3.
+
+     The ladder runs surface > canvas > surface-2 > surface-3, so a hover or
+     muted surface always sits *below* the page rather than above it. Every
+     text pair here clears WCAG AA on the background it actually appears on —
+     including text-brand and text-warm on bg-brand-soft, which the row chips
+     use and which the previous values failed at 3.56. */
+  --canvas: #f5f1e9;
   --surface: #ffffff;
-  --surface-2: #f5f3ef;
-  --surface-3: #efebe5;
+  --surface-2: #ebe5d9;
+  --surface-3: #ddd5c5;
   --ink: #1a1815;
-  --ink-2: #6b665e;
-  --ink-3: #9c958a;
-  --line: #e8e4dd;
-  --line-soft: #f1eee9;
+  --ink-2: #57524b;
+  --ink-3: #736d61;
+  --line: #ddd6c8;
+  --line-soft: #eee9e0;
 
   /* Brand brass — punctuation, not paint. */
-  --brand: #a9741f;
+  --brand: #92620f;
   --brand-2: #c08a2e;
-  --brand-soft: #f8f0df;
+  --brand-soft: #fcf3e0;
 
   /* Money secured. */
   --good: #146b3c;
   --good-fg: #ffffff;
-  --good-soft: #e6f1e9;
-  --good-line: #c9e2d2;
+  --good-soft: #d8eee2;
+  --good-line: #b3d9c4;
 
   /* Intent bands. */
   --hot: #b8431a;
-  --hot-soft: #fbeae1;
-  --warm: #96661a;
-  --warm-soft: #f8efda;
-  --cold: #7c766c;
-  --cold-soft: #efece7;
+  --hot-soft: #fce7dc;
+  --warm: #8f6212;
+  --warm-soft: #faedd0;
+  --cold: #676159;
+  --cold-soft: #eae5db;
 
   --danger: #b03a20;
-  --danger-soft: #fbeae1;
+  --danger-soft: #fce6dc;
   --danger-line: #f0cfbf;
 
   /* Recessive bar fill for the attention chart — deliberately neutral so the
      brass pricing bar is the only thing carrying emphasis. Checked for CVD
-     and normal-vision separation against --brand. */
-  --bar: #4a453e;
+     and normal-vision separation against --brand: ΔE 18.2 protan, 20.6 tritan,
+     20.7 normal. It tracks --brand, so re-run the check if that moves. */
+  --bar: #3f3a34;
 
-  --shadow-sm: 0 1px 2px rgba(26, 24, 21, 0.05);
+  /* A warm ground can carry a real shadow; on the old near-white one these
+     had to stay faint or they read as dirt. */
+  --shadow-sm: 0 1px 2px rgba(46, 38, 24, 0.07);
   --shadow-md:
-    0 1px 2px rgba(26, 24, 21, 0.05), 0 8px 20px -12px rgba(26, 24, 21, 0.22);
+    0 1px 2px rgba(46, 38, 24, 0.06), 0 8px 20px -12px rgba(46, 38, 24, 0.28);
   --shadow-lg:
-    0 1px 2px rgba(26, 24, 21, 0.05), 0 20px 48px -24px rgba(26, 24, 21, 0.32);
+    0 1px 2px rgba(46, 38, 24, 0.06), 0 20px 48px -24px rgba(46, 38, 24, 0.38);
 
   --radius: 0.625rem;
 
