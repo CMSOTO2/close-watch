@@ -112,6 +112,34 @@ export const markProposalWon = createServerFn({ method: 'POST' })
     return { id: data.id }
   })
 
+/**
+ * Marks a proposal lost (the deal fell through). Deliberately a status change
+ * rather than a delete: the visits, readers and attention it collected are the
+ * record of what happened, and they are worth as much on a deal that got away
+ * as on one that closed. Nothing here touches the secured totals, which read
+ * status = 'won' only.
+ */
+export const markProposalLost = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid(), revokeLinks: z.boolean().default(false) }))
+  .handler(async ({ data }): Promise<{ id: string }> => {
+    const supabase = getSupabaseServerClient()
+    const { error } = await supabase
+      .from('proposals')
+      .update({ status: 'lost', outcome_at: new Date().toISOString() })
+      .eq('id', data.id)
+    if (error) throw new Error(error.message)
+
+    if (data.revokeLinks) {
+      await supabase
+        .from('share_links')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('proposal_id', data.id)
+        .is('revoked_at', null)
+    }
+
+    return { id: data.id }
+  })
+
 /** Reopens a finalized proposal back to "sent" and clears its outcome. */
 export const reopenProposal = createServerFn({ method: 'POST' })
   .validator(z.object({ id: z.uuid() }))

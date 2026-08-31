@@ -15,6 +15,7 @@ import { getProposalDetail } from '#/lib/proposals/detail'
 import {
   createShareLink,
   deleteProposal,
+  markProposalLost,
   markProposalWon,
   reopenProposal,
   revokeShareLink,
@@ -27,7 +28,7 @@ import {
 import { ConfirmDialog } from '#/components/confirm-dialog'
 import { useToast } from '#/components/toast'
 import { PageContainer } from '#/components/page-container'
-import { formatMoney } from '#/lib/utils'
+import { cn, formatMoney } from '#/lib/utils'
 import { formatDay, useTimeZone } from '#/lib/local-date'
 import { deadLinkLabel, partitionLinks } from '#/lib/proposals/link-status'
 import { SECTION_LABELS, queryKeys } from '#/constants'
@@ -179,7 +180,7 @@ function Outcome({ proposalId }: { proposalId: string }) {
   const [revokeLinks, setRevokeLinks] = useState(false)
 
   if (!proposal) return null
-  const won = proposal.status === 'won'
+  const closed = proposal.status === 'won' || proposal.status === 'lost'
 
   /**
    * Paints the outcome immediately and rolls back if the server disagrees.
@@ -188,7 +189,7 @@ function Outcome({ proposalId }: { proposalId: string }) {
    */
   async function run(
     fn: () => Promise<unknown>,
-    next: { status: 'won' | 'sent'; message: string },
+    next: { status: 'won' | 'lost' | 'sent'; message: string },
   ) {
     const key = queryKeys.proposal(proposalId)
     await queryClient.cancelQueries({ queryKey: key })
@@ -200,7 +201,9 @@ function Outcome({ proposalId }: { proposalId: string }) {
         : {
             ...old,
             status: next.status,
-            outcomeAt: next.status === 'won' ? new Date().toISOString() : null,
+            // Reopening clears the outcome date; either close stamps it.
+            outcomeAt:
+              next.status === 'sent' ? null : new Date().toISOString(),
           },
     )
     setBusy(true)
@@ -225,20 +228,45 @@ function Outcome({ proposalId }: { proposalId: string }) {
     }
   }
 
-  if (won) {
+  if (closed) {
+    const won = proposal.status === 'won'
     const markedOn =
       proposal.outcomeAt === null ? null : formatDay(proposal.outcomeAt, timeZone)
+    const value =
+      proposal.dealValueCents == null
+        ? null
+        : formatMoney(proposal.dealValueCents, proposal.currency)
+
     return (
-      <div className="mt-6 flex items-center justify-between gap-4 rounded-lg border border-good-line bg-good-soft px-4 py-3">
+      <div
+        className={cn(
+          'mt-6 flex items-center justify-between gap-4 rounded-lg border px-4 py-3',
+          won ? 'border-good-line bg-good-soft' : 'border-line bg-surface-2',
+        )}
+      >
         <div>
-          <p className="text-sm font-semibold text-good">
-            Paid &amp; finalized
-            {proposal.dealValueCents != null && (
-              <> · {formatMoney(proposal.dealValueCents, proposal.currency)}</>
+          <p
+            className={cn(
+              'text-sm font-semibold',
+              won ? 'text-good' : 'text-ink-2',
+            )}
+          >
+            {won ? 'Paid & finalized' : 'Didn’t close'}
+            {value !== null && (
+              <>
+                {' · '}
+                {/* Struck through on a loss, matching how the closed list
+                    already prints a value that never landed. */}
+                <span className={won ? undefined : 'line-through'}>
+                  {value}
+                </span>
+              </>
             )}
           </p>
           {markedOn && (
-            <p className="text-xs text-good/80">Marked {markedOn}</p>
+            <p className={cn('text-xs', won ? 'text-good/80' : 'text-ink-3')}>
+              Marked {markedOn}
+            </p>
           )}
         </div>
         <button
@@ -249,7 +277,10 @@ function Outcome({ proposalId }: { proposalId: string }) {
             })
           }
           disabled={busy}
-          className="shrink-0 text-xs font-medium text-good hover:underline disabled:opacity-50"
+          className={cn(
+            'shrink-0 text-xs font-medium hover:underline disabled:opacity-50',
+            won ? 'text-good' : 'text-ink-2',
+          )}
         >
           Reopen
         </button>
@@ -270,6 +301,21 @@ function Outcome({ proposalId }: { proposalId: string }) {
         className="inline-flex items-center gap-2 rounded-md bg-good px-4 py-2 text-sm font-medium text-good-fg shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
       >
         {busy ? 'Saving…' : 'Mark as paid & finalized'}
+      </button>
+      {/* Quiet beside the win, but present: a deal that fell through is worth
+          recording rather than deleting or leaving open forever, and the
+          proposal keeps every visit and reader it collected either way. */}
+      <button
+        onClick={() =>
+          run(
+            () => markProposalLost({ data: { id: proposalId, revokeLinks } }),
+            { status: 'lost', message: 'Marked as lost \u2014 the stats stay' },
+          )
+        }
+        disabled={busy}
+        className="rounded-md border border-line bg-surface px-3 py-2 text-sm font-medium text-ink-2 shadow-sm transition-colors hover:border-ink-3 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
+      >
+        Mark as lost
       </button>
       <label className="inline-flex items-center gap-1.5 text-xs text-ink-2">
         <input
