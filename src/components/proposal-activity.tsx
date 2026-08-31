@@ -170,7 +170,7 @@ function RecentVisits({ visits }: { visits: Array<VisitActivity> }) {
                   <span className="truncate">{v.recipientLabel}</span>
                 )}
                 {v.isReturn && (
-                  <Badge className="bg-surface-2 text-ink-2">return</Badge>
+                  <Badge className="bg-surface-3 text-ink">return</Badge>
                 )}
                 <EventBadges events={v.events} />
               </p>
