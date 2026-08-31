@@ -77,6 +77,14 @@ function expiryInfo(
   return { label: `Expires ${formatDay(iso, timeZone)}`, soon: false }
 }
 
+/** Who a link was cut for — used in the list and in the revoke confirmation. */
+function recipientOf(link: {
+  recipientName: string | null
+  recipientEmail: string | null
+}): string {
+  return link.recipientName ?? link.recipientEmail ?? 'Untitled recipient'
+}
+
 function ProposalDetail() {
   const { id } = Route.useParams()
   const router = useRouter()
@@ -284,6 +292,14 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   const timeZone = useTimeZone()
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
+  // Holds the link awaiting confirmation. The recipient's name travels with it
+  // so the dialog can name who is about to lose their link, rather than asking
+  // about "this link" while the list sits behind a scrim.
+  const [pendingRevoke, setPendingRevoke] = useState<{
+    id: string
+    recipient: string
+  } | null>(null)
+  const [revoking, setRevoking] = useState(false)
 
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) })
@@ -325,18 +341,39 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
     }
   }
 
-  async function revoke(linkId: string) {
+  async function confirmRevoke() {
+    if (pendingRevoke === null) return
+    setRevoking(true)
     try {
-      await revokeShareLink({ data: { id: linkId } })
-      notify('Link revoked \u2014 it no longer opens')
+      await revokeShareLink({ data: { id: pendingRevoke.id } })
+      notify(`${pendingRevoke.recipient}'s link no longer opens`)
+      setPendingRevoke(null)
     } catch {
       notify('Could not revoke that link', 'danger')
+    } finally {
+      setRevoking(false)
+      await refresh()
     }
-    await refresh()
   }
 
   return (
     <section className="mt-10 max-w-3xl">
+      <ConfirmDialog
+        open={pendingRevoke !== null}
+        title="Revoke this link?"
+        message={
+          pendingRevoke === null
+            ? ''
+            : `${pendingRevoke.recipient} will not be able to open the proposal again. What they have already read is kept, but reaching them means sending a new link.`
+        }
+        confirmLabel="Revoke link"
+        busyLabel="Revoking…"
+        destructive
+        busy={revoking}
+        onConfirm={confirmRevoke}
+        onCancel={() => setPendingRevoke(null)}
+      />
+
       <h2 className="font-display text-base font-semibold tracking-tight">
         Share links
       </h2>
@@ -359,11 +396,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
                 className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-line bg-surface px-3 py-2 shadow-sm"
               >
                 <div className="min-w-0 flex-1 basis-64">
-                  <p className="truncate text-sm">
-                    {link.recipientName ??
-                      link.recipientEmail ??
-                      'Untitled recipient'}
-                  </p>
+                  <p className="truncate text-sm">{recipientOf(link)}</p>
                   <p
                     className={`truncate font-mono text-[11px] ${dead ? 'text-ink-3 line-through' : 'text-ink-2'}`}
                   >
@@ -392,7 +425,12 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
                       {copied === link.url ? 'Copied' : 'Copy'}
                     </button>
                     <button
-                      onClick={() => revoke(link.id)}
+                      onClick={() =>
+                        setPendingRevoke({
+                          id: link.id,
+                          recipient: recipientOf(link),
+                        })
+                      }
                       className="text-xs text-ink-3 transition-colors hover:text-danger"
                     >
                       Revoke

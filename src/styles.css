@@ -46,6 +46,7 @@
 
   --danger: #b03a20;
   --danger-soft: #fbeae1;
+  --danger-line: #f0cfbf;
 
   /* Recessive bar fill for the attention chart — deliberately neutral so the
      brass pricing bar is the only thing carrying emphasis. Checked for CVD
@@ -130,6 +131,7 @@
 
   --danger: #ef7a5c;
   --danger-soft: #2c1c15;
+  --danger-line: #4a2c20;
 
   --bar: #8b857b;
 
@@ -174,6 +176,7 @@
   --color-cold-soft: var(--cold-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
+  --color-danger-line: var(--danger-line);
   --color-bar: var(--bar);
 
   --shadow-sm: var(--shadow-sm);
@@ -279,6 +282,26 @@
     from {
       opacity: 0;
       transform: translateY(3px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Toasts drop in from above the fold they now sit in. Slightly longer than
+     .row-enter because this one is asking to be noticed rather than trying to
+     stay out of the way. Reduced motion is handled globally further down. */
+  .toast-enter {
+    /* `backwards`, not `both`: a filled-forwards animation would pin
+       `transform: none` and beat the leave transition's translate. */
+    animation: toast-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  @keyframes toast-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.97);
     }
     to {
       opacity: 1;

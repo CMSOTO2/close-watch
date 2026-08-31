@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { AlertCircle, Check, CheckCircle2 } from 'lucide-react'
 import { cn } from '#/lib/utils'
 
 type Tone = 'neutral' | 'good' | 'danger'
@@ -46,7 +47,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         // screen reader is already saying.
         role="status"
         aria-live="polite"
-        className="pointer-events-none fixed bottom-4 left-1/2 z-[60] flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-2 px-4 sm:left-auto sm:right-4 sm:translate-x-0 sm:items-end"
+        // Top rather than bottom, where the eye already is after pressing
+        // something, and centred rather than tucked right: the top-right of
+        // every page is already spoken for by Sign out above and Delete or
+        // New proposal below, and a toast landing on either of those is worse
+        // than one that has to be read from the middle. The offset clears the
+        // sticky header; on the header-less pages it reads as a top margin.
+        className="pointer-events-none fixed left-1/2 top-[4.5rem] z-[60] flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-2 px-4"
       >
         {toasts.map((t) => (
           <ToastItem
@@ -62,10 +69,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-const TONE: Record<Tone, string> = {
-  neutral: 'border-line bg-surface text-ink',
-  good: 'border-good-line bg-good-soft text-good',
-  danger: 'border-line bg-danger-soft text-danger',
+/**
+ * Three readings, not two: `neutral` is "that worked", `good` is a win worth a
+ * beat of colour, `danger` is "that did not happen". Keeping the green for
+ * closing a deal is the whole reason a plain confirmation stays plain.
+ */
+const TONE: Record<Tone, { className: string; Icon: typeof Check }> = {
+  neutral: { className: 'border-line bg-surface text-ink', Icon: Check },
+  good: {
+    className: 'border-good-line bg-good-soft text-good',
+    Icon: CheckCircle2,
+  },
+  danger: {
+    className: 'border-danger-line bg-danger-soft text-danger',
+    Icon: AlertCircle,
+  },
 }
 
 function ToastItem({ toast, onDone }: { toast: Toast; onDone: () => void }) {
@@ -80,15 +98,25 @@ function ToastItem({ toast, onDone }: { toast: Toast; onDone: () => void }) {
     }
   }, [onDone])
 
+  const { className, Icon } = TONE[toast.tone]
+
   return (
     <div
       className={cn(
-        'pointer-events-auto rounded-md border px-3.5 py-2.5 text-[13px] font-medium shadow-lg',
+        'toast-enter pointer-events-auto flex items-center gap-2 rounded-md border py-2.5 pl-3 pr-3.5 text-[13px] font-medium shadow-lg',
         'motion-safe:transition-[opacity,transform] motion-safe:duration-200',
-        leaving ? 'opacity-0 motion-safe:translate-y-1' : 'opacity-100',
-        TONE[toast.tone],
+        // Leaves the way it arrived — upward, back past the header.
+        leaving ? 'opacity-0 motion-safe:-translate-y-1' : 'opacity-100',
+        className,
       )}
     >
+      <Icon
+        aria-hidden
+        className={cn(
+          'size-4 shrink-0',
+          toast.tone === 'neutral' && 'text-ink-3',
+        )}
+      />
       {toast.message}
     </div>
   )
