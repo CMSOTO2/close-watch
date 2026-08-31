@@ -58,8 +58,11 @@ export const createProposal = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<CreateProposalResult> => {
     const supabase = getSupabaseServerClient()
 
+    // getUser's result is a discriminated union: no error means a real user,
+    // so the extra `!auth.user` this used to carry was dead by the types and
+    // cost the repo its only lint error.
     const { data: auth, error: authError } = await supabase.auth.getUser()
-    if (authError || !auth.user) throw new Error('Not signed in')
+    if (authError) throw new Error('Not signed in')
 
     // The on_auth_user_created trigger normally creates this, but don't let a
     // missing profile row wall off proposal creation: owner_id references it.
