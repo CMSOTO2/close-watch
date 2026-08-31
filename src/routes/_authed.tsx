@@ -1,4 +1,13 @@
-import { Link, Outlet, createFileRoute, redirect, useRouter } from '@tanstack/react-router'
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  redirect,
+  useRouter,
+} from '@tanstack/react-router'
+import { Wordmark } from '#/components/brand-mark'
+import { PageContainer } from '#/components/page-container'
+import { ThemeToggle } from '#/components/theme-toggle'
 import { getSessionUser } from '#/lib/auth'
 import { getSupabaseBrowserClient } from '#/lib/supabase/client'
 
@@ -22,27 +31,45 @@ function AuthedLayout() {
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-neutral-200">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-3">
-          <Link to="/dashboard" className="text-sm font-semibold text-neutral-900">
-            Closewatch
+    <div className="min-h-screen bg-canvas">
+      <header className="sticky top-0 z-30 border-b border-line bg-surface">
+        <PageContainer className="flex items-center justify-between gap-4 py-3">
+          <Link
+            to="/dashboard"
+            className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+          >
+            <Wordmark />
           </Link>
-          <div className="flex items-center gap-3">
-            {user.email && <span className="text-xs text-neutral-500">{user.email}</span>}
-            <Link to="/settings" className="text-sm text-neutral-500 hover:text-neutral-900">
+          <nav className="flex items-center gap-4">
+            <Link
+              to="/settings"
+              className="text-[13px] text-ink-2 transition-colors hover:text-ink"
+            >
               Settings
             </Link>
             <button
               onClick={signOut}
-              className="text-sm text-neutral-500 hover:text-neutral-900"
+              className="text-[13px] text-ink-2 transition-colors hover:text-ink"
             >
               Sign out
             </button>
-          </div>
-        </div>
+            <ThemeToggle />
+            <span
+              title={user.email ?? undefined}
+              className="grid size-7 shrink-0 place-items-center rounded-full bg-surface-3 text-[11px] font-semibold text-ink-2"
+            >
+              {initials(user.email)}
+            </span>
+          </nav>
+        </PageContainer>
       </header>
       <Outlet />
     </div>
   )
+}
+
+/** First two letters of the local part — enough to recognise your own account. */
+function initials(email: string | null | undefined): string {
+  if (!email) return '·'
+  return email.slice(0, 2).toUpperCase()
 }

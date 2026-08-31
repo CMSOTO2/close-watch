@@ -21,7 +21,13 @@ type Props = {
 }
 
 /** A single text input wired to a TanStack Form field, with its error line. */
-export function AuthField({ field, type, name, autoComplete, placeholder }: Props) {
+export function AuthField({
+  field,
+  type,
+  name,
+  autoComplete,
+  placeholder,
+}: Props) {
   return (
     <div>
       <input
@@ -32,10 +38,12 @@ export function AuthField({ field, type, name, autoComplete, placeholder }: Prop
         onBlur={field.handleBlur}
         onChange={(e) => field.handleChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+        className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
       />
       {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-        <p className="mt-1 text-xs text-red-600">{fieldError(field.state.meta.errors)}</p>
+        <p className="mt-1 text-xs text-danger">
+          {fieldError(field.state.meta.errors)}
+        </p>
       )}
     </div>
   )

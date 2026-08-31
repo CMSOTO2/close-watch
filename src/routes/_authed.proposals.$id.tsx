@@ -1,5 +1,14 @@
-import { Link, createFileRoute, notFound, useRouter } from '@tanstack/react-router'
-import { queryOptions, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import {
+  Link,
+  createFileRoute,
+  notFound,
+  useRouter,
+} from '@tanstack/react-router'
+import {
+  queryOptions,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { getProposalDetail } from '#/lib/proposals/detail'
@@ -11,8 +20,12 @@ import {
   revokeShareLink,
   setPageSection,
 } from '#/lib/proposals/mutations'
-import { ProposalActivity, proposalAnalyticsQuery } from '#/components/proposal-activity'
+import {
+  ProposalActivity,
+  proposalAnalyticsQuery,
+} from '#/components/proposal-activity'
 import { ConfirmDialog } from '#/components/confirm-dialog'
+import { PageContainer } from '#/components/page-container'
 import { formatMoney } from '#/lib/utils'
 import { SECTION_LABELS, queryKeys } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
@@ -33,12 +46,17 @@ export const Route = createFileRoute('/_authed/proposals/$id')({
   },
   component: ProposalDetail,
   notFoundComponent: () => (
-    <div className="mx-auto max-w-2xl px-6 py-16 text-center">
-      <h1 className="text-lg font-medium">Proposal not found</h1>
-      <Link to="/dashboard" className="mt-3 inline-block text-sm text-neutral-500 hover:text-neutral-900">
+    <PageContainer className="py-16 text-center">
+      <h1 className="font-display text-lg font-semibold tracking-tight">
+        Proposal not found
+      </h1>
+      <Link
+        to="/dashboard"
+        className="mt-3 inline-block text-[13px] text-ink-2 transition-colors hover:text-ink"
+      >
         Back to proposals
       </Link>
-    </div>
+    </PageContainer>
   ),
 })
 
@@ -74,7 +92,9 @@ function ProposalDetail() {
     setDeleting(true)
     try {
       await deleteProposal({ data: { id } })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.proposalSummaries })
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.proposalSummaries,
+      })
       await router.navigate({ to: '/dashboard' })
     } catch {
       setDeleting(false)
@@ -83,15 +103,18 @@ function ProposalDetail() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-10">
+    <PageContainer className="py-8 sm:py-9">
       <div className="flex items-center justify-between">
-        <Link to="/dashboard" className="text-sm text-neutral-500 hover:text-neutral-900">
+        <Link
+          to="/dashboard"
+          className="text-[13px] text-ink-2 transition-colors hover:text-ink"
+        >
           ← Proposals
         </Link>
         <button
           onClick={() => setConfirmOpen(true)}
           disabled={deleting}
-          className="text-sm text-neutral-400 hover:text-red-600 disabled:opacity-50"
+          className="text-[13px] text-ink-3 transition-colors hover:text-danger disabled:opacity-50"
         >
           Delete
         </button>
@@ -109,10 +132,12 @@ function ProposalDetail() {
         onCancel={() => setConfirmOpen(false)}
       />
 
-      <div className="mt-4">
-        <h1 className="text-xl font-semibold">{proposal.clientName}</h1>
-        <p className="text-sm text-neutral-500">{proposal.title}</p>
-        <p className="mt-2 text-sm text-neutral-500">
+      <div className="mt-4 max-w-3xl">
+        <h1 className="font-display text-2xl font-semibold tracking-tight">
+          {proposal.clientName}
+        </h1>
+        <p className="text-[13px] text-ink-2">{proposal.title}</p>
+        <p className="mt-2 text-[13px] text-ink-3">
           {proposal.pageCount} pages
           {proposal.dealValueCents != null && (
             <> · {formatMoney(proposal.dealValueCents, proposal.currency)}</>
@@ -129,7 +154,7 @@ function ProposalDetail() {
       <ShareLinks proposalId={id} />
       <ProposalActivity proposalId={id} />
       <PageTags proposalId={id} />
-    </div>
+    </PageContainer>
   )
 }
 
@@ -147,8 +172,12 @@ function Outcome({ proposalId }: { proposalId: string }) {
     try {
       await fn()
       await Promise.all([
-        queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.proposalSummaries }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.proposal(proposalId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.proposalSummaries,
+        }),
         queryClient.invalidateQueries({ queryKey: queryKeys.securedTotals }),
       ])
     } finally {
@@ -165,20 +194,24 @@ function Outcome({ proposalId }: { proposalId: string }) {
         })
       : null
     return (
-      <div className="mt-6 flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+      <div className="mt-6 flex items-center justify-between gap-4 rounded-lg border border-good-line bg-good-soft px-4 py-3">
         <div>
-          <p className="text-sm font-medium text-green-700">
+          <p className="text-sm font-semibold text-good">
             Paid &amp; finalized
             {proposal.dealValueCents != null && (
               <> · {formatMoney(proposal.dealValueCents, proposal.currency)}</>
             )}
           </p>
-          {markedOn && <p className="text-xs text-green-600/80">Marked {markedOn}</p>}
+          {markedOn && (
+            <p className="text-xs text-good/80">Marked {markedOn}</p>
+          )}
         </div>
         <button
-          onClick={() => run(() => reopenProposal({ data: { id: proposalId } }))}
+          onClick={() =>
+            run(() => reopenProposal({ data: { id: proposalId } }))
+          }
           disabled={busy}
-          className="text-xs text-green-700 hover:underline disabled:opacity-50"
+          className="shrink-0 text-xs font-medium text-good hover:underline disabled:opacity-50"
         >
           Reopen
         </button>
@@ -189,18 +222,20 @@ function Outcome({ proposalId }: { proposalId: string }) {
   return (
     <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
       <button
-        onClick={() => run(() => markProposalWon({ data: { id: proposalId, revokeLinks } }))}
+        onClick={() =>
+          run(() => markProposalWon({ data: { id: proposalId, revokeLinks } }))
+        }
         disabled={busy}
-        className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-md bg-good px-4 py-2 text-sm font-medium text-good-fg shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
       >
         {busy ? 'Saving…' : 'Mark as paid & finalized'}
       </button>
-      <label className="inline-flex items-center gap-1.5 text-xs text-neutral-500">
+      <label className="inline-flex items-center gap-1.5 text-xs text-ink-2">
         <input
           type="checkbox"
           checked={revokeLinks}
           onChange={(e) => setRevokeLinks(e.target.checked)}
-          className="rounded border-neutral-300"
+          className="rounded border-line accent-[var(--brand)]"
         />
         Also revoke share links
       </label>
@@ -216,7 +251,8 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) })
+  const refresh = () =>
+    queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) })
 
   const form = useForm({
     defaultValues: { recipientName: '', recipientEmail: '' },
@@ -233,7 +269,9 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
         form.reset()
         await refresh()
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Could not create the link')
+        setError(
+          err instanceof Error ? err.message : 'Could not create the link',
+        )
       }
     },
   })
@@ -254,9 +292,11 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   }
 
   return (
-    <section className="mt-10">
-      <h2 className="text-sm font-semibold text-neutral-800">Share links</h2>
-      <p className="mt-1 text-xs text-neutral-500">
+    <section className="mt-10 max-w-3xl">
+      <h2 className="font-display text-base font-semibold tracking-tight">
+        Share links
+      </h2>
+      <p className="mt-1 text-[13px] text-ink-2">
         One link per recipient. That&rsquo;s how you tell who&rsquo;s reading.
       </p>
 
@@ -264,41 +304,52 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
         <ul className="mt-4 space-y-2">
           {links.map((link) => {
             const revoked = link.revokedAt != null
-            const expired = link.expiresAt != null && new Date(link.expiresAt) < new Date()
+            const expired =
+              link.expiresAt != null && new Date(link.expiresAt) < new Date()
             const dead = revoked || expired
-            const expiry = !dead && link.expiresAt ? expiryInfo(link.expiresAt) : null
+            const expiry =
+              !dead && link.expiresAt ? expiryInfo(link.expiresAt) : null
             return (
               <li
                 key={link.id}
-                className="flex items-center gap-3 rounded-md border border-neutral-200 px-3 py-2"
+                className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-line bg-surface px-3 py-2 shadow-sm"
               >
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 basis-64">
                   <p className="truncate text-sm">
-                    {link.recipientName ?? link.recipientEmail ?? 'Untitled recipient'}
+                    {link.recipientName ??
+                      link.recipientEmail ??
+                      'Untitled recipient'}
                   </p>
-                  <p className={`truncate text-xs ${dead ? 'text-neutral-400 line-through' : 'text-neutral-500'}`}>
+                  <p
+                    className={`truncate font-mono text-[11px] ${dead ? 'text-ink-3 line-through' : 'text-ink-2'}`}
+                  >
                     {link.url}
                   </p>
                   {expiry && (
-                    <p className={`text-xs ${expiry.soon ? 'text-amber-600' : 'text-neutral-400'}`}>
+                    <p
+                      className={`text-xs ${expiry.soon ? 'text-warm' : 'text-ink-3'}`}
+                    >
                       {expiry.label}
-                      {expiry.soon && ' — send a fresh link if this deal is still live'}
+                      {expiry.soon &&
+                        ' — send a fresh link if this deal is still live'}
                     </p>
                   )}
                 </div>
                 {dead ? (
-                  <span className="text-xs text-neutral-400">{revoked ? 'revoked' : 'expired'}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-wide text-ink-3">
+                    {revoked ? 'revoked' : 'expired'}
+                  </span>
                 ) : (
                   <>
                     <button
                       onClick={() => copy(link.url)}
-                      className="rounded border border-neutral-300 px-2 py-1 text-xs hover:bg-neutral-50"
+                      className="rounded-md border border-line bg-surface px-2 py-1 text-xs font-medium text-ink-2 transition-colors hover:border-ink-3 hover:text-ink"
                     >
                       {copied === link.url ? 'Copied' : 'Copy'}
                     </button>
                     <button
                       onClick={() => revoke(link.id)}
-                      className="text-xs text-neutral-400 hover:text-red-600"
+                      className="text-xs text-ink-3 transition-colors hover:text-danger"
                     >
                       Revoke
                     </button>
@@ -319,14 +370,14 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
       >
         <form.Field name="recipientName">
           {(field) => (
-            <label className="flex-1">
-              <span className="text-xs text-neutral-500">Recipient name</span>
+            <label className="min-w-[12rem] flex-1">
+              <span className="kicker">Recipient name</span>
               <input
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
                 placeholder="Jordan at Acme"
-                className="mt-1 w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm"
+                className="mt-1.5 w-full rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
               />
             </label>
           )}
@@ -335,41 +386,46 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
           name="recipientEmail"
           validators={{
             onChange: ({ value }) =>
-              !value || /.+@.+\..+/.test(value) ? undefined : 'Enter a valid email',
+              !value || /.+@.+\..+/.test(value)
+                ? undefined
+                : 'Enter a valid email',
           }}
         >
           {(field) => (
-            <label className="flex-1">
-              <span className="text-xs text-neutral-500">Email (optional)</span>
+            <label className="min-w-[12rem] flex-1">
+              <span className="kicker">Email (optional)</span>
               <input
                 type="email"
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
                 placeholder="jordan@acme.com"
-                className="mt-1 w-full rounded-md border border-neutral-300 px-2.5 py-1.5 text-sm"
+                className="mt-1.5 w-full rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
               />
-              {field.state.meta.isTouched && field.state.meta.errors.length > 0 && (
-                <span className="mt-1 block text-xs text-red-600">
-                  {field.state.meta.errors.join(', ')}
-                </span>
-              )}
+              {field.state.meta.isTouched &&
+                field.state.meta.errors.length > 0 && (
+                  <span className="mt-1 block text-xs text-danger">
+                    {field.state.meta.errors.join(', ')}
+                  </span>
+                )}
             </label>
           )}
         </form.Field>
-        <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting] as const}>
+        <form.Subscribe
+          selector={(s) => [s.canSubmit, s.isSubmitting] as const}
+        >
           {([canSubmit, isSubmitting]) => (
             <button
               type="submit"
               disabled={!canSubmit}
-              className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+              className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
             >
               {isSubmitting ? 'Creating…' : 'New link'}
             </button>
           )}
         </form.Subscribe>
       </form>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-[13px] text-danger">{error}</p>}
     </section>
   )
 }
@@ -384,37 +440,50 @@ function PageTags({ proposalId }: { proposalId: string }) {
     setSavingPage(pageNumber)
     try {
       await setPageSection({ data: { proposalId, pageNumber, section } })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) })
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.proposal(proposalId),
+      })
     } finally {
       setSavingPage(null)
     }
   }
 
   return (
-    <section className="mt-10">
-      <h2 className="text-sm font-semibold text-neutral-800">Pages</h2>
-      <p className="mt-1 text-xs text-neutral-500">
+    <section className="mt-10 max-w-3xl">
+      <h2 className="font-display text-base font-semibold tracking-tight">
+        Pages
+      </h2>
+      <p className="mt-1 text-[13px] text-ink-2">
         Tag your pricing page so you can see when a client lingers on it.
       </p>
 
-      <ul className="mt-4 divide-y divide-neutral-100">
+      <ul className="mt-4 divide-y divide-line-soft">
         {pages.map((page) => (
-          <li key={page.pageNumber} className="flex items-center justify-between gap-3 py-2">
-            <span className="text-sm text-neutral-600">Page {page.pageNumber}</span>
+          <li
+            key={page.pageNumber}
+            className="flex items-center justify-between gap-3 py-2"
+          >
+            <span className="text-[13px] text-ink-2">
+              Page {page.pageNumber}
+            </span>
             <div className="flex items-center gap-2">
               {savingPage === page.pageNumber && (
-                <span className="text-xs text-neutral-400">saving…</span>
+                <span className="text-xs text-ink-3">saving…</span>
               )}
               <select
                 value={page.section}
-                onChange={(e) => onChange(page.pageNumber, e.target.value as PageSection)}
-                className="rounded-md border border-neutral-300 px-2 py-1 text-sm"
+                onChange={(e) =>
+                  onChange(page.pageNumber, e.target.value as PageSection)
+                }
+                className="cursor-pointer rounded-md border border-line bg-surface px-2 py-1 text-[13px] text-ink-2 transition-colors hover:border-ink-3 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
-                {(Object.keys(SECTION_LABELS) as Array<PageSection>).map((s) => (
-                  <option key={s} value={s}>
-                    {SECTION_LABELS[s]}
-                  </option>
-                ))}
+                {(Object.keys(SECTION_LABELS) as Array<PageSection>).map(
+                  (s) => (
+                    <option key={s} value={s}>
+                      {SECTION_LABELS[s]}
+                    </option>
+                  ),
+                )}
               </select>
             </div>
           </li>

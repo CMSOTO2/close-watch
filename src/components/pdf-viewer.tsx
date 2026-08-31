@@ -13,7 +13,10 @@ type Props = {
 
 /** Turn a proposal title into a safe `.pdf` filename. */
 function downloadName(title: string | undefined): string {
-  const base = (title ?? 'proposal').trim().replace(/[^\w.\- ]+/g, '').replace(/\s+/g, '-')
+  const base = (title ?? 'proposal')
+    .trim()
+    .replace(/[^\w.\- ]+/g, '')
+    .replace(/\s+/g, '-')
   const stem = base.replace(/\.pdf$/i, '') || 'proposal'
   return `${stem}.pdf`
 }
@@ -81,7 +84,8 @@ export function PdfViewer({ pdfUrl, visitId, token, title }: Props) {
       const url = URL.createObjectURL(await fetchPdf())
       const frame = document.createElement('iframe')
       frame.setAttribute('aria-hidden', 'true')
-      frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'
+      frame.style.cssText =
+        'position:fixed;right:0;bottom:0;width:0;height:0;border:0'
       frame.src = url
       frame.onload = () => {
         try {
@@ -123,7 +127,8 @@ export function PdfViewer({ pdfUrl, visitId, token, title }: Props) {
 
       container.replaceChildren()
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const contentWidth = () => Math.min(container.clientWidth || MAX_CONTENT_WIDTH, MAX_CONTENT_WIDTH)
+      const contentWidth = () =>
+        Math.min(container.clientWidth || MAX_CONTENT_WIDTH, MAX_CONTENT_WIDTH)
 
       // Build every page's placeholder first, sized to its aspect ratio, so the
       // column has its true height (and the tracker its page elements) before a
@@ -138,7 +143,9 @@ export function PdfViewer({ pdfUrl, visitId, token, title }: Props) {
 
         const wrapper = document.createElement('div')
         wrapper.dataset.page = String(n)
-        wrapper.className = 'mb-6 overflow-hidden rounded-lg bg-white shadow-sm'
+        // Literal white, not a surface token: this holds the rendered PDF page,
+        // which is white paper. Tinting it would tint the document.
+        wrapper.className = 'mb-6 overflow-hidden rounded-lg bg-white shadow-md'
         wrapper.style.aspectRatio = `${base.width} / ${base.height}`
         container.appendChild(wrapper)
         wrappers.push(wrapper)
@@ -165,7 +172,9 @@ export function PdfViewer({ pdfUrl, visitId, token, title }: Props) {
           const page = await doc.getPage(n)
           if (isCancelled()) return
           const base = page.getViewport({ scale: 1 })
-          const viewport = page.getViewport({ scale: (contentWidth() / base.width) * dpr })
+          const viewport = page.getViewport({
+            scale: (contentWidth() / base.width) * dpr,
+          })
 
           const canvas = document.createElement('canvas')
           canvas.width = viewport.width
@@ -250,21 +259,31 @@ export function PdfViewer({ pdfUrl, visitId, token, title }: Props) {
     <div className="mx-auto w-full max-w-4xl px-4 py-8">
       {status === 'ready' && (
         <div className="sticky top-3 z-10 mb-4 flex justify-end gap-2">
-          <ToolbarButton onClick={onDownload} busy={busy === 'download'} disabled={busy !== null}>
+          <ToolbarButton
+            onClick={onDownload}
+            busy={busy === 'download'}
+            disabled={busy !== null}
+          >
             <Download className="size-4" aria-hidden />
             {busy === 'download' ? 'Preparing…' : 'Download'}
           </ToolbarButton>
-          <ToolbarButton onClick={onPrint} busy={busy === 'print'} disabled={busy !== null}>
+          <ToolbarButton
+            onClick={onPrint}
+            busy={busy === 'print'}
+            disabled={busy !== null}
+          >
             <Printer className="size-4" aria-hidden />
             {busy === 'print' ? 'Preparing…' : 'Print'}
           </ToolbarButton>
         </div>
       )}
       {status === 'loading' && (
-        <p className="py-24 text-center text-sm text-neutral-500">Loading document…</p>
+        <p className="py-24 text-center text-[13px] text-ink-2">
+          Loading document…
+        </p>
       )}
       {status === 'error' && (
-        <p className="py-24 text-center text-sm text-red-600">
+        <p className="py-24 text-center text-[13px] text-danger">
           This document could not be displayed.
         </p>
       )}
@@ -290,7 +309,7 @@ function ToolbarButton({
       onClick={onClick}
       disabled={disabled}
       aria-busy={busy}
-      className="inline-flex items-center gap-1.5 rounded-md border border-neutral-300 bg-white/90 px-3 py-1.5 text-sm font-medium text-neutral-700 shadow-sm backdrop-blur hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface/90 px-3 py-1.5 text-[13px] font-medium text-ink-2 shadow-sm backdrop-blur transition-colors hover:border-ink-3 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-60"
     >
       {children}
     </button>

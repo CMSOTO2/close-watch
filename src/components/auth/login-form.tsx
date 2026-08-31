@@ -4,7 +4,11 @@ import { useForm } from '@tanstack/react-form-start'
 import { getSupabaseBrowserClient } from '#/lib/supabase/client'
 import { AuthField } from './auth-field'
 import { GoogleButton } from './google-button'
-import { emailSchema, signinPasswordSchema, signupPasswordSchema } from './validation'
+import {
+  emailSchema,
+  signinPasswordSchema,
+  signupPasswordSchema,
+} from './validation'
 import type { Mode } from './validation'
 
 export function LoginForm() {
@@ -31,12 +35,16 @@ export function LoginForm() {
         const { data, error } = await supabase.auth.signUp({
           email: value.email,
           password: value.password,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
         })
         if (error) return setSubmitError(error.message)
         // No session means the project requires email confirmation first.
         if (!data.session) {
-          return setNotice(`Check ${value.email} to confirm your account, then sign in.`)
+          return setNotice(
+            `Check ${value.email} to confirm your account, then sign in.`,
+          )
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -69,20 +77,26 @@ export function LoginForm() {
 
   return (
     <>
-      <h1 className="text-xl font-semibold">
-        {mode === 'signup' ? 'Create your Closewatch account' : 'Sign in to Closewatch'}
+      <h1 className="font-display text-xl font-semibold tracking-tight">
+        {mode === 'signup'
+          ? 'Create your Closewatch account'
+          : 'Sign in to Closewatch'}
       </h1>
 
       {notice ? (
-        <p className="mt-4 text-sm text-neutral-600">{notice}</p>
+        <p className="mt-4 rounded-md border border-good-line bg-good-soft px-3 py-2.5 text-[13px] text-good">
+          \n {notice}\n{' '}
+        </p>
       ) : (
         <>
-          <GoogleButton onError={setSubmitError} />
+          <div className="mt-6">
+            <GoogleButton onError={setSubmitError} />
+          </div>
 
-          <div className="my-4 flex items-center gap-3 text-xs text-neutral-400">
-            <span className="h-px flex-1 bg-neutral-200" />
+          <div className="my-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wide text-ink-3">
+            <span className="h-px flex-1 bg-line" />
             or
-            <span className="h-px flex-1 bg-neutral-200" />
+            <span className="h-px flex-1 bg-line" />
           </div>
 
           <form
@@ -107,7 +121,10 @@ export function LoginForm() {
             <form.Field
               name="password"
               validators={{
-                onChange: mode === 'signup' ? signupPasswordSchema : signinPasswordSchema,
+                onChange:
+                  mode === 'signup'
+                    ? signupPasswordSchema
+                    : signinPasswordSchema,
               }}
             >
               {(field) => (
@@ -115,7 +132,9 @@ export function LoginForm() {
                   field={field}
                   type="password"
                   name="password"
-                  autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                  autoComplete={
+                    mode === 'signup' ? 'new-password' : 'current-password'
+                  }
                   placeholder="Password"
                 />
               )}
@@ -146,43 +165,53 @@ export function LoginForm() {
             )}
 
             {mode === 'signup' && (
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-ink-2">
                 At least 6 characters, with a number and an uppercase letter.
               </p>
             )}
 
-            <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting] as const}>
+            <form.Subscribe
+              selector={(s) => [s.canSubmit, s.isSubmitting] as const}
+            >
               {([canSubmit, isSubmitting]) => (
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="w-full rounded-md bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+                  className="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Working…' : mode === 'signup' ? 'Create account' : 'Sign in'}
+                  {isSubmitting
+                    ? 'Working…'
+                    : mode === 'signup'
+                      ? 'Create account'
+                      : 'Sign in'}
                 </button>
               )}
             </form.Subscribe>
 
-            {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+            {submitError && (
+              <p className="text-[13px] text-danger">{submitError}</p>
+            )}
           </form>
 
           <button
             type="button"
             onClick={sendMagicLink}
-            className="mt-3 w-full text-center text-xs text-neutral-500 hover:text-neutral-900"
+            className="mt-3 w-full text-center text-xs text-ink-2 transition-colors hover:text-ink"
           >
             Email me a magic link instead
           </button>
 
-          <p className="mt-6 text-center text-sm text-neutral-500">
-            {mode === 'signup' ? 'Already have an account?' : 'New to Closewatch?'}{' '}
+          <p className="mt-6 text-center text-[13px] text-ink-2">
+            {mode === 'signup'
+              ? 'Already have an account?'
+              : 'New to Closewatch?'}{' '}
             <button
               type="button"
               onClick={() => {
                 setMode(mode === 'signup' ? 'signin' : 'signup')
                 setSubmitError(null)
               }}
-              className="font-medium text-neutral-900 hover:underline"
+              className="font-medium text-brand hover:underline"
             >
               {mode === 'signup' ? 'Sign in' : 'Create an account'}
             </button>

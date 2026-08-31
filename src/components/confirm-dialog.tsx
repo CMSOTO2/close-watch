@@ -44,7 +44,7 @@ export function ConfirmDialog({
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]"
         onClick={busy ? undefined : onCancel}
         aria-hidden="true"
       />
@@ -52,19 +52,22 @@ export function ConfirmDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
-        className="relative w-full max-w-sm rounded-lg bg-white p-5 shadow-xl"
+        className="relative w-full max-w-sm rounded-lg border border-line bg-surface p-5 shadow-lg"
       >
-        <h2 id="confirm-dialog-title" className="text-base font-semibold text-neutral-900">
+        <h2
+          id="confirm-dialog-title"
+          className="font-display text-base font-semibold tracking-tight text-ink"
+        >
           {title}
         </h2>
-        <p className="mt-2 text-sm text-neutral-600">{message}</p>
+        <p className="mt-2 text-[13px] leading-relaxed text-ink-2">{message}</p>
         <div className="mt-5 flex justify-end gap-2">
           <button
             type="button"
             autoFocus
             onClick={onCancel}
             disabled={busy}
-            className="rounded-md px-3 py-1.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 disabled:opacity-50"
+            className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink disabled:opacity-50"
           >
             {cancelLabel}
           </button>
@@ -72,8 +75,10 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={busy}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50 ${
-              destructive ? 'bg-red-600 hover:bg-red-700' : 'bg-neutral-900 hover:bg-neutral-700'
+            className={`rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50 ${
+              destructive
+                ? 'bg-destructive text-destructive-foreground'
+                : 'bg-primary text-primary-foreground'
             }`}
           >
             {busy ? busyLabel : confirmLabel}

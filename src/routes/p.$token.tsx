@@ -1,5 +1,6 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
 import { PdfViewer } from '#/components/pdf-viewer'
+import { PageContainer } from '#/components/page-container'
 import { beginVisit } from '#/lib/analytics/begin-visit'
 
 export const Route = createFileRoute('/p/$token')({
@@ -19,10 +20,12 @@ export const Route = createFileRoute('/p/$token')({
   }),
   component: ViewerPage,
   notFoundComponent: () => (
-    <div className="grid min-h-screen place-items-center px-6 text-center">
+    <div className="grid min-h-screen place-items-center bg-canvas px-6 text-center">
       <div>
-        <h1 className="text-lg font-medium">This link is no longer available</h1>
-        <p className="mt-2 text-sm text-neutral-500">
+        <h1 className="font-display text-lg font-semibold tracking-tight">
+          This link is no longer available
+        </h1>
+        <p className="mt-2 text-[13px] text-ink-2">
           It may have expired or been revoked. Ask the sender for a new one.
         </p>
       </div>
@@ -35,16 +38,25 @@ function ViewerPage() {
   const { token } = Route.useParams()
 
   return (
-    <div className="min-h-screen bg-neutral-100">
-      <header className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex max-w-4xl items-baseline justify-between gap-3 px-4 py-3">
-          <span className="min-w-0 truncate text-sm font-medium">{title}</span>
+    <div className="min-h-screen bg-canvas">
+      <header className="sticky top-0 z-20 border-b border-line bg-surface">
+        <PageContainer className="flex items-baseline justify-between gap-3 py-3">
+          <span className="min-w-0 truncate font-display text-sm font-semibold tracking-tight">
+            {title}
+          </span>
           {senderName && (
-            <span className="shrink-0 text-xs text-neutral-500">from {senderName}</span>
+            <span className="shrink-0 text-xs text-ink-2">
+              from {senderName}
+            </span>
           )}
-        </div>
+        </PageContainer>
       </header>
-      <PdfViewer pdfUrl={pdfUrl} visitId={visitId} token={token} title={title} />
+      <PdfViewer
+        pdfUrl={pdfUrl}
+        visitId={visitId}
+        token={token}
+        title={title}
+      />
     </div>
   )
 }

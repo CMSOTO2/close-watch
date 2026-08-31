@@ -1,12 +1,18 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { getProposalSummaries, getSecuredTotals } from '#/lib/analytics/summaries'
+import {
+  getProposalSummaries,
+  getSecuredTotals,
+} from '#/lib/analytics/summaries'
 import { queryKeys } from '#/constants'
 import { ClosedRow } from '#/components/dashboard/closed-row'
 import { ListControls } from '#/components/dashboard/list-controls'
 import { ProposalRow } from '#/components/dashboard/proposal-row'
-import { SecuredBanner } from '#/components/dashboard/secured-banner'
+import { filterByQuery } from '#/components/dashboard/search'
+import { PageContainer } from '#/components/page-container'
+import { Button } from '#/components/ui/button'
+import { SummaryStrip } from '#/components/dashboard/summary-strip'
 import { usePersistedChoice } from '#/components/dashboard/use-persisted-choice'
 import {
   comparatorFor,
@@ -46,58 +52,88 @@ function Dashboard() {
   const { data } = useSuspenseQuery(summariesQuery)
   const { data: secured } = useSuspenseQuery(securedQuery)
   const [tab, setTab] = useState<'active' | 'closed'>('active')
+  // Not persisted, unlike sort and heat: a query restored on next login would
+  // hide rows for a reason the owner no longer remembers setting.
+  const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = usePersistedChoice<SortKey>(
     'cw.dashboard.sort',
     'priority',
     SORT_KEYS,
   )
-  const [heat, setHeat] = usePersistedChoice<HeatFilter>('cw.dashboard.heat', 'all', HEAT_KEYS)
+  const [heat, setHeat] = usePersistedChoice<HeatFilter>(
+    'cw.dashboard.heat',
+    'all',
+    HEAT_KEYS,
+  )
 
   // Active: open deals. Default is hottest first — the point of this page is who
   // to call — but the owner can re-sort and filter by heat.
   // Closed: most recently finalized first.
+  //
+  // Search narrows both tabs, so the tab counts report matches and a query that
+  // only hits the other tab can say so rather than looking like no results.
   const activeAll = data.filter((p) => !isClosed(p))
-  const active = activeAll
+  const activeMatched = filterByQuery(activeAll, query)
+  const closedMatched = filterByQuery(data.filter(isClosed), query)
+
+  const active = activeMatched
     .filter((p) => heat === 'all' || p.intent.band === heat)
     .sort(comparatorFor(sortKey))
-  const closed = data
-    .filter(isClosed)
-    .sort((a, b) => (b.outcomeAt ?? '').localeCompare(a.outcomeAt ?? ''))
+  const closed = [...closedMatched].sort((a, b) =>
+    (b.outcomeAt ?? '').localeCompare(a.outcomeAt ?? ''),
+  )
   const list = tab === 'active' ? active : closed
+  const hotCount = activeAll.filter((p) => p.intent.band === 'hot').length
+  const otherTabMatches =
+    tab === 'active' ? closedMatched.length : activeMatched.length
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
-      <div className="flex items-baseline justify-between">
-        <h1 className="text-xl font-semibold">Proposals</h1>
-        <Link
-          to="/proposals/new"
-          className="text-sm text-neutral-500 hover:text-neutral-900"
-        >
-          New proposal
-        </Link>
+    <PageContainer className="py-8 sm:py-9">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">
+            Proposals
+          </h1>
+          <p className="mt-0.5 text-[13px] text-ink-2">
+            {activeAll.length === 0
+              ? 'Nothing open right now.'
+              : `${activeAll.length} open ${activeAll.length === 1 ? 'deal' : 'deals'} \u00b7 ${hotCount} running hot`}
+          </p>
+        </div>
+        <Button asChild size="sm">
+          <Link to="/proposals/new">
+            <span aria-hidden className="text-base leading-none opacity-70">
+              +
+            </span>
+            New proposal
+          </Link>
+        </Button>
       </div>
 
-      <SecuredBanner secured={secured} />
-
       {data.length === 0 ? (
-        <div className="mt-10">
-          <p className="text-sm text-neutral-500">
-            Upload a proposal to get a tracked link.
+        <div className="mt-10 rounded-lg border border-line bg-surface px-6 py-10 text-center shadow-sm">
+          <p className="font-display text-lg font-semibold tracking-tight">
+            No proposals yet
           </p>
-          <Link
-            to="/proposals/new"
-            className="mt-4 inline-block rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white"
-          >
-            Upload a proposal
-          </Link>
+          <p className="mx-auto mt-1 max-w-sm text-[13px] text-ink-2">
+            Upload a proposal to get a tracked link — you will see who opened
+            it, how long they read, and when a deal is worth a call.
+          </p>
+          <Button asChild className="mt-5">
+            <Link to="/proposals/new">Upload a proposal</Link>
+          </Button>
         </div>
       ) : (
         <>
+          <SummaryStrip secured={secured} active={activeAll} />
+
           <ListControls
             tab={tab}
             onTab={setTab}
-            activeCount={activeAll.length}
-            closedCount={closed.length}
+            activeCount={activeMatched.length}
+            closedCount={closedMatched.length}
+            query={query}
+            onQuery={setQuery}
             sortKey={sortKey}
             onSort={setSortKey}
             heat={heat}
@@ -105,15 +141,16 @@ function Dashboard() {
           />
 
           {list.length === 0 ? (
-            <p className="mt-8 text-sm text-neutral-500">
-              {tab === 'active'
-                ? activeAll.length === 0
-                  ? 'No open proposals — every deal is closed.'
-                  : 'No proposals match this filter.'
-                : 'No closed deals yet.'}
-            </p>
+            <EmptyList
+              tab={tab}
+              query={query}
+              onClearQuery={() => setQuery('')}
+              hasOpenDeals={activeAll.length > 0}
+              otherTabMatches={otherTabMatches}
+              onSwitchTab={() => setTab(tab === 'active' ? 'closed' : 'active')}
+            />
           ) : (
-            <ul className="mt-4 divide-y divide-neutral-200">
+            <ul className="mt-3.5 flex flex-col gap-2">
               {list.map((p) =>
                 tab === 'active' ? (
                   <ProposalRow key={p.id} proposal={p} />
@@ -124,6 +161,70 @@ function Dashboard() {
             </ul>
           )}
         </>
+      )}
+    </PageContainer>
+  )
+}
+
+/**
+ * Why the list is empty is different every time — no deals at all, a heat
+ * filter, a search that only matches the other tab — and each case has its own
+ * way out, so the message carries the action rather than just stating the fact.
+ */
+function EmptyList({
+  tab,
+  query,
+  onClearQuery,
+  hasOpenDeals,
+  otherTabMatches,
+  onSwitchTab,
+}: {
+  tab: 'active' | 'closed'
+  query: string
+  onClearQuery: () => void
+  hasOpenDeals: boolean
+  otherTabMatches: number
+  onSwitchTab: () => void
+}) {
+  const other = tab === 'active' ? 'closed' : 'active'
+
+  return (
+    <div className="mt-8 rounded-md border border-dashed border-line px-4 py-8 text-center">
+      <p className="text-[13px] text-ink-2">
+        {query ? (
+          <>
+            No {tab} proposals match{' '}
+            <span className="font-medium text-ink">“{query}”</span>.
+          </>
+        ) : tab === 'active' ? (
+          hasOpenDeals ? (
+            'No proposals match this filter.'
+          ) : (
+            'No open proposals \u2014 every deal is closed.'
+          )
+        ) : (
+          'No closed deals yet.'
+        )}
+      </p>
+
+      {query && otherTabMatches > 0 && (
+        <button
+          onClick={onSwitchTab}
+          className="mt-2 text-[13px] font-medium text-brand hover:underline"
+        >
+          {otherTabMatches} {other}{' '}
+          {otherTabMatches === 1 ? 'proposal matches' : 'proposals match'} —
+          show {other}
+        </button>
+      )}
+
+      {query && otherTabMatches === 0 && (
+        <button
+          onClick={onClearQuery}
+          className="mt-2 text-[13px] font-medium text-brand hover:underline"
+        >
+          Clear search
+        </button>
       )}
     </div>
   )
