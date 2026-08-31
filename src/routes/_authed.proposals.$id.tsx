@@ -316,8 +316,12 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
       await navigator.clipboard.writeText(url)
       setCopied(url)
       setTimeout(() => setCopied((c) => (c === url ? null : c)), 1500)
+      notify('Link copied')
     } catch {
-      setError('Copy failed — select the link and copy manually.')
+      // A toast rather than `setError`, which renders at the foot of the
+      // section: a copy that failed should say so next to the pointer, not
+      // several rows below the button that was pressed.
+      notify('Could not copy — select the link and copy it manually', 'danger')
     }
   }
 
@@ -473,6 +477,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
 function PageTags({ proposalId }: { proposalId: string }) {
   const queryClient = useQueryClient()
   const { data: proposal } = useSuspenseQuery(detailQuery(proposalId))
+  const notify = useToast()
   const pages = proposal?.pages ?? []
   const [savingPage, setSavingPage] = useState<number | null>(null)
 
@@ -483,6 +488,11 @@ function PageTags({ proposalId }: { proposalId: string }) {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.proposal(proposalId),
       })
+    } catch {
+      // The select is driven by the query, so a failure used to reset it to the
+      // old tag and say nothing at all — leaving the owner to believe pricing
+      // was tagged when it was not.
+      notify('Could not save that page tag', 'danger')
     } finally {
       setSavingPage(null)
     }

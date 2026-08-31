@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
 import { PageContainer } from '#/components/page-container'
+import { useToast } from '#/components/toast'
 import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, queryKeys } from '#/constants'
 
 export const Route = createFileRoute('/_authed/proposals/new')({
@@ -39,6 +40,7 @@ async function readPageCount(file: File): Promise<number> {
 function NewProposal() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const notify = useToast()
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const form = useForm({
@@ -62,6 +64,11 @@ function NewProposal() {
         data.set('pageCount', String(pageCount))
 
         await createProposal({ data })
+
+        // Fired before the navigation, not after: the provider lives above the
+        // router, so the toast rides across to the dashboard and lands next to
+        // the row it is talking about.
+        notify(`${value.clientName.trim()} proposal created`, 'good')
 
         await queryClient.invalidateQueries({
           queryKey: queryKeys.proposalSummaries,
