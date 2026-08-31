@@ -178,6 +178,7 @@ function Outcome({ proposalId }: { proposalId: string }) {
   const timeZone = useTimeZone()
   const [busy, setBusy] = useState(false)
   const [revokeLinks, setRevokeLinks] = useState(false)
+  const [confirmLost, setConfirmLost] = useState(false)
 
   if (!proposal) return null
   const closed = proposal.status === 'won' || proposal.status === 'lost'
@@ -306,17 +307,29 @@ function Outcome({ proposalId }: { proposalId: string }) {
           recording rather than deleting or leaving open forever, and the
           proposal keeps every visit and reader it collected either way. */}
       <button
-        onClick={() =>
-          run(
-            () => markProposalLost({ data: { id: proposalId, revokeLinks } }),
-            { status: 'lost', message: 'Marked as lost \u2014 the stats stay' },
-          )
-        }
+        onClick={() => setConfirmLost(true)}
         disabled={busy}
         className="rounded-md border border-line bg-surface px-3 py-2 text-sm font-medium text-ink-2 shadow-sm transition-colors hover:border-ink-3 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
       >
         Mark as lost
       </button>
+
+      <ConfirmDialog
+        open={confirmLost}
+        title="Mark this deal as lost?"
+        message="It leaves the pipeline and moves to Closed. Every visit, reader and page it collected is kept, and you can reopen it if the client comes back."
+        confirmLabel="Mark as lost"
+        busyLabel="Saving…"
+        busy={busy}
+        onConfirm={async () => {
+          await run(
+            () => markProposalLost({ data: { id: proposalId, revokeLinks } }),
+            { status: 'lost', message: 'Marked as lost \u2014 the stats stay' },
+          )
+          setConfirmLost(false)
+        }}
+        onCancel={() => setConfirmLost(false)}
+      />
       <label className="inline-flex items-center gap-1.5 text-xs text-ink-2">
         <input
           type="checkbox"

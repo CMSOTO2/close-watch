@@ -61,6 +61,11 @@
   --danger-soft: #fbdecd;
   --danger-line: #f0cfbf;
 
+  /* A deal that closed the other way. Its own colour rather than --danger,
+     which means "something went wrong": losing a deal is a fact to file, not
+     an error. Far from --good (ΔE 63) so the closed list reads at a glance. */
+  --lost: #a8624a;
+
   /* The attention chart's two fills, which are a pair and are picked as one.
      They are their own tokens rather than borrowing --brand because a fill and
      a text colour want opposite things: --brand has to be dark enough to pass
@@ -154,6 +159,8 @@
   --danger-soft: #2c1c15;
   --danger-line: #4a2c20;
 
+  --lost: #c07a63;
+
   --bar: #8b857b;
   /* What the pricing bar already was here: dark's --brand. Named now so the
      chart stops reaching for a text token. */
@@ -201,6 +208,7 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-danger-line: var(--danger-line);
+  --color-lost: var(--lost);
   --color-bar: var(--bar);
   --color-bar-lead: var(--bar-lead);
 
