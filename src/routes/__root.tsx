@@ -45,7 +45,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // The pre-paint script below sets `class="dark"` on this element before
+    // React hydrates, which is the whole point of it — it beats the flash of a
+    // light page. React sees an attribute the server did not render and warns.
+    // Suppressing is scoped to this element's own attributes, not the tree.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
