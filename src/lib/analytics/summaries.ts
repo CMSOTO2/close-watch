@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import { scoreIntent } from './intent'
+import { shareUrl } from '#/constants'
 import type { IntentResult } from './intent'
 import type { ProposalStatus } from '#/lib/supabase/types'
 
@@ -26,10 +27,16 @@ export const getSecuredTotals = createServerFn({ method: 'GET' }).handler(
       .eq('status', 'won')
 
     const cutoff = Date.now() - THIRTY_DAYS_MS
-    const byCurrency = new Map<string, { allTimeCents: number; last30Cents: number }>()
+    const byCurrency = new Map<
+      string,
+      { allTimeCents: number; last30Cents: number }
+    >()
     for (const p of data ?? []) {
       if (p.deal_value_cents == null) continue
-      const entry = byCurrency.get(p.currency) ?? { allTimeCents: 0, last30Cents: 0 }
+      const entry = byCurrency.get(p.currency) ?? {
+        allTimeCents: 0,
+        last30Cents: 0,
+      }
       entry.allTimeCents += p.deal_value_cents
       if (p.outcome_at && new Date(p.outcome_at).getTime() >= cutoff) {
         entry.last30Cents += p.deal_value_cents
@@ -58,6 +65,8 @@ export type ProposalSummary = {
   totalEngagedMs: number
   pricingEngagedMs: number
   lastViewedAt: string | null
+  /** Newest link that is still live, so the list can offer a one-click copy. */
+  shareUrl: string | null
   intent: IntentResult
 }
 
@@ -83,10 +92,17 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
 
     const ids = proposals.map((p) => p.id)
 
-    const [{ data: visits }, { data: pageViews }, { data: pages }] = await Promise.all([
+    const [
+      { data: visits },
+      { data: pageViews },
+      { data: pages },
+      { data: links },
+    ] = await Promise.all([
       supabase
         .from('visits')
-        .select('id, proposal_id, visitor_id, engaged_ms, started_at, last_seen_at')
+        .select(
+          'id, proposal_id, visitor_id, engaged_ms, started_at, last_seen_at',
+        )
         .in('proposal_id', ids)
         .eq('is_bot', false)
         .eq('is_qualified', true),
@@ -98,7 +114,23 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
         .from('proposal_pages')
         .select('proposal_id, page_number, section')
         .in('proposal_id', ids),
+      supabase
+        .from('share_links')
+        .select('proposal_id, token, expires_at, revoked_at, created_at')
+        .in('proposal_id', ids)
+        .is('revoked_at', null)
+        .order('created_at', { ascending: false }),
     ])
+
+    // Newest live link per proposal. Ordered newest-first above, so the first
+    // unexpired one seen for an id wins.
+    const now = Date.now()
+    const liveLink = new Map<string, string>()
+    for (const l of links ?? []) {
+      if (liveLink.has(l.proposal_id)) continue
+      if (l.expires_at && new Date(l.expires_at).getTime() < now) continue
+      liveLink.set(l.proposal_id, shareUrl(l.token))
+    }
 
     const pricingPages = new Set(
       (pages ?? [])
@@ -110,10 +142,15 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
     // visits. Both are buying signals that feed the intent score below.
     const visitIds = (visits ?? []).map((v) => v.id)
     const { data: events } = visitIds.length
-      ? await supabase.from('events').select('visit_id, type').in('visit_id', visitIds)
+      ? await supabase
+          .from('events')
+          .select('visit_id, type')
+          .in('visit_id', visitIds)
       : { data: [] as Array<{ visit_id: string; type: string }> }
 
-    const visitProposal = new Map((visits ?? []).map((v) => [v.id, v.proposal_id]))
+    const visitProposal = new Map(
+      (visits ?? []).map((v) => [v.id, v.proposal_id]),
+    )
     const downloadedProposals = new Set<string>()
     const printedProposals = new Set<string>()
     for (const e of events ?? []) {
@@ -150,16 +187,25 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
         distinctViewers,
         totalEngagedMs,
         pricingEngagedMs,
-        lastViewedAt: seenTimes.length ? new Date(Math.max(...seenTimes)).toISOString() : null,
+        lastViewedAt: seenTimes.length
+          ? new Date(Math.max(...seenTimes)).toISOString()
+          : null,
+        shareUrl: liveLink.get(p.id) ?? null,
         intent: scoreIntent({
           pageCount: p.page_count,
           qualifiedVisits: own.length,
           distinctViewers,
           totalEngagedMs,
           pricingEngagedMs,
-          reachedLastPage: ownPages.some((pv) => pv.page_number === p.page_count),
-          firstVisitAt: startTimes.length ? new Date(Math.min(...startTimes)) : null,
-          lastVisitAt: startTimes.length ? new Date(Math.max(...startTimes)) : null,
+          reachedLastPage: ownPages.some(
+            (pv) => pv.page_number === p.page_count,
+          ),
+          firstVisitAt: startTimes.length
+            ? new Date(Math.min(...startTimes))
+            : null,
+          lastVisitAt: startTimes.length
+            ? new Date(Math.max(...startTimes))
+            : null,
           downloaded: downloadedProposals.has(p.id),
           printed: printedProposals.has(p.id),
         }),

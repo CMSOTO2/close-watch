@@ -9,7 +9,14 @@ import { queryKeys } from '#/constants'
 import { ClosedRow } from '#/components/dashboard/closed-row'
 import { ListControls } from '#/components/dashboard/list-controls'
 import { ProposalRow } from '#/components/dashboard/proposal-row'
+import { ClientGroup } from '#/components/dashboard/client-group'
+import { groupByClient } from '#/components/dashboard/grouping'
 import { filterByQuery } from '#/components/dashboard/search'
+import { useListKeys } from '#/components/dashboard/use-list-keys'
+import {
+  sinceLabel,
+  useSinceLastVisit,
+} from '#/components/dashboard/since-last-visit'
 import { PageContainer } from '#/components/page-container'
 import { Button } from '#/components/ui/button'
 import { SummaryStrip } from '#/components/dashboard/summary-strip'
@@ -21,6 +28,10 @@ import {
   SORT_KEYS,
 } from '#/components/dashboard/sorting'
 import type { HeatFilter, SortKey } from '#/components/dashboard/sorting'
+import type { Delta } from '#/components/dashboard/since-last-visit'
+import type { ProposalSummary } from '#/lib/analytics/summaries'
+
+const GROUP_KEYS = ['on', 'off'] as const
 
 // refetchOnMount: 'always' — the first render right after login can run its
 // SSR fetch before the Supabase session is fully in play, caching an empty
@@ -51,6 +62,8 @@ export const Route = createFileRoute('/_authed/dashboard')({
 function Dashboard() {
   const { data } = useSuspenseQuery(summariesQuery)
   const { data: secured } = useSuspenseQuery(securedQuery)
+  useListKeys()
+  const { deltas, since } = useSinceLastVisit(data)
   const [tab, setTab] = useState<'active' | 'closed'>('active')
   // Not persisted, unlike sort and heat: a query restored on next login would
   // hide rows for a reason the owner no longer remembers setting.
@@ -65,6 +78,24 @@ function Dashboard() {
     'all',
     HEAT_KEYS,
   )
+  const [grouping, setGrouping] = usePersistedChoice<'on' | 'off'>(
+    'cw.dashboard.group',
+    'off',
+    GROUP_KEYS,
+  )
+  const grouped = grouping === 'on'
+  // Collapsed rather than expanded, so a group never silently hides rows the
+  // owner has not chosen to fold away. Session-only: which groups are shut is
+  // a scratch decision, not a preference worth restoring weeks later.
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
+
+  function toggleGroup(key: string) {
+    setCollapsed((prev) => {
+      const next = new Set(prev)
+      if (!next.delete(key)) next.add(key)
+      return next
+    })
+  }
 
   // Active: open deals. Default is hottest first — the point of this page is who
   // to call — but the owner can re-sort and filter by heat.
@@ -86,6 +117,10 @@ function Dashboard() {
   const hotCount = activeAll.filter((p) => p.intent.band === 'hot').length
   const otherTabMatches =
     tab === 'active' ? closedMatched.length : activeMatched.length
+  const news = since === null ? null : summarizeNews(deltas, since)
+  const entries = grouped
+    ? groupByClient(list)
+    : list.map((proposal) => ({ kind: 'single' as const, proposal }))
 
   return (
     <PageContainer className="py-8 sm:py-9">
@@ -99,6 +134,12 @@ function Dashboard() {
               ? 'Nothing open right now.'
               : `${activeAll.length} open ${activeAll.length === 1 ? 'deal' : 'deals'} \u00b7 ${hotCount} running hot`}
           </p>
+          {news !== null && (
+            <p className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-brand">
+              <span aria-hidden className="size-1.5 rounded-full bg-brand" />
+              {news}
+            </p>
+          )}
         </div>
         <Button asChild size="sm">
           <Link to="/proposals/new">
@@ -134,6 +175,8 @@ function Dashboard() {
             closedCount={closedMatched.length}
             query={query}
             onQuery={setQuery}
+            grouped={grouped}
+            onGrouped={(next) => setGrouping(next ? 'on' : 'off')}
             sortKey={sortKey}
             onSort={setSortKey}
             heat={heat}
@@ -151,11 +194,30 @@ function Dashboard() {
             />
           ) : (
             <ul className="mt-3.5 flex flex-col gap-2">
-              {list.map((p) =>
-                tab === 'active' ? (
-                  <ProposalRow key={p.id} proposal={p} />
+              {entries.map((entry) =>
+                entry.kind === 'single' ? (
+                  <Row
+                    key={entry.proposal.id}
+                    tab={tab}
+                    proposal={entry.proposal}
+                    delta={deltas.get(entry.proposal.id)}
+                  />
                 ) : (
-                  <ClosedRow key={p.id} proposal={p} />
+                  <ClientGroup
+                    key={entry.key}
+                    group={entry}
+                    open={!collapsed.has(entry.key)}
+                    onToggle={() => toggleGroup(entry.key)}
+                  >
+                    {entry.proposals.map((p) => (
+                      <Row
+                        key={p.id}
+                        tab={tab}
+                        proposal={p}
+                        delta={deltas.get(p.id)}
+                      />
+                    ))}
+                  </ClientGroup>
                 ),
               )}
             </ul>
@@ -228,4 +290,38 @@ function EmptyList({
       )}
     </div>
   )
+}
+
+function Row({
+  tab,
+  proposal,
+  delta,
+}: {
+  tab: 'active' | 'closed'
+  proposal: ProposalSummary
+  delta?: Delta
+}) {
+  return tab === 'active' ? (
+    <ProposalRow proposal={proposal} delta={delta} />
+  ) : (
+    <ClosedRow proposal={proposal} />
+  )
+}
+
+/**
+ * The one line that turns the page from a table into news. Silent when nothing
+ * moved — an always-present "0 new opens" would train the eye to skip it.
+ */
+function summarizeNews(
+  deltas: Map<string, Delta>,
+  since: string,
+): string | null {
+  if (deltas.size === 0) return null
+
+  let opens = 0
+  for (const d of deltas.values()) opens += d.opens
+
+  const where = `${deltas.size} proposal${deltas.size === 1 ? '' : 's'}`
+  if (opens === 0) return `Activity on ${where} ${sinceLabel(since)}`
+  return `${opens} new open${opens === 1 ? '' : 's'} across ${where} ${sinceLabel(since)}`
 }

@@ -1,3 +1,4 @@
+import { totalByCurrency } from './totals'
 import { formatMoney } from '#/lib/utils'
 import type { ProposalSummary, SecuredTotal } from '#/lib/analytics/summaries'
 
@@ -22,7 +23,7 @@ export function SummaryStrip({
     .map((s) => formatMoney(s.last30Cents, s.currency))
     .join(' · ')
 
-  const pipeline = joinByCurrency(active)
+  const pipeline = totalByCurrency(active)
   const hottest = active.reduce<ProposalSummary | null>(
     (best, p) =>
       best === null || p.intent.score > best.intent.score ? p : best,
@@ -55,20 +56,6 @@ export function SummaryStrip({
       />
     </div>
   )
-}
-
-/** Totals the priced proposals, keeping each currency separate. */
-function joinByCurrency(proposals: Array<ProposalSummary>): string | null {
-  const totals = new Map<string, number>()
-  for (const p of proposals) {
-    if (p.dealValueCents == null) continue
-    totals.set(p.currency, (totals.get(p.currency) ?? 0) + p.dealValueCents)
-  }
-  if (totals.size === 0) return null
-  return [...totals.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([currency, cents]) => formatMoney(cents, currency))
-    .join(' · ')
 }
 
 function Cell({

@@ -20,6 +20,7 @@ function proposal(clientName: string, title: string): ProposalSummary {
     totalEngagedMs: 0,
     pricingEngagedMs: 0,
     lastViewedAt: null,
+    shareUrl: null,
     intent: { score: 0, band: 'cold', signals: [] },
   }
 }
