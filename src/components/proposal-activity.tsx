@@ -110,7 +110,7 @@ function PageAttentionChart({ pages }: { pages: Array<PageAttention> }) {
               </span>
               <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-3">
                 <div
-                  className={`h-full rounded-full ${isPricing ? 'bg-brand' : 'bg-bar'}`}
+                  className={`h-full rounded-full ${isPricing ? 'bg-bar-lead' : 'bg-bar'}`}
                   style={{
                     width: `${Math.max(pct, page.engagedMs > 0 ? 4 : 0)}%`,
                   }}
@@ -131,7 +131,7 @@ function EventBadges({ events }: { events: Array<string> }) {
   return (
     <>
       {events.map((e) => (
-        <Badge key={e} className="bg-brand-soft text-warm">
+        <Badge key={e} className="bg-warm-soft text-warm">
           {e}
         </Badge>
       ))}

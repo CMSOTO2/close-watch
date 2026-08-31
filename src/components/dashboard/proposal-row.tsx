@@ -108,7 +108,7 @@ export function ProposalRow({
                   'rounded px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wide',
                   intent.band === 'hot'
                     ? 'bg-hot-soft text-hot'
-                    : 'bg-brand-soft text-warm',
+                    : 'bg-warm-soft text-warm',
                 )}
               >
                 {flag.label}

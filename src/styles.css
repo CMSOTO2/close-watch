@@ -21,10 +21,13 @@
      dark mode's own 3.3.
 
      The ladder runs surface > canvas > surface-2 > surface-3, so a hover or
-     muted surface always sits *below* the page rather than above it. Every
-     text pair here clears WCAG AA on the background it actually appears on —
-     including text-brand and text-warm on bg-brand-soft, which the row chips
-     use and which the previous values failed at 3.56. */
+     muted surface always sits *below* the page rather than above it.
+
+     The -soft tints are pill backgrounds, and a pill has to read as one on
+     BOTH grounds: they sit on white inside a card and on the canvas in the
+     activity list. --brand-soft used to be *lighter* than --canvas, so those
+     pills vanished. Each is now at least 4 L* under the canvas and 8 under
+     white, and each carries text that clears WCAG AA against it. */
   --canvas: #f5f1e9;
   --surface: #ffffff;
   --surface-2: #ebe5d9;
@@ -36,33 +39,38 @@
   --line-soft: #eee9e0;
 
   /* Brand brass — punctuation, not paint. */
-  --brand: #92620f;
+  --brand: #875809;
   --brand-2: #c08a2e;
-  --brand-soft: #fcf3e0;
+  --brand-soft: #f4e3bc;
 
   /* Money secured. */
   --good: #146b3c;
   --good-fg: #ffffff;
-  --good-soft: #d8eee2;
-  --good-line: #b3d9c4;
+  --good-soft: #cfe7d8;
+  --good-line: #a9d2bb;
 
   /* Intent bands. */
-  --hot: #b8431a;
-  --hot-soft: #fce7dc;
-  --warm: #8f6212;
-  --warm-soft: #faedd0;
-  --cold: #676159;
-  --cold-soft: #eae5db;
+  --hot: #a63a12;
+  --hot-soft: #fbdccb;
+  --warm: #80570d;
+  --warm-soft: #f6e2b4;
+  --cold: #5f594f;
+  --cold-soft: #e6e0d4;
 
-  --danger: #b03a20;
-  --danger-soft: #fce6dc;
+  --danger: #a33418;
+  --danger-soft: #fbdecd;
   --danger-line: #f0cfbf;
 
-  /* Recessive bar fill for the attention chart — deliberately neutral so the
-     brass pricing bar is the only thing carrying emphasis. Checked for CVD
-     and normal-vision separation against --brand: ΔE 18.2 protan, 20.6 tritan,
-     20.7 normal. It tracks --brand, so re-run the check if that moves. */
-  --bar: #3f3a34;
+  /* The attention chart's two fills, which are a pair and are picked as one.
+     They are their own tokens rather than borrowing --brand because a fill and
+     a text colour want opposite things: --brand has to be dark enough to pass
+     AA as text, and a bar that dark stops receding and starts shouting — which
+     is how the neutral bar ended up out-weighing the pricing bar it was meant
+     to sit behind. Checked together: ΔE 17.2 normal, 17.1 protan, 19.2 tritan,
+     both inside the lightness band, both ≥ 3:1 on the surface. Re-run
+     scripts/validate_palette.js if either moves. */
+  --bar: #6b6459;
+  --bar-lead: #b8822a;
 
   /* A warm ground can carry a real shadow; on the old near-white one these
      had to stay faint or they read as dirt. */
@@ -147,6 +155,9 @@
   --danger-line: #4a2c20;
 
   --bar: #8b857b;
+  /* What the pricing bar already was here: dark's --brand. Named now so the
+     chart stops reaching for a text token. */
+  --bar-lead: #dfa954;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md:
@@ -191,6 +202,7 @@
   --color-danger-soft: var(--danger-soft);
   --color-danger-line: var(--danger-line);
   --color-bar: var(--bar);
+  --color-bar-lead: var(--bar-lead);
 
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
