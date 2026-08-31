@@ -25,6 +25,7 @@ import {
   proposalAnalyticsQuery,
 } from '#/components/proposal-activity'
 import { ConfirmDialog } from '#/components/confirm-dialog'
+import { useToast } from '#/components/toast'
 import { PageContainer } from '#/components/page-container'
 import { formatMoney } from '#/lib/utils'
 import { SECTION_LABELS, queryKeys } from '#/constants'
@@ -82,6 +83,7 @@ function ProposalDetail() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { data: proposal } = useSuspenseQuery(detailQuery(id))
+  const notify = useToast()
   const [deleting, setDeleting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
@@ -92,11 +94,13 @@ function ProposalDetail() {
     setDeleting(true)
     try {
       await deleteProposal({ data: { id } })
+      notify('Proposal deleted')
       await queryClient.invalidateQueries({
         queryKey: queryKeys.proposalSummaries,
       })
       await router.navigate({ to: '/dashboard' })
     } catch {
+      notify('Could not delete that proposal', 'danger')
       setDeleting(false)
       setConfirmOpen(false)
     }
@@ -161,27 +165,54 @@ function ProposalDetail() {
 function Outcome({ proposalId }: { proposalId: string }) {
   const queryClient = useQueryClient()
   const { data: proposal } = useSuspenseQuery(detailQuery(proposalId))
+  const notify = useToast()
   const [busy, setBusy] = useState(false)
   const [revokeLinks, setRevokeLinks] = useState(false)
 
   if (!proposal) return null
   const won = proposal.status === 'won'
 
-  async function run(fn: () => Promise<unknown>) {
+  /**
+   * Paints the outcome immediately and rolls back if the server disagrees.
+   * Marking a deal paid is a moment worth celebrating, not one to spend
+   * watching three queries refetch before anything on screen changes.
+   */
+  async function run(
+    fn: () => Promise<unknown>,
+    next: { status: 'won' | 'sent'; message: string },
+  ) {
+    const key = queryKeys.proposal(proposalId)
+    await queryClient.cancelQueries({ queryKey: key })
+    const previous = queryClient.getQueryData(key)
+
+    queryClient.setQueryData(key, (old: typeof proposal) =>
+      old == null
+        ? old
+        : {
+            ...old,
+            status: next.status,
+            outcomeAt: next.status === 'won' ? new Date().toISOString() : null,
+          },
+    )
     setBusy(true)
+
     try {
       await fn()
+      notify(next.message, next.status === 'won' ? 'good' : 'neutral')
+    } catch {
+      queryClient.setQueryData(key, previous)
+      notify('That did not save — nothing was changed', 'danger')
+    } finally {
+      setBusy(false)
+      // The totals and the list are derived from this proposal, so they are
+      // refreshed either way: after a success, and after a rollback.
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.proposal(proposalId),
-        }),
+        queryClient.invalidateQueries({ queryKey: key }),
         queryClient.invalidateQueries({
           queryKey: queryKeys.proposalSummaries,
         }),
         queryClient.invalidateQueries({ queryKey: queryKeys.securedTotals }),
       ])
-    } finally {
-      setBusy(false)
     }
   }
 
@@ -208,7 +239,10 @@ function Outcome({ proposalId }: { proposalId: string }) {
         </div>
         <button
           onClick={() =>
-            run(() => reopenProposal({ data: { id: proposalId } }))
+            run(() => reopenProposal({ data: { id: proposalId } }), {
+              status: 'sent',
+              message: 'Reopened',
+            })
           }
           disabled={busy}
           className="shrink-0 text-xs font-medium text-good hover:underline disabled:opacity-50"
@@ -223,7 +257,10 @@ function Outcome({ proposalId }: { proposalId: string }) {
     <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
       <button
         onClick={() =>
-          run(() => markProposalWon({ data: { id: proposalId, revokeLinks } }))
+          run(
+            () => markProposalWon({ data: { id: proposalId, revokeLinks } }),
+            { status: 'won', message: 'Marked as paid \u2014 nice one' },
+          )
         }
         disabled={busy}
         className="inline-flex items-center gap-2 rounded-md bg-good px-4 py-2 text-sm font-medium text-good-fg shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
@@ -248,6 +285,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   const { data: proposal } = useSuspenseQuery(detailQuery(proposalId))
   const links = proposal?.shareLinks ?? []
 
+  const notify = useToast()
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
 
@@ -267,6 +305,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
           },
         })
         form.reset()
+        notify('Share link created')
         await refresh()
       } catch (err) {
         setError(
@@ -287,7 +326,12 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   }
 
   async function revoke(linkId: string) {
-    await revokeShareLink({ data: { id: linkId } })
+    try {
+      await revokeShareLink({ data: { id: linkId } })
+      notify('Link revoked \u2014 it no longer opens')
+    } catch {
+      notify('Could not revoke that link', 'danger')
+    }
     await refresh()
   }
 
