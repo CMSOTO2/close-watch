@@ -208,6 +208,7 @@ function Dashboard() {
                     group={entry}
                     open={!collapsed.has(entry.key)}
                     onToggle={() => toggleGroup(entry.key)}
+                    showHeat={tab === 'active'}
                   >
                     {entry.proposals.map((p) => (
                       <Row

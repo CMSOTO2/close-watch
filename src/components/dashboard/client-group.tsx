@@ -4,24 +4,32 @@ import { bestIntent } from './grouping'
 import { totalByCurrency } from './totals'
 import { cn } from '#/lib/utils'
 import type { ListEntry } from './grouping'
+import type { ProposalSummary } from '#/lib/analytics/summaries'
 
 /**
  * Several proposals to one client, bracketed under a header that carries the
- * rollup — count, total value, strongest heat — so collapsing the group loses
- * nothing you were scanning for.
+ * rollup — count, total value, and on open deals the strongest heat — so
+ * collapsing the group loses nothing you were scanning for.
  */
 export function ClientGroup({
   group,
   open,
   onToggle,
+  showHeat,
   children,
 }: {
   group: Extract<ListEntry, { kind: 'group' }>
   open: boolean
   onToggle: () => void
+  /**
+   * Off on the closed tab. Heat is a read on whether a deal is worth chasing,
+   * which a won or lost one no longer is — and the rows underneath carry no
+   * heat there either, so a header that did would be summarising a column
+   * that isn't shown.
+   */
+  showHeat: boolean
   children: React.ReactNode
 }) {
-  const intent = bestIntent(group.proposals)
   const total = totalByCurrency(group.proposals)
   const count = group.proposals.length
 
@@ -55,7 +63,7 @@ export function ClientGroup({
               {total}
             </span>
           )}
-          <HeatMeter band={intent.band} score={intent.score} />
+          {showHeat && <GroupHeat proposals={group.proposals} />}
         </span>
       </button>
 
@@ -68,4 +76,10 @@ export function ClientGroup({
       )}
     </li>
   )
+}
+
+/** Split out so bestIntent is only reached when the meter is actually shown. */
+function GroupHeat({ proposals }: { proposals: Array<ProposalSummary> }) {
+  const intent = bestIntent(proposals)
+  return <HeatMeter band={intent.band} score={intent.score} />
 }
