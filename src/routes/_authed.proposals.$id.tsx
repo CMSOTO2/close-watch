@@ -28,6 +28,7 @@ import { ConfirmDialog } from '#/components/confirm-dialog'
 import { useToast } from '#/components/toast'
 import { PageContainer } from '#/components/page-container'
 import { formatMoney } from '#/lib/utils'
+import { formatDay, useTimeZone } from '#/lib/local-date'
 import { SECTION_LABELS, queryKeys } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
 
@@ -64,18 +65,16 @@ export const Route = createFileRoute('/_authed/proposals/$id')({
 const DAY_MS = 24 * 60 * 60 * 1000
 
 /** Human-readable expiry for an active share link. `soon` flags the last week. */
-function expiryInfo(iso: string): { label: string; soon: boolean } {
+function expiryInfo(
+  iso: string,
+  timeZone: string,
+): { label: string; soon: boolean } {
   const days = Math.ceil((new Date(iso).getTime() - Date.now()) / DAY_MS)
   const soon = days <= 7
   if (days <= 0) return { label: 'Expires today', soon: true }
   if (days === 1) return { label: 'Expires tomorrow', soon: true }
   if (days <= 30) return { label: `Expires in ${days} days`, soon }
-  const date = new Date(iso).toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-  return { label: `Expires ${date}`, soon: false }
+  return { label: `Expires ${formatDay(iso, timeZone)}`, soon: false }
 }
 
 function ProposalDetail() {
@@ -166,6 +165,7 @@ function Outcome({ proposalId }: { proposalId: string }) {
   const queryClient = useQueryClient()
   const { data: proposal } = useSuspenseQuery(detailQuery(proposalId))
   const notify = useToast()
+  const timeZone = useTimeZone()
   const [busy, setBusy] = useState(false)
   const [revokeLinks, setRevokeLinks] = useState(false)
 
@@ -217,13 +217,8 @@ function Outcome({ proposalId }: { proposalId: string }) {
   }
 
   if (won) {
-    const markedOn = proposal.outcomeAt
-      ? new Date(proposal.outcomeAt).toLocaleDateString(undefined, {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        })
-      : null
+    const markedOn =
+      proposal.outcomeAt === null ? null : formatDay(proposal.outcomeAt, timeZone)
     return (
       <div className="mt-6 flex items-center justify-between gap-4 rounded-lg border border-good-line bg-good-soft px-4 py-3">
         <div>
@@ -286,6 +281,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   const links = proposal?.shareLinks ?? []
 
   const notify = useToast()
+  const timeZone = useTimeZone()
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
 
@@ -352,7 +348,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
               link.expiresAt != null && new Date(link.expiresAt) < new Date()
             const dead = revoked || expired
             const expiry =
-              !dead && link.expiresAt ? expiryInfo(link.expiresAt) : null
+              !dead && link.expiresAt ? expiryInfo(link.expiresAt, timeZone) : null
             return (
               <li
                 key={link.id}

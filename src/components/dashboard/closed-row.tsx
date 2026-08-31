@@ -1,17 +1,14 @@
 import { Link } from '@tanstack/react-router'
 import { ROW_LINK_ATTR } from './use-list-keys'
+import { formatDay, useTimeZone } from '#/lib/local-date'
 import { cn, formatMoney } from '#/lib/utils'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
 
 export function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
   const won = proposal.status === 'won'
-  const date = proposal.outcomeAt
-    ? new Date(proposal.outcomeAt).toLocaleDateString(undefined, {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
-    : null
+  const timeZone = useTimeZone()
+  const date =
+    proposal.outcomeAt === null ? null : formatDay(proposal.outcomeAt, timeZone)
 
   // Rendered at one breakpoint or the other, never both.
   const money =

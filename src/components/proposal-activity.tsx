@@ -3,6 +3,7 @@ import { CornerDownRight } from 'lucide-react'
 import { getProposalAnalytics } from '#/lib/analytics/proposal-analytics'
 import { formatDuration } from '#/lib/analytics/intent'
 import { SECTION_LABELS, queryKeys } from '#/constants'
+import { formatDay, useTimeZone } from '#/lib/local-date'
 import type {
   PageAttention,
   ProposalAnalytics,
@@ -15,7 +16,7 @@ export const proposalAnalyticsQuery = (id: string) =>
     queryFn: () => getProposalAnalytics({ data: { id } }),
   })
 
-function formatRelative(iso: string | null): string {
+function formatRelative(iso: string | null, timeZone: string): string {
   if (!iso) return '—'
   const diff = Date.now() - new Date(iso).getTime()
   const min = Math.floor(diff / 60000)
@@ -25,7 +26,7 @@ function formatRelative(iso: string | null): string {
   if (hr < 24) return `${hr}h ago`
   const d = Math.floor(hr / 24)
   if (d < 30) return `${d}d ago`
-  return new Date(iso).toLocaleDateString()
+  return formatDay(iso, timeZone)
 }
 
 export function ProposalActivity({ proposalId }: { proposalId: string }) {
@@ -58,6 +59,7 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
 }
 
 function StatTiles({ totals }: { totals: ProposalAnalytics['totals'] }) {
+  const timeZone = useTimeZone()
   const tiles = [
     { label: 'Opens', value: String(totals.qualifiedVisits) },
     { label: 'Viewers', value: String(totals.distinctViewers) },
@@ -65,7 +67,7 @@ function StatTiles({ totals }: { totals: ProposalAnalytics['totals'] }) {
       label: 'Total time',
       value: formatDuration(totals.totalEngagedMs / 1000),
     },
-    { label: 'Last opened', value: formatRelative(totals.lastOpenedAt) },
+    { label: 'Last opened', value: formatRelative(totals.lastOpenedAt, timeZone) },
     { label: 'Downloads', value: String(totals.downloads) },
     { label: 'Prints', value: String(totals.prints) },
   ]
@@ -138,6 +140,7 @@ function EventBadges({ events }: { events: Array<string> }) {
 }
 
 function RecentVisits({ visits }: { visits: Array<VisitActivity> }) {
+  const timeZone = useTimeZone()
   if (visits.length === 0) return null
   const recent = visits.slice(0, 12)
 
@@ -172,7 +175,7 @@ function RecentVisits({ visits }: { visits: Array<VisitActivity> }) {
                 <EventBadges events={v.events} />
               </p>
               <p className="text-xs text-ink-3">
-                {formatRelative(v.startedAt)}
+                {formatRelative(v.startedAt, timeZone)}
                 {v.device && ` · ${v.device}`}
               </p>
             </div>
