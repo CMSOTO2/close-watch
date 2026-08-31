@@ -12,7 +12,21 @@ export const Route = createFileRoute('/_authed/proposals/new')({
 
 /** Reads the page count from the chosen PDF without a full render. */
 async function readPageCount(file: File): Promise<number> {
-  const { pdfjs } = await import('#/lib/pdf')
+  // The pdfjs bundle is fetched on demand, so this request can fail long after
+  // the page itself loaded: a deploy replaces the hashed chunk under an open
+  // tab, or a dev server restarts beneath it. The browser's own words for that
+  // — "Failed to fetch dynamically imported module: .../src/lib/pdf.ts" — were
+  // reaching the form verbatim, which reads as a broken app rather than a page
+  // that has gone stale.
+  let pdfjs
+  try {
+    ;({ pdfjs } = await import('#/lib/pdf'))
+  } catch (cause) {
+    throw new Error(
+      'Could not load the PDF reader \u2014 reload the page and try again.',
+      { cause },
+    )
+  }
 
   const data = new Uint8Array(await file.arrayBuffer())
   const loadingTask = pdfjs.getDocument({ data })
