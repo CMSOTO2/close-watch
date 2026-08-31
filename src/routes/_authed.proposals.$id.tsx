@@ -29,6 +29,7 @@ import { useToast } from '#/components/toast'
 import { PageContainer } from '#/components/page-container'
 import { formatMoney } from '#/lib/utils'
 import { formatDay, useTimeZone } from '#/lib/local-date'
+import { deadLinkLabel, partitionLinks } from '#/lib/proposals/link-status'
 import { SECTION_LABELS, queryKeys } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
 
@@ -300,6 +301,13 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
     recipient: string
   } | null>(null)
   const [revoking, setRevoking] = useState(false)
+  // Hidden by default. A revoked link is a decision already made; leaving them
+  // stacked above the form makes a proposal with a few false starts look busier
+  // than it is, and buries the link that actually works.
+  const [showDead, setShowDead] = useState(false)
+
+  const { live, dead, revoked, expired } = partitionLinks(links)
+  const visible = showDead ? [...live, ...dead] : live
 
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: queryKeys.proposal(proposalId) })
@@ -381,15 +389,14 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
         One link per recipient. That&rsquo;s how you tell who&rsquo;s reading.
       </p>
 
-      {links.length > 0 && (
+      {visible.length > 0 && (
         <ul className="mt-4 space-y-2">
-          {links.map((link) => {
-            const revoked = link.revokedAt != null
-            const expired =
-              link.expiresAt != null && new Date(link.expiresAt) < new Date()
-            const dead = revoked || expired
+          {visible.map(({ link, status }) => {
+            const isDead = status !== 'live'
             const expiry =
-              !dead && link.expiresAt ? expiryInfo(link.expiresAt, timeZone) : null
+              !isDead && link.expiresAt
+                ? expiryInfo(link.expiresAt, timeZone)
+                : null
             return (
               <li
                 key={link.id}
@@ -398,7 +405,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
                 <div className="min-w-0 flex-1 basis-64">
                   <p className="truncate text-sm">{recipientOf(link)}</p>
                   <p
-                    className={`truncate font-mono text-[11px] ${dead ? 'text-ink-3 line-through' : 'text-ink-2'}`}
+                    className={`truncate font-mono text-[11px] ${isDead ? 'text-ink-3 line-through' : 'text-ink-2'}`}
                   >
                     {link.url}
                   </p>
@@ -412,9 +419,9 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
                     </p>
                   )}
                 </div>
-                {dead ? (
+                {isDead ? (
                   <span className="font-mono text-[10px] uppercase tracking-wide text-ink-3">
-                    {revoked ? 'revoked' : 'expired'}
+                    {status}
                   </span>
                 ) : (
                   <>
@@ -441,6 +448,17 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
             )
           })}
         </ul>
+      )}
+
+      {dead.length > 0 && (
+        <button
+          type="button"
+          onClick={() => setShowDead((prev) => !prev)}
+          aria-expanded={showDead}
+          className="mt-3 text-xs font-medium text-ink-3 transition-colors hover:text-ink"
+        >
+          {showDead ? 'Hide' : 'Show'} {deadLinkLabel({ revoked, expired })}
+        </button>
       )}
 
       <form
