@@ -194,7 +194,10 @@ function Home() {
               ))}
             </ol>
 
-            <div className="mt-10 max-w-2xl">
+            {/* Centred rather than left-aligned: on its own under a
+                full-width row of steps, a shot pinned to the left edge reads as
+                the start of a column that never arrives. */}
+            <div className="mx-auto mt-10 max-w-2xl">
               <LinkShot />
             </div>
           </PageContainer>
@@ -232,7 +235,12 @@ function Home() {
             <h2 className="mt-3 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
               The things people ask first.
             </h2>
-            <Faq />
+            {/* Held to a readable measure. Left to the full container, the
+                questions sit at one edge and their chevrons at the other, a
+                thousand pixels apart, and stop reading as one control. */}
+            <div className="max-w-3xl">
+              <Faq />
+            </div>
           </PageContainer>
         </section>
 
