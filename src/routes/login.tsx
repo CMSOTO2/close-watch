@@ -14,6 +14,26 @@ function LoginPage() {
         <div className="rounded-lg border border-line bg-surface px-6 py-7 shadow-md">
           <LoginForm />
         </div>
+        {/* Google's consent screen links these too, but someone creating an
+            account should be able to reach them from the page where they do
+            it, not only from the marketing site. */}
+        <p className="mt-5 text-center text-xs text-ink-3">
+          By continuing you agree to our{' '}
+          <Link
+            to="/terms"
+            className="text-ink-2 hover:text-ink hover:underline"
+          >
+            terms
+          </Link>{' '}
+          and{' '}
+          <Link
+            to="/privacy"
+            className="text-ink-2 hover:text-ink hover:underline"
+          >
+            privacy policy
+          </Link>
+          .
+        </p>
       </div>
     </div>
   )

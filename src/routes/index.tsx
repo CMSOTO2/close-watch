@@ -260,9 +260,17 @@ function Home() {
       <footer className="border-t border-line">
         <PageContainer className="flex flex-wrap items-center justify-between gap-4 py-8">
           <Wordmark />
-          <p className="text-xs text-ink-3">
-            © {new Date().getUTCFullYear()} Closewatch
-          </p>
+          <nav className="flex flex-wrap items-center gap-4 text-xs text-ink-2">
+            <Link to="/privacy" className="transition-colors hover:text-ink">
+              Privacy
+            </Link>
+            <Link to="/terms" className="transition-colors hover:text-ink">
+              Terms
+            </Link>
+            <span className="text-ink-3">
+              © {new Date().getUTCFullYear()} Closewatch
+            </span>
+          </nav>
         </PageContainer>
       </footer>
     </div>
