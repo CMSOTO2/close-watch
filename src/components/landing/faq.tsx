@@ -22,12 +22,18 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     q: 'Will they know they are being tracked?',
     a: (
       <>
-        There is no notice on the document, in the same way an email read
-        receipt or a website analytics tag is not announced. You are measuring
-        engagement with your own proposal. If you would rather tell them, the
-        link works exactly the same either way, and plenty of people do say
-        &ldquo;let me know if the pricing page needs work,&rdquo; which is the
-        same conversation from the other end.
+        Yes. The viewer carries a line saying the sender is told when the
+        document was opened, which pages were read, and whether it was
+        downloaded or printed, with a link to exactly what is recorded. It is
+        one quiet line above the first page, not a banner.
+        <br />
+        <br />
+        That is deliberate. A proposal you are proud of does not need to be read
+        in secret, and the conversation it opens &mdash; &ldquo;let me know if
+        the pricing page needs work&rdquo; &mdash; is the same one you would
+        have had anyway, from the other end. It is also the difference between a
+        tool a client would shrug at and one they would resent finding out about
+        later.
       </>
     ),
   },
@@ -97,10 +103,10 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     q: 'What happens when I hit the free limit?',
     a: (
       <>
-        Nothing you have already sent stops working. Two proposals can be
-        active at once on the free plan; a third needs one of them closed, or a
-        paid plan. Links you have already sent keep tracking either way, because
-        a proposal going quiet on your side is not a reason to break a link
+        Nothing you have already sent stops working. Two proposals can be active
+        at once on the free plan; a third needs one of them closed, or a paid
+        plan. Links you have already sent keep tracking either way, because a
+        proposal going quiet on your side is not a reason to break a link
         sitting in a client&rsquo;s inbox.
       </>
     ),

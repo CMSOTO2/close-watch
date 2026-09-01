@@ -1,4 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
+import { Eye } from 'lucide-react'
 import { PdfViewer } from '#/components/pdf-viewer'
 import { PageContainer } from '#/components/page-container'
 import { beginVisit } from '#/lib/analytics/begin-visit'
@@ -51,6 +52,30 @@ function ViewerPage() {
           )}
         </PageContainer>
       </header>
+
+      {/* Said at the top of the document, not in a footer under it. Recording
+          starts when this page loads, so the notice has to be where the reader
+          is at that moment rather than nine pages further down. It scrolls
+          away with the rest — it is a disclosure, not a nag. */}
+      <div className="border-b border-line-soft bg-surface-2">
+        <PageContainer className="flex items-start gap-1.5 py-2 text-xs leading-relaxed text-ink-3">
+          <Eye aria-hidden className="mt-0.5 size-3.5 shrink-0" />
+          <p>
+            This document is tracked. The sender is told when it is opened,
+            which pages are read, and whether it is downloaded or printed.{' '}
+            {/* New tab, so reading the policy does not abandon the document. */}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener"
+              className="whitespace-nowrap underline underline-offset-2 transition-colors hover:text-ink-2"
+            >
+              What is recorded
+            </a>
+          </p>
+        </PageContainer>
+      </div>
+
       <PdfViewer
         pdfUrl={pdfUrl}
         visitId={visitId}

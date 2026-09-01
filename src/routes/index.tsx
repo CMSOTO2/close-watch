@@ -268,6 +268,9 @@ function Home() {
             <Link to="/terms" className="transition-colors hover:text-ink">
               Terms
             </Link>
+            <Link to="/dpa" className="transition-colors hover:text-ink">
+              DPA
+            </Link>
             <span className="text-ink-3">
               © {new Date().getUTCFullYear()} Closewatch
             </span>

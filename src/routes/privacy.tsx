@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
 import { SHARE_LINK_TTL_DAYS } from '#/constants'
 
@@ -108,6 +108,19 @@ function Privacy() {
             'Google: only if you choose to sign in with Google.',
           ]}
         />
+        <p>
+          If you are an account holder in the UK or EU, the data you collect
+          about your own clients is yours and we process it on your
+          instructions. Our{' '}
+          <Link
+            to="/dpa"
+            className="underline underline-offset-2 hover:text-ink"
+          >
+            data processing agreement
+          </Link>{' '}
+          sets out those terms, and lists the same companies above as
+          sub-processors.
+        </p>
       </Clause>
 
       <Clause heading="How long it is kept">
@@ -119,8 +132,20 @@ function Privacy() {
               created, and can be revoked sooner at any time.
             </>,
             'Close your account and we delete your proposals and the tracking data attached to them.',
+            <>
+              Twelve months after a visit, we strip the parts of it that could
+              point at a person: the hashed IP address, the city, and the
+              referring link. What is left is the reading itself &mdash; when,
+              how long, which pages &mdash; and the country. This runs nightly,
+              whether or not anyone asks.
+            </>,
           ]}
         />
+        <p>
+          Nothing here is kept because it might be useful one day. A visit is
+          kept because the account holder is still working the deal it belongs
+          to, and stops being kept in full the moment that stops being true.
+        </p>
       </Clause>
 
       <Clause heading="Your choices">
