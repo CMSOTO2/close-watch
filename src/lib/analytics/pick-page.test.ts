@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { pickPage } from './tracker'
+import { pageWeights, pickPage } from './tracker'
 import type { PageBox } from './tracker'
 
 const VH = 873
@@ -60,5 +60,68 @@ describe('pickPage', () => {
 
   it('handles a page taller than the viewport', () => {
     expect(pickPage([{ page: 7, top: -400, bottom: 1400 }], VH, false, 6)).toBe(7)
+  })
+})
+
+describe('pageWeights', () => {
+  const VIEWPORT = 1000
+
+  it('gives the whole tick to a page that fills the screen', () => {
+    expect(pageWeights([{ page: 3, top: -100, bottom: 1100 }], VIEWPORT)).toEqual([
+      { page: 3, weight: 1 },
+    ])
+  })
+
+  // The point of the change: two sections on screen are two sections being read.
+  it('splits between two pages in proportion to the screen each holds', () => {
+    const weights = pageWeights(
+      [
+        { page: 1, top: 0, bottom: 600 },
+        { page: 2, top: 600, bottom: 1000 },
+      ],
+      VIEWPORT,
+    )
+    expect(weights).toEqual([
+      { page: 1, weight: 0.6 },
+      { page: 2, weight: 0.4 },
+    ])
+  })
+
+  // Total page time must never exceed engaged time, at any arrangement.
+  it('always sums to exactly one tick', () => {
+    const arrangements = [
+      [{ page: 1, top: -300, bottom: 400 }, { page: 2, top: 400, bottom: 1400 }],
+      [
+        { page: 4, top: -50, bottom: 250 },
+        { page: 5, top: 250, bottom: 700 },
+        { page: 6, top: 700, bottom: 980 },
+      ],
+      [{ page: 9, top: 100, bottom: 900 }],
+    ]
+    for (const boxes of arrangements) {
+      const total = pageWeights(boxes, VIEWPORT).reduce((s, w) => s + w.weight, 0)
+      expect(total).toBeCloseTo(1, 10)
+    }
+  })
+
+  // Otherwise a page earns "reached" simply by being scrolled past.
+  it('ignores a sliver at the edge of the screen', () => {
+    const weights = pageWeights(
+      [
+        { page: 1, top: 0, bottom: 960 },
+        { page: 2, top: 960, bottom: 1600 },
+      ],
+      VIEWPORT,
+    )
+    expect(weights).toEqual([{ page: 1, weight: 1 }])
+  })
+
+  it('reports nothing when every page is a sliver, so the caller can hold', () => {
+    expect(pageWeights([{ page: 2, top: 980, bottom: 1200 }], VIEWPORT)).toEqual([])
+    expect(pageWeights([], VIEWPORT)).toEqual([])
+  })
+
+  it('survives a zero-height viewport rather than dividing by it', () => {
+    expect(pageWeights([{ page: 1, top: 0, bottom: 10 }], 0)).toEqual([])
   })
 })

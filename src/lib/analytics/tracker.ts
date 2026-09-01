@@ -66,6 +66,45 @@ export function pickPage(
   return best.page
 }
 
+/**
+ * How much of the screen a page must hold before it is credited with any of
+ * the time. Below this it is a sliver at an edge, not something being read,
+ * and crediting it would let a page earn "reached" just by being scrolled past.
+ */
+const MIN_SHARE = 0.1
+
+/**
+ * How to divide a tick between the pages on screen.
+ *
+ * A reader with two sections in front of them is not reading only one of them,
+ * and handing the whole tick to a single page was making that claim several
+ * times a second. Weights are the share of the viewport each page holds,
+ * normalised so a tick is still worth exactly one tick — total page time never
+ * exceeds engaged time.
+ *
+ * Returns an empty array when nothing qualifies, which the caller treats as
+ * "leave it on the page they were already on".
+ */
+export function pageWeights(
+  boxes: Array<PageBox>,
+  viewportHeight: number,
+): Array<{ page: number; weight: number }> {
+  if (viewportHeight <= 0) return []
+
+  const shares = boxes.map((box) => ({
+    page: box.page,
+    share:
+      Math.max(0, Math.min(box.bottom, viewportHeight) - Math.max(box.top, 0)) /
+      viewportHeight,
+  }))
+
+  const kept = shares.filter((s) => s.share >= MIN_SHARE)
+  const total = kept.reduce((sum, s) => sum + s.share, 0)
+  if (total <= 0) return []
+
+  return kept.map((s) => ({ page: s.page, weight: s.share / total }))
+}
+
 export type Flush = {
   engagedMs: number
   pages: Array<{ page: number; ms: number }>
@@ -176,26 +215,36 @@ export function startTracker({
     const atBottom =
       window.scrollY + viewportHeight >= doc.scrollHeight - BOTTOM_SLACK_PX
 
-    const next = pickPage(
-      onScreenBoxes(viewportHeight),
-      viewportHeight,
-      atBottom,
-      currentPage,
-    )
+    const boxes = onScreenBoxes(viewportHeight)
+    const next = pickPage(boxes, viewportHeight, atBottom, currentPage)
     if (next !== currentPage) {
       currentPage = next
       queuedEvents.push({ type: 'page_enter', page: next })
     }
 
     engagedMs += delta
-    pageMs.set(currentPage, (pageMs.get(currentPage) ?? 0) + delta)
+
+    const weights = pageWeights(boxes, viewportHeight)
+    if (weights.length === 0) {
+      pageMs.set(currentPage, (pageMs.get(currentPage) ?? 0) + delta)
+    } else {
+      for (const { page, weight } of weights) {
+        pageMs.set(page, (pageMs.get(page) ?? 0) + delta * weight)
+      }
+    }
   }, TICK_MS)
 
   function drain(): Flush | null {
     if (engagedMs === 0 && pageMs.size === 0 && queuedEvents.length === 0) return null
     const payload: Flush = {
       engagedMs,
-      pages: [...pageMs.entries()].map(([page, ms]) => ({ page, ms })),
+      // Rounded because splitting a tick across pages leaves fractions, and
+      // the ingest schema takes integers — a fractional ms fails its parse,
+      // which that endpoint answers with the same silent 204 as success, and
+      // the whole flush goes with it.
+      pages: [...pageMs.entries()]
+        .map(([page, ms]) => ({ page, ms: Math.round(ms) }))
+        .filter((p) => p.ms > 0),
       events: queuedEvents,
     }
     engagedMs = 0
