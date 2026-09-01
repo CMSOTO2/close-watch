@@ -68,6 +68,12 @@ function Home() {
             >
               How it works
             </a>
+            <Link
+              to="/demo"
+              className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
+            >
+              Demo
+            </Link>
             <a
               href="#pricing"
               className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
@@ -111,12 +117,9 @@ function Home() {
                     <ArrowRight aria-hidden className="size-4" />
                   </Link>
                 </Button>
-                <a
-                  href="#how"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink"
-                >
-                  See how it works
-                </a>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/demo">Try it on yourself</Link>
+                </Button>
               </div>
 
               <p className="mt-4 text-[13px] text-ink-3">

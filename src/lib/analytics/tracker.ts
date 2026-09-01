@@ -14,7 +14,7 @@ const IDLE_MS = 60_000
 /** Guards against a machine waking from sleep and reporting a single huge tick. */
 const MAX_TICK_MS = 2_000
 
-type Flush = {
+export type Flush = {
   engagedMs: number
   pages: Array<{ page: number; ms: number }>
   events: Array<{ type: string; page?: number; payload?: unknown }>
@@ -25,9 +25,31 @@ export type TrackerOptions = {
   token: string
   /** Element per page, in order. Index 0 is page 1. */
   getPageElements: () => Array<HTMLElement>
+  /**
+   * Where a flush goes. Defaults to the ingest endpoint for `visitId`.
+   *
+   * The landing page's demo passes its own, so the readout it shows is
+   * produced by this file rather than by a second copy of these rules written
+   * to look like them. A demo of honest timing has to be honestly timed, and
+   * a parallel implementation would drift the first time either changed.
+   */
+  sink?: (payload: Flush) => void
+  /**
+   * How often accrued time is handed to the sink, in ms. Defaults to ten
+   * seconds, which is the right cadence for a network write. The demo drops it
+   * so its on-screen counter moves rather than jumping in ten-second steps —
+   * this changes how often the total is reported, never how it is measured.
+   */
+  flushMs?: number
 }
 
-export function startTracker({ visitId, token, getPageElements }: TrackerOptions) {
+export function startTracker({
+  visitId,
+  token,
+  getPageElements,
+  sink,
+  flushMs = FLUSH_MS,
+}: TrackerOptions) {
   const endpoint = `/api/track/${visitId}`
 
   let engagedMs = 0
@@ -110,6 +132,11 @@ export function startTracker({ visitId, token, getPageElements }: TrackerOptions
     const payload = drain()
     if (!payload) return
 
+    if (sink) {
+      sink(payload)
+      return
+    }
+
     const body = JSON.stringify({ token, ...payload })
 
     // sendBeacon is the only thing that reliably survives a tab close, and it
@@ -128,7 +155,7 @@ export function startTracker({ visitId, token, getPageElements }: TrackerOptions
     })
   }
 
-  const flushTimer = window.setInterval(() => flush(false), FLUSH_MS)
+  const flushTimer = window.setInterval(() => flush(false), flushMs)
 
   const onHide = () => {
     if (document.visibilityState === 'hidden') flush(true)
