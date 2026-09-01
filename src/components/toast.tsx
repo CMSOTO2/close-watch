@@ -73,15 +73,30 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
  * Three readings, not two: `neutral` is "that worked", `good` is a win worth a
  * beat of colour, `danger` is "that did not happen". Keeping the green for
  * closing a deal is the whole reason a plain confirmation stays plain.
+ *
+ * The icon carries its own colour rather than inheriting the message's. On the
+ * tinted toasts that is the tone itself, a shade the body text already uses; on
+ * the plain one it is brass, which is the only colour a neutral toast can take
+ * without borrowing the green that means a deal closed. A grey tick — which is
+ * what this was — is the same tick the disabled states use.
  */
-const TONE: Record<Tone, { className: string; Icon: typeof Check }> = {
-  neutral: { className: 'border-line bg-surface text-ink', Icon: Check },
+const TONE: Record<
+  Tone,
+  { className: string; icon: string; Icon: typeof Check }
+> = {
+  neutral: {
+    className: 'border-line bg-surface text-ink',
+    icon: 'text-brand',
+    Icon: Check,
+  },
   good: {
     className: 'border-good-line bg-good-soft text-good',
+    icon: 'text-good',
     Icon: CheckCircle2,
   },
   danger: {
     className: 'border-danger-line bg-danger-soft text-danger',
+    icon: 'text-danger',
     Icon: AlertCircle,
   },
 }
@@ -98,7 +113,7 @@ function ToastItem({ toast, onDone }: { toast: Toast; onDone: () => void }) {
     }
   }, [onDone])
 
-  const { className, Icon } = TONE[toast.tone]
+  const { className, icon, Icon } = TONE[toast.tone]
 
   return (
     <div
@@ -110,13 +125,7 @@ function ToastItem({ toast, onDone }: { toast: Toast; onDone: () => void }) {
         className,
       )}
     >
-      <Icon
-        aria-hidden
-        className={cn(
-          'size-4 shrink-0',
-          toast.tone === 'neutral' && 'text-ink-3',
-        )}
-      />
+      <Icon aria-hidden className={cn('size-4 shrink-0', icon)} />
       {toast.message}
     </div>
   )
