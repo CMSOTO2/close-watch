@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!--
+    The same mark as the app's BrandMark, with the palette inlined because a
+    favicon gets none of the site's CSS. The media query is the reason this is
+    an SVG rather than a PNG: the tile flips to the light ink in a dark browser
+    chrome, so the mark never sits as a dark square on a dark tab strip.
+  -->
+  <style>
+    .tile { fill: #1a1815 }
+    .mark { stroke: #c08a2e; fill: #c08a2e }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #f0ede7 }
+      .mark { stroke: #875809; fill: #875809 }
+    }
+  </style>
+  <rect class="tile" width="32" height="32" rx="8.5"/>
+  <circle class="mark" cx="16" cy="16" r="9" fill="none" stroke-width="3"
+          stroke-linecap="round" stroke-dasharray="44.3 12.25"/>
+  <circle class="mark" cx="22.99" cy="10.34" r="2.7"/>
+</svg>

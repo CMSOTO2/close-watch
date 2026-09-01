@@ -61,6 +61,14 @@
   --danger-soft: #fbdecd;
   --danger-line: #f0cfbf;
 
+  /* The brand mark picks its own two colours rather than borrowing --ink and
+     --brand-2, which flip for reasons that have nothing to do with the logo:
+     in dark those two land at 1.56:1 against each other and the mark all but
+     disappears inside its own tile. The tile follows --ink so it always stands
+     against the page; the mark is chosen per theme to sit on that tile. */
+  --mark-tile: var(--ink);
+  --mark-ink: #c08a2e;
+
   /* A deal that closed the other way. Its own colour rather than --danger,
      which means "something went wrong": losing a deal is a fact to file, not
      an error. Far from --good (ΔE 63) so the closed list reads at a glance. */
@@ -161,6 +169,10 @@
 
   --lost: #c07a63;
 
+  /* Deep brass on the cream tile dark mode gives it: 5.2:1, matching the 5.8:1
+     the light pairing has. */
+  --mark-ink: #875809;
+
   --bar: #8b857b;
   /* What the pricing bar already was here: dark's --brand. Named now so the
      chart stops reaching for a text token. */
@@ -209,6 +221,8 @@
   --color-danger-soft: var(--danger-soft);
   --color-danger-line: var(--danger-line);
   --color-lost: var(--lost);
+  --color-mark-tile: var(--mark-tile);
+  --color-mark-ink: var(--mark-ink);
   --color-bar: var(--bar);
   --color-bar-lead: var(--bar-lead);
 

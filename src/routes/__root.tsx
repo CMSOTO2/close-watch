@@ -38,6 +38,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         rel: 'stylesheet',
         href: appCss,
       },
+      // SVG only: it is the one favicon format that can answer
+      // prefers-color-scheme, which the mark needs so its tile does not sit as
+      // a dark square on a dark tab strip.
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
     ],
   }),
   shellComponent: RootDocument,
