@@ -13,12 +13,19 @@ import { startTracker } from './tracker'
 
 let fetchMock: ReturnType<typeof vi.fn>
 
-/** Reports every observed element as on screen the moment it is observed. */
+/**
+ * Reports whether an element overlaps the window, the way a real observer
+ * would. Stubbing this as "everything is on screen" hides the thing the
+ * tracker leans on: that it reads geometry for the two or three pages in view
+ * rather than for all five hundred.
+ */
 class FakeObserver {
   constructor(private cb: IntersectionObserverCallback) {}
   observe(el: Element) {
+    const rect = el.getBoundingClientRect()
+    const isIntersecting = rect.bottom > 0 && rect.top < window.innerHeight
     this.cb(
-      [{ target: el, isIntersecting: true } as IntersectionObserverEntry],
+      [{ target: el, isIntersecting } as IntersectionObserverEntry],
       this as unknown as IntersectionObserver,
     )
   }
@@ -131,5 +138,103 @@ describe('page attribution', () => {
     tracker.stop()
 
     expect(flushedMs(2)).toBe(0)
+  })
+})
+
+/**
+ * The same rules under the shape the real viewer actually has.
+ *
+ * The demo's pages are shorter than the viewport and two or three share the
+ * screen; a rendered PDF page is taller than the viewport and usually only one
+ * or two do. Both callers run this file, so both are worth pinning down —
+ * these are US Letter at the viewer's max-w-4xl, which is 864px of content and
+ * so 1118px tall, stacked with the mb-6 gap, in a 900px window.
+ */
+describe('page attribution in the PDF viewer', () => {
+  const VIEWER_VIEWPORT = 900
+  const PAGE_H = 1118
+  const GAP = 24
+
+  /** Page `n` with its top at `top`, at real viewer dimensions. */
+  const pdfPage = (n: number, top: number) => page(n, top, top + PAGE_H)
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: VIEWER_VIEWPORT,
+    })
+  })
+
+  it('gives the whole tick to a page taller than the window', () => {
+    vi.useFakeTimers()
+    setScroll({ scrollY: 2000, scrollHeight: 12_000 })
+    // Page 3 covers the window; its neighbours are off screen.
+    const pages = [pdfPage(2, -1300), pdfPage(3, -160), pdfPage(4, 982)]
+    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    expect(flushedMs(3)).toBeCloseTo(10_000, -2)
+    expect(flushedMs(2)).toBe(0)
+  })
+
+  it('splits across a page boundary in view', () => {
+    vi.useFakeTimers()
+    setScroll({ scrollY: 2000, scrollHeight: 12_000 })
+    // Page 4 holds the top 300px, page 5 the remaining 576 after the gap.
+    const pages = [pdfPage(4, -818), pdfPage(5, 324)]
+    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    const fourth = flushedMs(4)
+    const fifth = flushedMs(5)
+    expect(fourth).toBeGreaterThan(0)
+    expect(fifth).toBeGreaterThan(fourth)
+    expect(fourth + fifth).toBeCloseTo(10_000, -2)
+  })
+
+  // What a reader does at the end of a proposal, and the case that used to
+  // leave the final page worth nothing.
+  it('credits the final page of a document', () => {
+    vi.useFakeTimers()
+    const scrollHeight = 12_000
+    setScroll({ scrollY: scrollHeight - VIEWER_VIEWPORT, scrollHeight })
+    // Last page bottom-aligned with the window, previous one above it.
+    const pages = [pdfPage(8, -1142), pdfPage(9, -218 + GAP)]
+    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    expect(flushedMs(9)).toBeGreaterThan(0)
+  })
+
+  it('reads geometry only for the pages on screen, not all 500', () => {
+    vi.useFakeTimers()
+    setScroll({ scrollY: 2000, scrollHeight: 600_000 })
+
+    let rectReads = 0
+    const pages = Array.from({ length: 500 }, (_, i) => {
+      const el = page(i + 1, -160 + i * (PAGE_H + GAP), -160 + i * (PAGE_H + GAP) + PAGE_H)
+      const real = el.getBoundingClientRect.bind(el)
+      el.getBoundingClientRect = () => {
+        rectReads++
+        return real()
+      }
+      return el
+    })
+
+    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    // Setup necessarily touches all of them once; the cost that matters is
+    // what every tick does from here on.
+    rectReads = 0
+    vi.advanceTimersByTime(1_000)
+    tracker.stop()
+
+    // Two ticks over the handful in view, not two passes over 500.
+    expect(rectReads).toBeLessThan(40)
   })
 })
