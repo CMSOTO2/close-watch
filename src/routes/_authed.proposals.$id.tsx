@@ -162,9 +162,19 @@ function ProposalDetail() {
       </div>
 
       <Outcome proposalId={id} />
-      <ShareLinks proposalId={id} />
       <ProposalActivity proposalId={id} />
-      <PageTags proposalId={id} />
+
+      {/* The two management blocks sit side by side once there is room for
+          them. Alone in a column each stopped at max-w-3xl while the activity
+          above ran the full shell, so every card on the page ended at a
+          different place and the right third was dead. Paired, they reach the
+          same edge the activity does. Below lg they stack and every section on
+          the page — activity included — holds the same narrow measure, so the
+          edges line up at both sizes rather than only the wide one. */}
+      <div className="grid items-start gap-x-10 lg:grid-cols-2">
+        <ShareLinks proposalId={id} />
+        <PageTags proposalId={id} />
+      </div>
     </PageContainer>
   )
 }
@@ -201,8 +211,7 @@ function Outcome({ proposalId }: { proposalId: string }) {
             ...old,
             status: next.status,
             // Reopening clears the outcome date; either close stamps it.
-            outcomeAt:
-              next.status === 'sent' ? null : new Date().toISOString(),
+            outcomeAt: next.status === 'sent' ? null : new Date().toISOString(),
           },
     )
     setBusy(true)
@@ -230,7 +239,9 @@ function Outcome({ proposalId }: { proposalId: string }) {
   if (closed) {
     const won = proposal.status === 'won'
     const markedOn =
-      proposal.outcomeAt === null ? null : formatDay(proposal.outcomeAt, timeZone)
+      proposal.outcomeAt === null
+        ? null
+        : formatDay(proposal.outcomeAt, timeZone)
     const value =
       proposal.dealValueCents == null
         ? null
@@ -422,7 +433,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   }
 
   return (
-    <section className="mt-10 max-w-3xl">
+    <section className="mt-10 max-w-3xl lg:max-w-none">
       <ConfirmDialog
         open={pendingRevoke !== null}
         title="Revoke this link?"
@@ -629,7 +640,7 @@ function PageTags({ proposalId }: { proposalId: string }) {
   }
 
   return (
-    <section className="mt-10 max-w-3xl">
+    <section className="mt-10 max-w-3xl lg:max-w-none">
       <h2 className="font-display text-base font-semibold tracking-tight">
         Pages
       </h2>

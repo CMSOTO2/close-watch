@@ -53,7 +53,7 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
   const { totals } = data
 
   return (
-    <section className="mt-10">
+    <section className="mt-10 max-w-3xl lg:max-w-none">
       <h2 className="font-display text-base font-semibold tracking-tight">
         Activity
       </h2>
