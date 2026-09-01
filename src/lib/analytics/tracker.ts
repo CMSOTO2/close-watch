@@ -78,12 +78,15 @@ const MIN_SHARE = 0.1
  *
  * A reader with two sections in front of them is not reading only one of them,
  * and handing the whole tick to a single page was making that claim several
- * times a second. Weights are the share of the viewport each page holds,
- * normalised so a tick is still worth exactly one tick — total page time never
- * exceeds engaged time.
+ * times a second. Each page gets the share of the window it actually holds.
  *
- * Returns an empty array when nothing qualifies, which the caller treats as
- * "leave it on the page they were already on".
+ * Deliberately not normalised to sum to one. Some of a window is often not a
+ * page at all — on a phone the demo puts its report under the proposal — and
+ * normalising would hand a page peeking in at the top the whole tick while the
+ * reader looked at something else entirely. Shares of disjoint strips can only
+ * sum to one, so page time still cannot exceed engaged time; it is simply
+ * allowed to fall short of it, which is the honest answer when part of the
+ * screen was not the document.
  */
 export function pageWeights(
   boxes: Array<PageBox>,
@@ -98,11 +101,9 @@ export function pageWeights(
       viewportHeight,
   }))
 
-  const kept = shares.filter((s) => s.share >= MIN_SHARE)
-  const total = kept.reduce((sum, s) => sum + s.share, 0)
-  if (total <= 0) return []
-
-  return kept.map((s) => ({ page: s.page, weight: s.share / total }))
+  return shares
+    .filter((s) => s.share >= MIN_SHARE)
+    .map((s) => ({ page: s.page, weight: s.share }))
 }
 
 export type Flush = {
@@ -224,13 +225,14 @@ export function startTracker({
 
     engagedMs += delta
 
-    const weights = pageWeights(boxes, viewportHeight)
-    if (weights.length === 0) {
-      pageMs.set(currentPage, (pageMs.get(currentPage) ?? 0) + delta)
-    } else {
-      for (const { page, weight } of weights) {
-        pageMs.set(page, (pageMs.get(page) ?? 0) + delta * weight)
-      }
+    // No page credited when none is on screen. There is somewhere to be in
+    // these documents that is not a page — below the last one on the demo sits
+    // the report itself — and the tick used to hand that time to whatever page
+    // the reader had last been on, so reading the report read as reading the
+    // terms. Engaged time above still counts: they are looking at the page,
+    // just not at any part of the proposal.
+    for (const { page, weight } of pageWeights(boxes, viewportHeight)) {
+      pageMs.set(page, (pageMs.get(page) ?? 0) + delta * weight)
     }
   }, TICK_MS)
 

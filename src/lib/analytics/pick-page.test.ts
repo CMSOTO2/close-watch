@@ -87,8 +87,9 @@ describe('pageWeights', () => {
     ])
   })
 
-  // Total page time must never exceed engaged time, at any arrangement.
-  it('always sums to exactly one tick', () => {
+  // Total page time must never exceed engaged time, at any arrangement. It may
+  // fall short of it, when part of the window was not a page.
+  it('never credits more than the tick it is dividing', () => {
     const arrangements = [
       [{ page: 1, top: -300, bottom: 400 }, { page: 2, top: 400, bottom: 1400 }],
       [
@@ -100,7 +101,8 @@ describe('pageWeights', () => {
     ]
     for (const boxes of arrangements) {
       const total = pageWeights(boxes, VIEWPORT).reduce((s, w) => s + w.weight, 0)
-      expect(total).toBeCloseTo(1, 10)
+      expect(total).toBeLessThanOrEqual(1)
+      expect(total).toBeGreaterThan(0)
     }
   })
 
@@ -113,7 +115,15 @@ describe('pageWeights', () => {
       ],
       VIEWPORT,
     )
-    expect(weights).toEqual([{ page: 1, weight: 1 }])
+    // Page 1 is credited the 96% it holds, not a rounded-up whole tick.
+    expect(weights).toEqual([{ page: 1, weight: 0.96 }])
+  })
+
+  // The reason the weights are raw: a page peeking in above something that is
+  // not the document at all must not be credited with the whole tick.
+  it('leaves the tick short when most of the window is not a page', () => {
+    const weights = pageWeights([{ page: 6, top: 0, bottom: 200 }], VIEWPORT)
+    expect(weights).toEqual([{ page: 6, weight: 0.2 }])
   })
 
   it('reports nothing when every page is a sliver, so the caller can hold', () => {

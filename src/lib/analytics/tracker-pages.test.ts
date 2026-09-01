@@ -194,7 +194,9 @@ describe('page attribution in the PDF viewer', () => {
     const fifth = flushedMs(5)
     expect(fourth).toBeGreaterThan(0)
     expect(fifth).toBeGreaterThan(fourth)
-    expect(fourth + fifth).toBeCloseTo(10_000, -2)
+    // Nearly all of it, the remainder being the gap between the two pages.
+    expect(fourth + fifth).toBeLessThanOrEqual(10_000)
+    expect(fourth + fifth).toBeGreaterThan(9_000)
   })
 
   // What a reader does at the end of a proposal, and the case that used to
@@ -235,7 +237,8 @@ describe('page attribution in the PDF viewer', () => {
     expect(flushedMs(3)).toBeGreaterThan(flushedMs(2))
     expect(flushedMs(2)).toBeGreaterThan(0)
     expect(flushedMs(4)).toBe(0)
-    expect(flushedMs(2) + flushedMs(3)).toBeCloseTo(10_000, -2)
+    expect(flushedMs(2) + flushedMs(3)).toBeLessThanOrEqual(10_000)
+    expect(flushedMs(2) + flushedMs(3)).toBeGreaterThan(9_000)
   })
 
   it('reads geometry only for the pages on screen, not all 500', () => {
@@ -262,5 +265,47 @@ describe('page attribution in the PDF viewer', () => {
 
     // Two ticks over the handful in view, not two passes over 500.
     expect(rectReads).toBeLessThan(40)
+  })
+})
+
+describe('when the reader is not looking at any page', () => {
+  // The demo stacks its report under the proposal on a phone, so scrolling
+  // down to read the report leaves every page above the window.
+  it('credits no page while the whole document is off screen', () => {
+    vi.useFakeTimers()
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 873 })
+    setScroll({ scrollY: 3000, scrollHeight: 6000 })
+    const pages = [page(5, -900, -414), page(6, -390, 96)]
+
+    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    vi.advanceTimersByTime(4_000)
+
+    // Now scroll so even the last page has left the window entirely.
+    pages[0].getBoundingClientRect = () => ({ top: -1800, bottom: -1314 }) as DOMRect
+    pages[1].getBoundingClientRect = () => ({ top: -1290, bottom: -804 }) as DOMRect
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    // Page 6 keeps what it earned while it was visible and gains nothing after.
+    expect(flushedMs(6)).toBeGreaterThan(0)
+    expect(flushedMs(6)).toBeLessThan(5_000)
+  })
+
+  it('still counts the time as engaged, which is what it is', () => {
+    vi.useFakeTimers()
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 873 })
+    setScroll({ scrollY: 3000, scrollHeight: 6000 })
+    const pages = [page(1, -2000, -1500)]
+
+    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    const engaged = fetchMock.mock.calls.reduce(
+      (sum, call) => sum + JSON.parse(call[1].body as string).engagedMs,
+      0,
+    )
+    expect(engaged).toBeCloseTo(10_000, -2)
+    expect(flushedMs(1)).toBe(0)
   })
 })
