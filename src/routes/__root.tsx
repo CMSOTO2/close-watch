@@ -38,10 +38,25 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         rel: 'stylesheet',
         href: appCss,
       },
-      // SVG only: it is the one favicon format that can answer
+      // The SVG is the real one: it is the only format that can answer
       // prefers-color-scheme, which the mark needs so its tile does not sit as
-      // a dark square on a dark tab strip.
+      // a dark square on a dark tab strip. The PNGs are the fallback for
+      // Safari and anything older, and for the iOS home screen, which takes
+      // no SVG at all. Browsers that understand the SVG ignore the rest.
       { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '32x32',
+        href: '/favicon-32.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '180x180',
+        href: '/favicon-180.png',
+      },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
     ],
   }),
   shellComponent: RootDocument,
