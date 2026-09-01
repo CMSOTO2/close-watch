@@ -14,6 +14,58 @@ const IDLE_MS = 60_000
 /** Guards against a machine waking from sleep and reporting a single huge tick. */
 const MAX_TICK_MS = 2_000
 
+export type PageBox = { page: number; top: number; bottom: number }
+
+/**
+ * Where down the viewport the reader is assumed to be looking. People read the
+ * upper middle of a screen, not the centre, and a line is a better model than
+ * "whichever page covers the most pixels": on a short cover page followed by a
+ * long one, area picks the page below the one being looked at.
+ */
+const READING_LINE = 0.35
+
+/** How close to the end of the scroll still counts as the end of it. */
+const BOTTOM_SLACK_PX = 24
+
+/**
+ * Which page a reader with these boxes on screen is reading.
+ *
+ * Split out and pure because the interesting cases are geometric and would
+ * otherwise only be reachable by scrolling a real browser.
+ *
+ * `atBottom` is not a nicety. At the end of a document there is nowhere left
+ * to scroll, so a final page shorter than the one above it can never win any
+ * "most visible" contest, however long the reader sits on it — which is how
+ * the last page of a proposal came to be worth no time at all, and why
+ * "Reached the last page" could not score.
+ */
+export function pickPage(
+  boxes: Array<PageBox>,
+  viewportHeight: number,
+  atBottom: boolean,
+  fallback: number,
+): number {
+  if (boxes.length === 0) return fallback
+  if (atBottom) return Math.max(...boxes.map((b) => b.page))
+
+  const line = viewportHeight * READING_LINE
+
+  const onLine = boxes.find((b) => b.top <= line && b.bottom > line)
+  if (onLine) return onLine.page
+
+  // In the gutter between two pages: whichever edge the line is nearer.
+  let best = boxes[0]
+  let bestDistance = Infinity
+  for (const box of boxes) {
+    const distance = box.bottom <= line ? line - box.bottom : box.top - line
+    if (distance < bestDistance) {
+      bestDistance = distance
+      best = box
+    }
+  }
+  return best.page
+}
+
 export type Flush = {
   engagedMs: number
   pages: Array<{ page: number; ms: number }>
@@ -61,7 +113,8 @@ export function startTracker({
   let lastTickAt = Date.now()
   let stopped = false
 
-  const visibility = new Map<number, number>()
+  const onScreen = new Set<number>()
+  const elements = new Map<number, HTMLElement>()
 
   const isActive = () =>
     document.visibilityState === 'visible' &&
@@ -77,39 +130,62 @@ export function startTracker({
     window.addEventListener(name, markActivity, { passive: true })
   }
 
-  // Which page is the reader actually looking at: the one occupying the most
-  // of the viewport right now.
+  // The observer only answers "which pages are on screen at all", so the tick
+  // below reads geometry for two or three elements instead of all of them —
+  // a 500-page document must not measure 500 rects twice a second.
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         const page = Number((entry.target as HTMLElement).dataset.page)
-        if (Number.isFinite(page)) visibility.set(page, entry.intersectionRatio)
-      }
-
-      let best = currentPage
-      let bestRatio = 0
-      for (const [page, ratio] of visibility) {
-        if (ratio > bestRatio) {
-          bestRatio = ratio
-          best = page
-        }
-      }
-
-      if (best !== currentPage && bestRatio > 0.25) {
-        currentPage = best
-        queuedEvents.push({ type: 'page_enter', page: best })
+        if (!Number.isFinite(page)) continue
+        if (entry.isIntersecting) onScreen.add(page)
+        else onScreen.delete(page)
       }
     },
-    { threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] },
+    { threshold: 0 },
   )
 
-  for (const el of getPageElements()) observer.observe(el)
+  for (const el of getPageElements()) {
+    const page = Number(el.dataset.page)
+    if (Number.isFinite(page)) elements.set(page, el)
+    observer.observe(el)
+  }
+
+  /** Reads the boxes of the pages currently on screen, in page order. */
+  function onScreenBoxes(viewportHeight: number): Array<PageBox> {
+    const boxes: Array<PageBox> = []
+    for (const page of [...onScreen].sort((a, b) => a - b)) {
+      const el = elements.get(page)
+      if (!el) continue
+      const rect = el.getBoundingClientRect()
+      if (rect.bottom <= 0 || rect.top >= viewportHeight) continue
+      boxes.push({ page, top: rect.top, bottom: rect.bottom })
+    }
+    return boxes
+  }
 
   const tickTimer = window.setInterval(() => {
     const now = Date.now()
     const delta = Math.min(now - lastTickAt, MAX_TICK_MS)
     lastTickAt = now
     if (!isActive()) return
+
+    const viewportHeight = window.innerHeight
+    const doc = document.documentElement
+    // Both callers scroll the window rather than an inner container.
+    const atBottom =
+      window.scrollY + viewportHeight >= doc.scrollHeight - BOTTOM_SLACK_PX
+
+    const next = pickPage(
+      onScreenBoxes(viewportHeight),
+      viewportHeight,
+      atBottom,
+      currentPage,
+    )
+    if (next !== currentPage) {
+      currentPage = next
+      queuedEvents.push({ type: 'page_enter', page: next })
+    }
 
     engagedMs += delta
     pageMs.set(currentPage, (pageMs.get(currentPage) ?? 0) + delta)

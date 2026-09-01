@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Eye, EyeOff } from 'lucide-react'
+import { Download, Eye, EyeOff, Printer } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { startTracker } from '#/lib/analytics/tracker'
 import { formatDuration, scoreIntent } from '#/lib/analytics/intent'
@@ -36,6 +36,7 @@ export function ProposalDemo() {
   const [revealed, setRevealed] = useState(false)
   const pagesRef = useRef<HTMLDivElement | null>(null)
   const panelRef = useRef<HTMLElement | null>(null)
+  const trackerRef = useRef<ReturnType<typeof startTracker> | null>(null)
 
   useEffect(() => {
     const tracker = startTracker({
@@ -51,7 +52,11 @@ export function ProposalDemo() {
       // ten-second steps. The measurement underneath is unchanged.
       flushMs: 500,
     })
-    return () => tracker.stop()
+    trackerRef.current = tracker
+    return () => {
+      trackerRef.current = null
+      tracker.stop()
+    }
   }, [])
 
   const seconds = read.engagedMs / 1000
@@ -100,6 +105,30 @@ export function ProposalDemo() {
                 </p>
               ))}
             </div>
+
+            {page.page === SAMPLE_PAGE_COUNT && (
+              <div className="mt-7 flex flex-wrap items-center gap-2 border-t border-line-soft pt-5">
+                <p className="mr-1 text-[13px] text-ink-3">
+                  What a client does next:
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => trackerRef.current?.recordDownload()}
+                >
+                  <Download aria-hidden />
+                  Download
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => trackerRef.current?.recordPrint()}
+                >
+                  <Printer aria-hidden />
+                  Print
+                </Button>
+              </div>
+            )}
 
             {page.lines && (
               <table className="mt-6 w-full max-w-md text-[13px]">
@@ -169,6 +198,7 @@ function SenderPanel({
   onReveal: () => void
 }) {
   const intent = scoreIntent(toIntentInput(read))
+  const forwarded = scoreIntent(toIntentInput(read, new Date(), true))
   const pricingSeconds = pricingMs(read) / 1000
 
   if (!revealed) {
@@ -290,10 +320,37 @@ function SenderPanel({
           ))}
         </ul>
         <p className="mt-4 text-[11px] leading-relaxed text-ink-3">
-          One read, in one sitting, by one person. A real proposal also earns
-          points for being opened again days later and for reaching a second
-          reader — the forward is the strongest signal there is, and this demo
-          will not invent one it did not see.
+          Everything above is something you actually did. One person, one
+          sitting — so no forward and no return, which are the two biggest
+          signals there are.
+        </p>
+      </div>
+
+      {/* Forwarding cannot be demonstrated by one visitor in one tab, and it
+          is the signal the product is really built around. Shown as an
+          explicit projection rather than folded into the score above, because
+          a demo that quietly credits you with a forward you did not make is
+          the exact dishonesty this product sells against. */}
+      <div className="rounded-lg border border-dashed border-line bg-surface/60 p-5">
+        <p className="kicker text-ink-3">If it were forwarded</p>
+        <div className="mt-2 flex items-baseline gap-2">
+          <p className="font-display text-xl font-semibold tnum text-ink-2">
+            {intent.score}
+          </p>
+          <span aria-hidden className="text-ink-3">
+            &rarr;
+          </span>
+          <p className="font-display text-xl font-semibold tnum text-brand">
+            {forwarded.score}
+          </p>
+          <span className="text-[11px] text-ink-3">
+            +{forwarded.score - intent.score} points
+          </span>
+        </div>
+        <p className="mt-2 text-[11px] leading-relaxed text-ink-3">
+          One link per recipient is how that is known: when a link sent to one
+          person is opened by a second, it has been passed on — usually to
+          whoever signs. This number is a projection, not something you did.
         </p>
       </div>
 

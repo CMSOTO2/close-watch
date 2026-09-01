@@ -15,16 +15,31 @@ export type DemoRead = {
   engagedMs: number
   /** Milliseconds per page number. */
   pageMs: Record<number, number>
+  downloaded: boolean
+  printed: boolean
 }
 
-export const EMPTY_READ: DemoRead = { engagedMs: 0, pageMs: {} }
+export const EMPTY_READ: DemoRead = {
+  engagedMs: 0,
+  pageMs: {},
+  downloaded: false,
+  printed: false,
+}
 
 export function applyFlush(read: DemoRead, flush: Flush): DemoRead {
   const pageMs = { ...read.pageMs }
   for (const { page, ms } of flush.pages) {
     pageMs[page] = (pageMs[page] ?? 0) + ms
   }
-  return { engagedMs: read.engagedMs + flush.engagedMs, pageMs }
+  // Downloads and prints ride in on the same flush the tracker already sends
+  // for them, so the demo learns about them the way the server does.
+  return {
+    engagedMs: read.engagedMs + flush.engagedMs,
+    pageMs,
+    downloaded:
+      read.downloaded || flush.events.some((e) => e.type === 'download'),
+    printed: read.printed || flush.events.some((e) => e.type === 'print'),
+  }
 }
 
 export function pricingMs(read: DemoRead): number {
@@ -46,17 +61,25 @@ export function reachedLastPage(read: DemoRead): boolean {
  * not see; those signals are worth more than everything here put together, and
  * inventing them is exactly the dishonesty the product is selling against.
  */
-export function toIntentInput(read: DemoRead, now: Date = new Date()): IntentInput {
+export function toIntentInput(
+  read: DemoRead,
+  now: Date = new Date(),
+  /**
+   * Set only by the "what a forward would add" preview, which is labelled as a
+   * projection on screen. Nothing the visitor actually did produces it.
+   */
+  forwarded = false,
+): IntentInput {
   return {
     pageCount: SAMPLE_PAGE_COUNT,
     qualifiedVisits: read.engagedMs > 0 ? 1 : 0,
-    distinctViewers: read.engagedMs > 0 ? 1 : 0,
+    distinctViewers: read.engagedMs > 0 ? (forwarded ? 2 : 1) : 0,
     totalEngagedMs: read.engagedMs,
     pricingEngagedMs: pricingMs(read),
     reachedLastPage: reachedLastPage(read),
     firstVisitAt: now,
     lastVisitAt: now,
-    downloaded: false,
-    printed: false,
+    downloaded: read.downloaded,
+    printed: read.printed,
   }
 }
