@@ -142,13 +142,14 @@ describe('page attribution', () => {
 })
 
 /**
- * The same rules under the shape the real viewer actually has.
+ * The same rules under the shapes the real viewer actually has.
  *
- * The demo's pages are shorter than the viewport and two or three share the
- * screen; a rendered PDF page is taller than the viewport and usually only one
- * or two do. Both callers run this file, so both are worth pinning down —
- * these are US Letter at the viewer's max-w-4xl, which is 864px of content and
- * so 1118px tall, stacked with the mb-6 gap, in a 900px window.
+ * Two of them, because proposals are not all portrait. Measured off a real
+ * deck in the deployed viewer: 864px of content at max-w-4xl, and pages 486px
+ * tall — a 16:9 presentation, shorter than the 873px window, so two of them
+ * share the screen the way the demo's do. US Letter at the same width is
+ * 1118px tall and taller than the window, so one page fills it. Both arrive
+ * here through the same tracker and neither should be assumed.
  */
 describe('page attribution in the PDF viewer', () => {
   const VIEWER_VIEWPORT = 900
@@ -210,6 +211,31 @@ describe('page attribution in the PDF viewer', () => {
     tracker.stop()
 
     expect(flushedMs(9)).toBeGreaterThan(0)
+  })
+
+  // The shape actually measured in production: a 16:9 deck, two pages sharing
+  // an 873px window. The last page of one of these is precisely the case that
+  // used to be worth nothing.
+  it('splits a landscape deck the way it splits the demo', () => {
+    vi.useFakeTimers()
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 873 })
+    setScroll({ scrollY: 1200, scrollHeight: 4749 })
+    const DECK_H = 486
+    const pages = [
+      page(2, -100, -100 + DECK_H),
+      page(3, 410, 410 + DECK_H),
+      page(4, 920, 920 + DECK_H),
+    ]
+    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    // Page 2 shows its last 386px, page 3 all 486, page 4 is off screen.
+    expect(flushedMs(3)).toBeGreaterThan(flushedMs(2))
+    expect(flushedMs(2)).toBeGreaterThan(0)
+    expect(flushedMs(4)).toBe(0)
+    expect(flushedMs(2) + flushedMs(3)).toBeCloseTo(10_000, -2)
   })
 
   it('reads geometry only for the pages on screen, not all 500', () => {
