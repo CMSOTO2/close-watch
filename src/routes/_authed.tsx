@@ -5,6 +5,7 @@ import {
   redirect,
   useRouter,
 } from '@tanstack/react-router'
+import { AccountMenu } from '#/components/account-menu'
 import { Wordmark } from '#/components/brand-mark'
 import { PageContainer } from '#/components/page-container'
 import { ThemeToggle } from '#/components/theme-toggle'
@@ -40,36 +41,22 @@ function AuthedLayout() {
           >
             <Wordmark />
           </Link>
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-2">
             <Link
-              to="/settings"
-              className="text-[13px] text-ink-2 transition-colors hover:text-ink"
+              to="/dashboard"
+              // Marks the current page rather than disabling the link, so the
+              // bar says where you are as well as where you can go.
+              activeProps={{ 'aria-current': 'page', className: 'text-ink' }}
+              className="rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              Settings
+              Proposals
             </Link>
-            <button
-              onClick={signOut}
-              className="text-[13px] text-ink-2 transition-colors hover:text-ink"
-            >
-              Sign out
-            </button>
             <ThemeToggle />
-            <span
-              title={user.email ?? undefined}
-              className="grid size-7 shrink-0 place-items-center rounded-full bg-surface-3 text-[11px] font-semibold text-ink-2"
-            >
-              {initials(user.email)}
-            </span>
+            <AccountMenu email={user.email ?? null} onSignOut={signOut} />
           </nav>
         </PageContainer>
       </header>
       <Outlet />
     </div>
   )
-}
-
-/** First two letters of the local part — enough to recognise your own account. */
-function initials(email: string | null | undefined): string {
-  if (!email) return '·'
-  return email.slice(0, 2).toUpperCase()
 }
