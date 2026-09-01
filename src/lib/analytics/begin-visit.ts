@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import {
   getCookie,
+  getRequest,
   getRequestHeader,
   getRequestIP,
   setCookie,
@@ -10,6 +11,8 @@ import { z } from 'zod'
 import { serverEnv } from '#/env'
 import { getSupabaseAdminClient } from '#/lib/supabase/server'
 import { detectBot, parseUserAgent } from './bots'
+import { requestGeo } from './geo'
+import type { Geo } from './geo'
 
 const VISITOR_COOKIE = 'cw_vid'
 /** Gap after which a return counts as a new visit rather than the same read. */
@@ -85,6 +88,19 @@ export const beginVisit = createServerFn({ method: 'GET' })
         ? createHash('sha256').update(`${serverEnv().IP_HASH_SALT}:${ip}`).digest('hex').slice(0, 32)
         : null
 
+      // Only on a new visit: a resumed read is the same person in the same
+      // place, and re-reading it would just cost a header parse per beacon.
+      //
+      // Guarded because location is the least important column on this row and
+      // the row itself is the product. Nothing about reading a header should
+      // ever be what stops a visit from being recorded.
+      let geo: Geo = { country: null, city: null }
+      try {
+        geo = requestGeo(getRequest())
+      } catch {
+        // No request context to read; the visit still counts.
+      }
+
       const { data: created, error } = await supabase
         .from('visits')
         .insert({
@@ -96,6 +112,8 @@ export const beginVisit = createServerFn({ method: 'GET' })
           os: device.os,
           browser: device.browser,
           referrer: getRequestHeader('referer') ?? null,
+          country: geo.country,
+          city: geo.city,
           ip_hash: ipHash,
           is_bot: isBot,
           bot_reason: reason,

@@ -174,9 +174,10 @@ function RecentVisits({ visits }: { visits: Array<VisitActivity> }) {
                 )}
                 <EventBadges events={v.events} />
               </p>
-              <p className="text-xs text-ink-3">
+              <p className="truncate text-xs text-ink-3">
                 {formatRelative(v.startedAt, timeZone)}
                 {v.device && ` · ${v.device}`}
+                {v.location && ` · ${v.location}`}
               </p>
             </div>
             <span className="shrink-0 text-xs tnum text-ink-2">

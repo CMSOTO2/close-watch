@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
+import { locationLabel } from '#/lib/analytics/geo'
 import type { PageSection } from '#/lib/supabase/types'
 
 export type PageAttention = {
@@ -15,6 +16,8 @@ export type VisitActivity = {
   startedAt: string
   engagedMs: number
   device: string | null
+  /** "London, United Kingdom", when Cloudflare's edge could tell. */
+  location: string | null
   recipientLabel: string
   isReturn: boolean
   isForward: boolean
@@ -79,7 +82,7 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
       supabase
         .from('visits')
         .select(
-          'id, share_link_id, visitor_id, visit_seq, started_at, last_seen_at, engaged_ms, browser, os, is_bot, is_qualified',
+          'id, share_link_id, visitor_id, visit_seq, started_at, last_seen_at, engaged_ms, browser, os, country, city, is_bot, is_qualified',
         )
         .eq('proposal_id', data.id)
         .order('started_at', { ascending: false }),
@@ -157,6 +160,7 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
       startedAt: v.started_at,
       engagedMs: v.engaged_ms,
       device: deviceLabel(v.browser, v.os),
+      location: locationLabel({ country: v.country, city: v.city }),
       recipientLabel: linkLabel(v.share_link_id),
       isReturn: v.visit_seq > 1,
       isForward: viewerIndexOf(v.share_link_id, v.visitor_id) > 1,
