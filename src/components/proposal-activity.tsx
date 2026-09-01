@@ -4,6 +4,9 @@ import { getProposalAnalytics } from '#/lib/analytics/proposal-analytics'
 import { formatDuration } from '#/lib/analytics/intent'
 import { SECTION_LABELS, queryKeys } from '#/constants'
 import { formatDay, useTimeZone } from '#/lib/local-date'
+import { sinceLabel } from '#/components/dashboard/since-last-visit'
+import { useSinceLastCheck } from '#/components/proposal-activity-delta'
+import type { ActivityDelta } from '#/components/proposal-activity-delta'
 import type {
   PageAttention,
   ProposalAnalytics,
@@ -31,6 +34,20 @@ function formatRelative(iso: string | null, timeZone: string): string {
 
 export function ProposalActivity({ proposalId }: { proposalId: string }) {
   const { data } = useSuspenseQuery(proposalAnalyticsQuery(proposalId))
+  // Hooks cannot sit behind the early return below, and the analytics query is
+  // suspense-backed, so `data` is only null for a proposal with no rows at all.
+  const empty = {
+    qualifiedVisits: 0,
+    distinctViewers: 0,
+    totalEngagedMs: 0,
+    firstOpenedAt: null,
+    lastOpenedAt: null,
+    botVisits: 0,
+    downloads: 0,
+    prints: 0,
+  }
+  const { delta, since } = useSinceLastCheck(proposalId, data?.totals ?? empty)
+
   if (!data) return null
 
   const { totals } = data
@@ -41,6 +58,13 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
         Activity
       </h2>
 
+      {delta !== null && since !== null && (
+        <p className="mt-1 flex items-center gap-1.5 text-[13px] font-medium text-brand">
+          <span aria-hidden className="size-1.5 rounded-full bg-brand" />
+          {summarizeDelta(delta)} {sinceLabel(since)}
+        </p>
+      )}
+
       {totals.qualifiedVisits === 0 ? (
         <p className="mt-3 text-[13px] text-ink-2">
           No qualified opens yet.
@@ -49,27 +73,74 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
         </p>
       ) : (
         <>
-          <StatTiles totals={totals} />
+          <StatTiles totals={totals} delta={delta} />
           <PageAttentionChart pages={data.pages} />
-          <RecentVisits visits={data.visits} />
+          <RecentVisits visits={data.visits} since={since} />
         </>
       )}
     </section>
   )
 }
 
-function StatTiles({ totals }: { totals: ProposalAnalytics['totals'] }) {
+/**
+ * The headline for the delta line, in the order a reader cares about: who
+ * looked, then how many of them, then what they did. Reading time is left out
+ * of the sentence — it is on its own tile, and "3 new opens and 4m 20s more
+ * reading" is a mouthful for something the tiles already say.
+ */
+function summarizeDelta(delta: ActivityDelta): string {
+  const parts: Array<string> = []
+  const add = (n: number, one: string, many: string) => {
+    if (n > 0) parts.push(`${n} new ${n === 1 ? one : many}`)
+  }
+
+  add(delta.opens, 'open', 'opens')
+  add(delta.viewers, 'reader', 'readers')
+  add(delta.downloads, 'download', 'downloads')
+  add(delta.prints, 'print', 'prints')
+
+  if (parts.length === 0) {
+    // Only the clock moved: someone re-read a proposal they had already opened.
+    return `${formatDuration(delta.engagedMs / 1000)} more reading`
+  }
+  if (parts.length === 1) return parts[0]
+  return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`
+}
+
+function StatTiles({
+  totals,
+  delta,
+}: {
+  totals: ProposalAnalytics['totals']
+  delta: ActivityDelta | null
+}) {
   const timeZone = useTimeZone()
   const tiles = [
-    { label: 'Opens', value: String(totals.qualifiedVisits) },
-    { label: 'Viewers', value: String(totals.distinctViewers) },
+    { label: 'Opens', value: String(totals.qualifiedVisits), up: delta?.opens },
+    {
+      label: 'Viewers',
+      value: String(totals.distinctViewers),
+      up: delta?.viewers,
+    },
     {
       label: 'Total time',
       value: formatDuration(totals.totalEngagedMs / 1000),
+      // Seconds, not a count: shown as "+1m 20s" rather than "+80".
+      upLabel:
+        delta && delta.engagedMs > 0
+          ? `+${formatDuration(delta.engagedMs / 1000)}`
+          : null,
     },
-    { label: 'Last opened', value: formatRelative(totals.lastOpenedAt, timeZone) },
-    { label: 'Downloads', value: String(totals.downloads) },
-    { label: 'Prints', value: String(totals.prints) },
+    {
+      label: 'Last opened',
+      value: formatRelative(totals.lastOpenedAt, timeZone),
+    },
+    {
+      label: 'Downloads',
+      value: String(totals.downloads),
+      up: delta?.downloads,
+    },
+    { label: 'Prints', value: String(totals.prints), up: delta?.prints },
   ]
   return (
     <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -79,8 +150,13 @@ function StatTiles({ totals }: { totals: ProposalAnalytics['totals'] }) {
           className="rounded-md border border-line bg-surface px-3 py-2.5 shadow-sm"
         >
           <dt className="kicker">{t.label}</dt>
-          <dd className="mt-1 font-display text-lg font-semibold tracking-tight tnum text-ink">
+          <dd className="mt-1 flex items-baseline gap-1.5 font-display text-lg font-semibold tracking-tight tnum text-ink">
             {t.value}
+            {(t.upLabel ?? (t.up ? `+${t.up}` : null)) && (
+              <span className="text-[12px] font-medium text-brand">
+                {t.upLabel ?? `+${t.up}`}
+              </span>
+            )}
           </dd>
         </div>
       ))}
@@ -139,7 +215,14 @@ function EventBadges({ events }: { events: Array<string> }) {
   )
 }
 
-function RecentVisits({ visits }: { visits: Array<VisitActivity> }) {
+function RecentVisits({
+  visits,
+  since,
+}: {
+  visits: Array<VisitActivity>
+  /** When this page was last open; visits after it are marked new. */
+  since: string | null
+}) {
   const timeZone = useTimeZone()
   if (visits.length === 0) return null
   const recent = visits.slice(0, 12)
@@ -168,6 +251,9 @@ function RecentVisits({ visits }: { visits: Array<VisitActivity> }) {
                   </>
                 ) : (
                   <span className="truncate">{v.recipientLabel}</span>
+                )}
+                {since !== null && v.startedAt > since && (
+                  <Badge className="bg-brand-soft text-brand">new</Badge>
                 )}
                 {v.isReturn && (
                   <Badge className="bg-surface-3 text-ink">return</Badge>
