@@ -22,8 +22,14 @@ import { cn } from '#/lib/utils'
 
 type Item = { label: string; href?: string; to?: string }
 
+/**
+ * No Home link: the wordmark to its left is one, and it stays in the bar even
+ * with the mobile panel open. No "How it works" either — the demo shows what
+ * that section describes, and two links to the same explanation split the
+ * click. The section keeps its id, so /#how still works if it is ever worth
+ * linking to directly.
+ */
 const ITEMS: Array<Item> = [
-  { label: 'How it works', href: '/#how' },
   { label: 'Demo', to: '/demo' },
   { label: 'Pricing', href: '/#pricing' },
   { label: 'Questions', href: '/#faq' },
