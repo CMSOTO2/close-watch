@@ -12,10 +12,12 @@
 ```
 src/
   env.ts                      zod-validated env, split public/server
-  constants.ts                shared constants (upload caps, bucket, sections, query keys)
+  constants.ts                shared constants (upload caps, bucket, sections, TTL, query keys)
+  styles.css                  the whole design system: raw palette -> shadcn tokens, both themes
   router.tsx                  router + query client wiring
   lib/
     pdf.ts                    pdfjs worker setup, shared by viewer and upload
+    local-date.ts             dates that survive the SSR/browser timezone split (see below)
     supabase/
       client.ts               browser client (publishable key)
       server.ts               request-scoped client + admin client
@@ -23,7 +25,8 @@ src/
     proposals/
       create.ts               server fn: upload PDF, create proposal
       detail.ts               server fn: single proposal for the owner (incl. owner name)
-      mutations.ts            server fns: share links, page sections, delete
+      mutations.ts            server fns: share links, page sections, won/lost/reopen, delete
+      link-status.ts          live vs revoked vs expired, and how they are counted
     analytics/
       bots.ts                 email-scanner detection, UA parsing
       tracker.ts              viewer-side engagement tracking (incl. download/print)
@@ -36,25 +39,38 @@ src/
     profile.ts                server fns: read/update the sender's display name
     auth.ts                   session lookup
   components/
-    auth/
-      login-form.tsx          sign-in/up form: password, magic link, Google
-      google-button.tsx       Google OAuth button
-      auth-field.tsx          shared input + error line
-      validation.ts           zod schemas for the auth forms
+    brand-mark.tsx            the mark and wordmark, drawn as SVG
+    account-menu.tsx          avatar disclosure: signed-in email, settings, sign out
+    page-container.tsx        the single 1280 shell every page centres on
+    theme-toggle.tsx          light/dark toggle + the pre-paint script
+    toast.tsx                 provider and hook; neutral / good / danger
+    confirm-dialog.tsx        modal used for destructive actions
+    legal-page.tsx            shared chrome for the privacy policy and terms
     pdf-viewer.tsx            client-side pdfjs renderer + download/print toolbar
     proposal-activity.tsx     per-proposal activity panel
-    confirm-dialog.tsx        modal used for destructive actions
+    auth/                     sign-in form, Google button, field, zod schemas
+    dashboard/                the proposal list, split by concern:
+                                sorting / search / grouping / totals   pure, tested
+                                since-last-visit  what moved since you last left
+                                use-list-keys     j/k navigation
+                                proposal-row, closed-row, client-group, list-controls,
+                                summary-strip, heat-meter, copy-link-button
+    landing/                  product shots, FAQ, scroll-into-view hook
+    ui/button.tsx             the one shadcn primitive in use
   routes/
-    index.tsx                 landing
+    index.tsx                 landing page
+    privacy.tsx, terms.tsx    linked from the footer, sign-in, and Google's consent screen
     login.tsx                 login route shell (renders components/auth)
     auth.callback.ts          PKCE code exchange (magic link and OAuth)
-    _authed.tsx               auth guard + header/sign out
+    _authed.tsx              auth guard + app header
     _authed.dashboard.tsx     proposal list
     _authed.settings.tsx      profile: sender name shown to recipients
     _authed.proposals.new.tsx     upload + create
     _authed.proposals.$id.tsx     proposal detail, share links, activity
     p.$token.tsx              public viewer
     api/track.$visitId.ts     engagement ingest (+ fires the first-open email)
+public/                       favicon.svg (theme-aware) + PNG fallbacks
+scripts/generate-icons.py     redraws the PNG icons from the mark's geometry
 supabase/migrations/          schema, RLS, ingest fn, share-link lock, bucket limit,
                               first-open flag, definer-function lockdown
 ```
@@ -92,6 +108,32 @@ retries. The whole thing is best-effort inside a `try/catch` — a notification 
 breaks the viewer's 204. It is gated on `RESEND_API_KEY` and does nothing until that is set,
 which keeps local and CI runs silent. Resend is called over its HTTP API, so it works from
 the Cloudflare Worker with no SMTP.
+
+## Design system
+
+`styles.css` is the whole of it. A raw palette is declared first, then the shadcn semantic
+tokens point at it with `var()`, so `.dark` redefines only the raw values and every
+primitive follows. Dark is designed rather than inverted: surfaces warm toward brown-black
+and the brass lifts to a legible gold.
+
+Two rules that are easy to break:
+
+- **Everything is layered on purpose.** Unlayered CSS outranks Tailwind's `@layer
+  utilities`, so a bare `a { color: inherit }` silently beats `text-primary-foreground` on
+  every link-styled button. New base and component rules go inside `@layer`.
+- **Pairs are chosen, not inherited.** `--bar`/`--bar-lead` and `--mark-tile`/`--mark-ink`
+  exist because a fill and a text colour want different things from one value: text has to
+  clear AA on the page, a fill has to separate from its neighbour. Tokens that borrowed
+  from each other produced a chart whose neutral bar out-shouted its emphasis bar, and a
+  logo at 1.56:1 against its own tile.
+
+## SSR runs in a different timezone from the browser
+
+The server is a Cloudflare Worker, and workerd's clock is UTC. The browser is wherever the
+owner is. Any date formatted with the ambient timezone therefore renders differently on the
+two sides and tears hydration. `lib/local-date.ts` formats both sides in UTC and re-renders
+in the real zone after hydration, through `useSyncExternalStore`'s server snapshot. Use it
+for dates rather than `toLocaleDateString`.
 
 ## Security model
 

@@ -3,7 +3,8 @@
 Upload the proposal PDF you already send. Get a link that tells you when the client opened
 it, how long they spent on pricing, and whether they forwarded it to someone else.
 
-Working name. See [docs/NAMING.md](docs/NAMING.md).
+Live at [getclosewatch.com](https://getclosewatch.com). The name is settled; the
+alternatives that were considered are in [docs/NAMING.md](docs/NAMING.md).
 
 ## Setup
 
@@ -48,15 +49,41 @@ Once your project exists, replace the hand-written schema types:
 pnpm dlx supabase gen types typescript --project-id <ref> > src/lib/supabase/types.ts
 ```
 
+## Deploy
+
+```bash
+pnpm run deploy   # build, then wrangler deploy
+```
+
+`run` is not optional there: `pnpm deploy` is pnpm's own workspace command and will not
+reach the script.
+
+`wrangler.jsonc` points the Worker at the `getclosewatch.com` custom domain, so a deploy
+serves both the app and `/p/:token` from it. It publishes the working tree, not a branch:
+see [docs/PRODUCTION.md](docs/PRODUCTION.md) for the secrets that have to exist on the
+Worker first.
+
+The PNG icons in `public/` are generated, not hand-drawn. If the mark changes, rerun
+`python3 scripts/generate-icons.py` rather than exporting from a design tool: SVG
+converters routinely fill the mark's stroked ring and turn it into a blob.
+
 ## What is here
 
-Magic-link and Google sign-in, a profile for your sender name, PDF upload to private
-storage, per-recipient share links, the public tracked viewer with download and print,
-engagement ingest (including download and print events), intent scoring, the dashboard
-with per-proposal detail and activity analytics, and the first-qualified-open email.
+The whole MVP loop: magic-link and Google sign-in, a profile for your sender name, PDF
+upload to private storage, per-recipient share links, the public tracked viewer with
+download and print, engagement ingest, intent scoring, per-proposal activity, and the
+first-qualified-open email.
 
-That is the full MVP. See [docs/PRODUCTION.md](docs/PRODUCTION.md) for what is left
-between this and a launch you would show a customer.
+Around it: a dashboard that sorts by intent and can group by client, search, heat
+filtering, keyboard navigation, a "since you last looked" diff, one-click link copying,
+won/lost outcomes that keep their tracking history, toasts and confirmations on the
+actions that deserve them, and a light/dark design system.
+
+Public surface: a landing page, a privacy policy and terms (both linked from Google's
+OAuth consent screen), and the brand mark and favicons.
+
+See [docs/PRODUCTION.md](docs/PRODUCTION.md) for what is still operational rather than
+built.
 
 Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing anything under
 `src/lib/analytics/`. The tracking rules there are the reason the numbers can be trusted,
