@@ -85,7 +85,7 @@ export function LoginForm() {
 
       {notice ? (
         <p className="mt-4 rounded-md border border-good-line bg-good-soft px-3 py-2.5 text-[13px] text-good">
-          \n {notice}\n{' '}
+          {notice}
         </p>
       ) : (
         <>
