@@ -1,66 +1,299 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { ArrowRight } from 'lucide-react'
 import { Wordmark } from '#/components/brand-mark'
 import { PageContainer } from '#/components/page-container'
 import { ThemeToggle } from '#/components/theme-toggle'
 import { Button } from '#/components/ui/button'
+import { Faq } from '#/components/landing/faq'
+import {
+  AttentionShot,
+  DashboardShot,
+  ForwardShot,
+  IntentShot,
+  LinkShot,
+} from '#/components/landing/product-shots'
+import { PDF_MAX_MB } from '#/constants'
 
-export const Route = createFileRoute('/')({ component: Home })
+const TITLE = 'Closewatch — know which proposals are actually being read'
+const DESCRIPTION =
+  'Turn the proposal PDF you already send into a tracked link. See who opened it, how long they spent on pricing, and whether it was forwarded to the person who signs.'
 
-const POINTS = [
+export const Route = createFileRoute('/')({
+  // The landing page is the one URL that gets pasted into a chat or a search
+  // result, so it carries its own title and description rather than inheriting
+  // the app's bare "Closewatch". No og:image until there is a real one — a tag
+  // pointing at nothing renders worse than no tag at all.
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: 'description', content: DESCRIPTION },
+      { property: 'og:title', content: TITLE },
+      { property: 'og:description', content: DESCRIPTION },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary' },
+    ],
+  }),
+  component: Home,
+})
+
+const STEPS = [
   {
-    kicker: 'Who opened it',
-    body: 'Qualified opens only — bots and your own previews are filtered out before anything counts.',
+    n: '01',
+    title: 'Upload the PDF you already send',
+    body: `Any proposal up to ${PDF_MAX_MB} MB. Nothing to rebuild, no template to adopt — it is the same document you were about to email.`,
   },
   {
-    kicker: 'How long on pricing',
-    body: 'Per-page dwell time, so you know whether they read the number or skipped past it.',
+    n: '02',
+    title: 'Send one link per recipient',
+    body: 'Your client clicks it and reads the proposal. No account, no plugin, nothing to install. That separate link per person is what tells you who actually read it.',
   },
   {
-    kicker: 'Who else saw it',
-    body: 'A second reader on a one-recipient link means it reached a budget holder. That is your call.',
+    n: '03',
+    title: 'Call the deal that is running hot',
+    body: 'Opens, time on pricing, forwards, prints. The list sorts itself so the proposal worth a call today is the one at the top.',
   },
 ]
 
 function Home() {
   return (
     <div className="min-h-screen bg-canvas">
-      <header className="border-b border-line bg-surface">
+      <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur">
         <PageContainer className="flex items-center justify-between gap-4 py-3">
           <Wordmark />
-          <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-1 sm:gap-3">
+            <a
+              href="#how"
+              className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
+            >
+              How it works
+            </a>
+            <a
+              href="#faq"
+              className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
+            >
+              Questions
+            </a>
             <ThemeToggle />
             <Button asChild size="sm" variant="outline">
               <Link to="/login">Sign in</Link>
             </Button>
-          </div>
+          </nav>
         </PageContainer>
       </header>
 
-      <PageContainer asMain className="py-16 sm:py-20 lg:py-24">
-        <p className="kicker text-brand">Proposal intelligence</p>
-        <h1 className="mt-4 max-w-[16ch] font-display text-4xl font-semibold leading-[1.05] tracking-[-0.035em] sm:text-5xl">
-          Know which proposals are actually being read.
-        </h1>
-        <p className="mt-5 max-w-[58ch] text-base text-ink-2">
-          Upload the PDF you already send. Closewatch gives you a link that
-          tells you when your client opened it, how long they spent on pricing,
-          and whether they forwarded it to someone else.
-        </p>
-        <Button asChild className="mt-8">
-          <Link to="/login">Get started</Link>
-        </Button>
+      <main>
+        {/* ---------- Hero ---------- */}
+        <PageContainer className="pb-16 pt-14 sm:pb-20 sm:pt-20">
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
+            <div>
+              <p className="kicker text-brand">Proposal intelligence</p>
+              <h1 className="mt-4 max-w-[15ch] font-display text-4xl font-semibold leading-[1.03] tracking-[-0.035em] sm:text-5xl lg:text-[3.4rem]">
+                Stop guessing whether they read it.
+              </h1>
+              <p className="mt-5 max-w-[54ch] text-[17px] leading-relaxed text-ink-2">
+                Closewatch turns the proposal PDF you already send into a
+                tracked link. You see who opened it, how long they spent on your
+                pricing, and whether it got forwarded to the person who signs —
+                so you know which deal to chase today, and which one to let go.
+              </p>
 
-        <div className="mt-16 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
-          {POINTS.map((p) => (
-            <div key={p.kicker} className="bg-surface px-4 py-5">
-              <p className="kicker">{p.kicker}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
-                {p.body}
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Button asChild size="lg">
+                  <Link to="/login">
+                    Start tracking your proposals
+                    <ArrowRight aria-hidden className="size-4" />
+                  </Link>
+                </Button>
+                <a
+                  href="#how"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-ink-2 transition-colors hover:text-ink"
+                >
+                  See how it works
+                </a>
+              </div>
+
+              <p className="mt-4 text-[13px] text-ink-3">
+                Free to start · Your client installs nothing · Revoke any link
+                at any time
               </p>
             </div>
-          ))}
-        </div>
-      </PageContainer>
+
+            <DashboardShot />
+          </div>
+        </PageContainer>
+
+        {/* ---------- The problem ---------- */}
+        <section className="border-y border-line bg-surface">
+          <PageContainer className="py-14 sm:py-16">
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
+              <div>
+                <h2 className="max-w-[20ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+                  &ldquo;Just following up on that proposal&rdquo;
+                </h2>
+                <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
+                  You send the PDF and the line goes dead. Was it read? Did it
+                  reach the person with the budget? Did the number scare them,
+                  or did it never get opened at all? Without an answer, every
+                  follow-up is a guess — sent too early, too late, or to the
+                  wrong person entirely.
+                </p>
+                <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
+                  A tracked link answers it. Not with a vanity open-rate, but
+                  with the handful of things that actually predict a close.
+                </p>
+              </div>
+
+              <dl className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
+                {[
+                  {
+                    k: 'Who opened it',
+                    v: 'Qualified reads only. Bots and link previews are filtered out before anything counts.',
+                  },
+                  {
+                    k: 'How long on pricing',
+                    v: 'Per-page dwell time, so you know whether they studied the number or skipped past it.',
+                  },
+                  {
+                    k: 'Who else saw it',
+                    v: 'A second reader on a one-person link means it reached a budget holder. That is your call to make.',
+                  },
+                ].map((p) => (
+                  <div key={p.k} className="bg-surface px-4 py-5">
+                    <dt className="kicker">{p.k}</dt>
+                    <dd className="mt-2 text-[13px] leading-relaxed text-ink-2">
+                      {p.v}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </PageContainer>
+        </section>
+
+        {/* ---------- How it works ---------- */}
+        <section id="how" className="scroll-mt-16">
+          <PageContainer className="py-16 sm:py-20">
+            <p className="kicker text-brand">How it works</p>
+            <h2 className="mt-3 max-w-[22ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+              Three steps, and none of them change how you sell.
+            </h2>
+
+            <ol className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
+              {STEPS.map((s) => (
+                <li key={s.n} className="bg-surface px-5 py-6">
+                  <p className="font-mono text-[11px] tracking-wider text-brand">
+                    {s.n}
+                  </p>
+                  <p className="mt-3 font-display text-base font-semibold tracking-tight">
+                    {s.title}
+                  </p>
+                  <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
+                    {s.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-10 max-w-2xl">
+              <LinkShot />
+            </div>
+          </PageContainer>
+        </section>
+
+        {/* ---------- Feature deep-dives ---------- */}
+        <section className="border-y border-line bg-surface">
+          <PageContainer className="flex flex-col gap-16 py-16 sm:gap-20 sm:py-20">
+            <Feature
+              kicker="Attention, page by page"
+              title="See exactly where they slowed down."
+              body="Closewatch measures visible attention on every page, so a proposal is not one number but a shape. Tag your pricing page and it gets tracked by name — because two minutes there means something very different from two minutes on your cover."
+              shot={<AttentionShot />}
+            />
+            <Feature
+              reverse
+              kicker="Forwarding"
+              title="Know when it reached the person who signs."
+              body="One link per recipient is the whole trick. When a link you sent to one person is opened by a second and a third, the proposal is being circulated internally — the clearest sign a deal is moving that you can observe from outside the room."
+              shot={<ForwardShot />}
+            />
+            <Feature
+              kicker="Intent, explained"
+              title="A score that shows its working."
+              body="Repeat opens, pricing dwell, depth of read, forwards, downloads and prints each contribute a fixed number of points. No model, no black box — every proposal lists the reasons behind its own number, because the reasons are what you act on."
+              shot={<IntentShot />}
+            />
+          </PageContainer>
+        </section>
+
+        {/* ---------- FAQ ---------- */}
+        <section id="faq" className="scroll-mt-16">
+          <PageContainer className="py-16 sm:py-20">
+            <p className="kicker text-brand">Questions</p>
+            <h2 className="mt-3 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+              The things people ask first.
+            </h2>
+            <Faq />
+          </PageContainer>
+        </section>
+
+        {/* ---------- Closing CTA ---------- */}
+        <section className="border-t border-line bg-surface">
+          <PageContainer className="py-16 text-center sm:py-20">
+            <h2 className="mx-auto max-w-[20ch] font-display text-3xl font-semibold tracking-[-0.025em] sm:text-4xl">
+              Your next follow-up could be an informed one.
+            </h2>
+            <p className="mx-auto mt-4 max-w-[50ch] text-[15px] leading-relaxed text-ink-2">
+              Upload a proposal, send the link, and watch what happens. It takes
+              about a minute, and the next time a client goes quiet you will
+              know why.
+            </p>
+            <Button asChild size="lg" className="mt-8">
+              <Link to="/login">
+                Get started
+                <ArrowRight aria-hidden className="size-4" />
+              </Link>
+            </Button>
+          </PageContainer>
+        </section>
+      </main>
+
+      <footer className="border-t border-line">
+        <PageContainer className="flex flex-wrap items-center justify-between gap-4 py-8">
+          <Wordmark />
+          <p className="text-xs text-ink-3">
+            © {new Date().getUTCFullYear()} Closewatch
+          </p>
+        </PageContainer>
+      </footer>
+    </div>
+  )
+}
+
+function Feature({
+  kicker,
+  title,
+  body,
+  shot,
+  reverse = false,
+}: {
+  kicker: string
+  title: string
+  body: string
+  shot: React.ReactNode
+  reverse?: boolean
+}) {
+  return (
+    <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+      <div className={reverse ? 'lg:order-2' : undefined}>
+        <p className="kicker text-brand">{kicker}</p>
+        <h3 className="mt-3 max-w-[20ch] font-display text-xl font-semibold tracking-[-0.02em] sm:text-2xl">
+          {title}
+        </h3>
+        <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
+          {body}
+        </p>
+      </div>
+      <div className={reverse ? 'lg:order-1' : undefined}>{shot}</div>
     </div>
   )
 }
