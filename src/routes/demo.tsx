@@ -1,15 +1,15 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { Wordmark } from '#/components/brand-mark'
+import { createFileRoute } from '@tanstack/react-router'
 import { PageContainer } from '#/components/page-container'
-import { ThemeToggle } from '#/components/theme-toggle'
-import { Button } from '#/components/ui/button'
+import { SiteHeader } from '#/components/landing/site-header'
 import { ProposalDemo } from '#/components/demo/proposal-demo'
 
 export const Route = createFileRoute('/demo')({
   component: DemoPage,
   head: () => ({
     meta: [
-      { title: 'Closewatch demo: read a proposal, then see what the sender saw' },
+      {
+        title: 'Closewatch demo: read a proposal, then see what the sender saw',
+      },
       {
         name: 'description',
         content:
@@ -22,22 +22,7 @@ export const Route = createFileRoute('/demo')({
 function DemoPage() {
   return (
     <div className="min-h-screen bg-canvas">
-      <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur">
-        <PageContainer className="flex items-center justify-between gap-4 py-3">
-          <Link
-            to="/"
-            className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-          >
-            <Wordmark />
-          </Link>
-          <nav aria-label="Demo" className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
-            <Button asChild size="sm" variant="outline">
-              <Link to="/login">Sign in</Link>
-            </Button>
-          </nav>
-        </PageContainer>
-      </header>
+      <SiteHeader current="demo" />
 
       <PageContainer asMain className="py-10 sm:py-12">
         <p className="kicker text-brand">Live demo</p>

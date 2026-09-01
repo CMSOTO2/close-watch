@@ -2,10 +2,10 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { Wordmark } from '#/components/brand-mark'
 import { PageContainer } from '#/components/page-container'
-import { ThemeToggle } from '#/components/theme-toggle'
 import { Button } from '#/components/ui/button'
 import { Faq } from '#/components/landing/faq'
 import { Pricing } from '#/components/landing/pricing'
+import { SiteHeader } from '#/components/landing/site-header'
 import {
   AttentionShot,
   DashboardShot,
@@ -58,41 +58,7 @@ const STEPS = [
 function Home() {
   return (
     <div className="min-h-screen bg-canvas">
-      <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur">
-        <PageContainer className="flex items-center justify-between gap-4 py-3">
-          <Wordmark />
-          <nav className="flex items-center gap-1 sm:gap-3">
-            <a
-              href="#how"
-              className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
-            >
-              How it works
-            </a>
-            <Link
-              to="/demo"
-              className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
-            >
-              Demo
-            </Link>
-            <a
-              href="#pricing"
-              className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
-            >
-              Pricing
-            </a>
-            <a
-              href="#faq"
-              className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
-            >
-              Questions
-            </a>
-            <ThemeToggle />
-            <Button asChild size="sm" variant="outline">
-              <Link to="/login">Sign in</Link>
-            </Button>
-          </nav>
-        </PageContainer>
-      </header>
+      <SiteHeader />
 
       <main>
         {/* Hero */}
