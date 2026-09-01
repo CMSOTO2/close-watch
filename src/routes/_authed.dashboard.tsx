@@ -124,31 +124,21 @@ function Dashboard() {
 
   return (
     <PageContainer className="py-8 sm:py-9">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">
-            Proposals
-          </h1>
-          <p className="mt-0.5 text-[13px] text-ink-2">
-            {activeAll.length === 0
-              ? 'Nothing open right now.'
-              : `${activeAll.length} open ${activeAll.length === 1 ? 'deal' : 'deals'} \u00b7 ${hotCount} running hot`}
+      <div>
+        <h1 className="font-display text-2xl font-semibold tracking-tight">
+          Proposals
+        </h1>
+        <p className="mt-0.5 text-[13px] text-ink-2">
+          {activeAll.length === 0
+            ? 'Nothing open right now.'
+            : `${activeAll.length} open ${activeAll.length === 1 ? 'deal' : 'deals'} \u00b7 ${hotCount} running hot`}
+        </p>
+        {news !== null && (
+          <p className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-brand">
+            <span aria-hidden className="size-1.5 rounded-full bg-brand" />
+            {news}
           </p>
-          {news !== null && (
-            <p className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-brand">
-              <span aria-hidden className="size-1.5 rounded-full bg-brand" />
-              {news}
-            </p>
-          )}
-        </div>
-        <Button asChild size="sm">
-          <Link to="/proposals/new">
-            <span aria-hidden className="text-base leading-none opacity-70">
-              +
-            </span>
-            New proposal
-          </Link>
-        </Button>
+        )}
       </div>
 
       {data.length === 0 ? (

@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   queryOptions,
   useQueryClient,
@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { getProfile, updateProfile } from '#/lib/profile'
 import { PageContainer } from '#/components/page-container'
+import { BackLink } from '#/components/back-link'
 import { queryKeys } from '#/constants'
 
 const profileQuery = queryOptions({
@@ -55,12 +56,7 @@ function SettingsPage() {
   return (
     <PageContainer className="py-8 sm:py-9">
       <div className="max-w-xl">
-        <Link
-          to="/dashboard"
-          className="text-[13px] text-ink-2 transition-colors hover:text-ink"
-        >
-          ← Proposals
-        </Link>
+        <BackLink />
 
         <h1 className="mt-4 font-display text-2xl font-semibold tracking-tight">
           Your profile

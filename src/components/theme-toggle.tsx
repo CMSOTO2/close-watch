@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Moon, Sun } from 'lucide-react'
 
 export const THEME_KEY = 'cw.theme'
 
@@ -11,26 +12,27 @@ export const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('${THEME
 
 type Theme = 'light' | 'dark'
 
-function systemTheme(): Theme {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light'
+function liveTheme(): Theme {
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
 }
 
 export function ThemeToggle() {
-  // Starts null so SSR and the first client render agree; the effect fills in
-  // the real value, which the pre-paint script has already applied to <html>.
+  // Which icon shows is decided by CSS off the `dark` class the pre-paint
+  // script has already set, not by state. State used to drive it, which meant
+  // a dark-mode load rendered the moon for a frame and then swapped to the sun
+  // once the effect ran — a visible flicker in the bar on every page load.
+  // State survives only to describe the button, where a frame of the generic
+  // label costs nothing.
   const [theme, setTheme] = useState<Theme | null>(null)
 
-  useEffect(() => {
-    const stored = localStorage.getItem(THEME_KEY)
-    setTheme(stored === 'dark' || stored === 'light' ? stored : systemTheme())
-  }, [])
+  useEffect(() => setTheme(liveTheme()), [])
 
   function toggle() {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
+    // Read the live class rather than state, so a click landing before the
+    // mount effect still flips the way the user can see it should.
+    const next: Theme = liveTheme() === 'dark' ? 'light' : 'dark'
     document.documentElement.classList.toggle('dark', next === 'dark')
+    setTheme(next)
     try {
       localStorage.setItem(THEME_KEY, next)
     } catch {
@@ -43,13 +45,16 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={
-        theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
+        theme === null
+          ? 'Toggle theme'
+          : theme === 'dark'
+            ? 'Switch to light theme'
+            : 'Switch to dark theme'
       }
-      className="grid size-7 place-items-center rounded-md text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="grid size-8 shrink-0 place-items-center rounded-md text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <span aria-hidden className="text-[13px] leading-none">
-        {theme === 'dark' ? '☀' : '☾'}
-      </span>
+      <Sun aria-hidden className="hidden size-4 dark:block" />
+      <Moon aria-hidden className="size-4 dark:hidden" />
     </button>
   )
 }

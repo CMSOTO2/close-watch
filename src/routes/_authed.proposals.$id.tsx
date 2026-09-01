@@ -28,6 +28,7 @@ import {
 import { ConfirmDialog } from '#/components/confirm-dialog'
 import { useToast } from '#/components/toast'
 import { PageContainer } from '#/components/page-container'
+import { BackLink } from '#/components/back-link'
 import { cn, formatMoney } from '#/lib/utils'
 import { formatDay, useTimeZone } from '#/lib/local-date'
 import { deadLinkLabel, partitionLinks } from '#/lib/proposals/link-status'
@@ -118,12 +119,7 @@ function ProposalDetail() {
   return (
     <PageContainer className="py-8 sm:py-9">
       <div className="flex items-center justify-between">
-        <Link
-          to="/dashboard"
-          className="text-[13px] text-ink-2 transition-colors hover:text-ink"
-        >
-          ← Proposals
-        </Link>
+        <BackLink />
         <button
           onClick={() => setConfirmOpen(true)}
           disabled={deleting}

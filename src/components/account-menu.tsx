@@ -65,7 +65,7 @@ export function AccountMenu({
         aria-expanded={open}
         aria-label="Account"
         className={cn(
-          'grid size-7 shrink-0 place-items-center rounded-full bg-surface-3 text-[11px] font-semibold text-ink-2 transition-colors',
+          'grid size-8 shrink-0 place-items-center rounded-full bg-surface-3 text-[11px] font-semibold text-ink-2 transition-colors',
           'hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
           open && 'text-ink ring-2 ring-ring ring-offset-2 ring-offset-surface',
         )}

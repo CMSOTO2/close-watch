@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
 import { PageContainer } from '#/components/page-container'
+import { BackLink } from '#/components/back-link'
 import { useToast } from '#/components/toast'
 import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, queryKeys } from '#/constants'
 
@@ -87,7 +88,9 @@ function NewProposal() {
   return (
     <PageContainer className="py-8 sm:py-9">
       <div className="max-w-xl">
-        <h1 className="font-display text-2xl font-semibold tracking-tight">
+        <BackLink />
+
+        <h1 className="mt-4 font-display text-2xl font-semibold tracking-tight">
           New proposal
         </h1>
         <p className="mt-1.5 text-[13px] text-ink-2">
