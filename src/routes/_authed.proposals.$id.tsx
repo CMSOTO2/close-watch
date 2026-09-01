@@ -168,9 +168,11 @@ function ProposalDetail() {
           them. Alone in a column each stopped at max-w-3xl while the activity
           above ran the full shell, so every card on the page ended at a
           different place and the right third was dead. Paired, they reach the
-          same edge the activity does. Below lg they stack and every section on
-          the page — activity included — holds the same narrow measure, so the
-          edges line up at both sizes rather than only the wide one. */}
+          same edge the activity does. Below lg they stack, and nothing is
+          capped: a section that stops at 768px inside a 950px shell is the
+          same unfilled right-hand strip in a smaller window. Single column
+          only ever happens under 1024px, so no input gets sprawling — the
+          widest a field reaches before the columns split is about 390px. */}
       <div className="grid items-start gap-x-10 lg:grid-cols-2">
         <ShareLinks proposalId={id} />
         <PageTags proposalId={id} />
@@ -433,7 +435,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
   }
 
   return (
-    <section className="mt-10 max-w-3xl lg:max-w-none">
+    <section className="mt-10">
       <ConfirmDialog
         open={pendingRevoke !== null}
         title="Revoke this link?"
@@ -640,7 +642,7 @@ function PageTags({ proposalId }: { proposalId: string }) {
   }
 
   return (
-    <section className="mt-10 max-w-3xl lg:max-w-none">
+    <section className="mt-10">
       <h2 className="font-display text-base font-semibold tracking-tight">
         Pages
       </h2>
