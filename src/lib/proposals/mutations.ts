@@ -77,12 +77,38 @@ export const setPageSection = createServerFn({ method: 'POST' })
 
     const { error } = await supabase
       .from('proposal_pages')
-      .update({ section: data.section })
+      // Choosing a tag by hand is what turns a guess into a fact, so this is
+      // the one place section_auto goes back to false.
+      .update({ section: data.section, section_auto: false })
       .eq('proposal_id', data.proposalId)
       .eq('page_number', data.pageNumber)
 
     if (error) throw new Error(error.message)
     return { pageNumber: data.pageNumber, section: data.section }
+  })
+
+/**
+ * Accepts every guessed page tag at once.
+ *
+ * Without this the only way to clear the guessed markers is to re-pick all of
+ * them from the dropdowns, which is the work the classifier exists to remove.
+ * The sections themselves do not change — they were already in use for
+ * tracking — this only records that a human looked at them.
+ */
+export const confirmPageSections = createServerFn({ method: 'POST' })
+  .validator(z.object({ proposalId: z.uuid() }))
+  .handler(async ({ data }): Promise<{ confirmed: number }> => {
+    const supabase = getSupabaseServerClient()
+
+    const { data: rows, error } = await supabase
+      .from('proposal_pages')
+      .update({ section_auto: false })
+      .eq('proposal_id', data.proposalId)
+      .eq('section_auto', true)
+      .select('page_number')
+
+    if (error) throw new Error(error.message)
+    return { confirmed: rows.length }
   })
 
 /**

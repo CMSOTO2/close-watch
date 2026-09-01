@@ -13,6 +13,7 @@ import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { getProposalDetail } from '#/lib/proposals/detail'
 import {
+  confirmPageSections,
   createShareLink,
   deleteProposal,
   markProposalLost,
@@ -28,6 +29,7 @@ import {
 import { ConfirmDialog } from '#/components/confirm-dialog'
 import { useToast } from '#/components/toast'
 import { PageContainer } from '#/components/page-container'
+import { Button } from '#/components/ui/button'
 import { BackLink } from '#/components/back-link'
 import { cn, formatMoney } from '#/lib/utils'
 import { formatDay, useTimeZone } from '#/lib/local-date'
@@ -591,6 +593,7 @@ function PageTags({ proposalId }: { proposalId: string }) {
   const notify = useToast()
   const pages = proposal?.pages ?? []
   const [savingPage, setSavingPage] = useState<number | null>(null)
+  const [confirming, setConfirming] = useState(false)
 
   async function onChange(pageNumber: number, section: PageSection) {
     setSavingPage(pageNumber)
@@ -609,6 +612,22 @@ function PageTags({ proposalId }: { proposalId: string }) {
     }
   }
 
+  const guessed = pages.filter((p) => p.sectionAuto).length
+
+  async function confirmAll() {
+    setConfirming(true)
+    try {
+      await confirmPageSections({ data: { proposalId } })
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.proposal(proposalId),
+      })
+    } catch {
+      notify('Could not confirm those page tags', 'danger')
+    } finally {
+      setConfirming(false)
+    }
+  }
+
   return (
     <section className="mt-10 max-w-3xl">
       <h2 className="font-display text-base font-semibold tracking-tight">
@@ -618,14 +637,45 @@ function PageTags({ proposalId }: { proposalId: string }) {
         Tag your pricing page so you can see when a client lingers on it.
       </p>
 
+      {guessed > 0 && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-surface-2 px-3.5 py-3">
+          <p className="text-[13px] text-ink-2">
+            <span className="font-medium text-ink">
+              {guessed} {guessed === 1 ? 'page was' : 'pages were'} tagged
+              automatically.
+            </span>{' '}
+            Worth checking the pricing page before you send it.
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={confirmAll}
+            disabled={confirming}
+          >
+            {confirming ? 'Saving\u2026' : 'Looks right'}
+          </Button>
+        </div>
+      )}
+
       <ul className="mt-4 divide-y divide-line-soft">
         {pages.map((page) => (
           <li
             key={page.pageNumber}
             className="flex items-center justify-between gap-3 py-2"
           >
-            <span className="text-[13px] text-ink-2">
+            <span className="flex items-center gap-2 text-[13px] text-ink-2">
               Page {page.pageNumber}
+              {page.sectionAuto && (
+                <span
+                  className="rounded-sm bg-surface-3 px-1.5 py-0.5 text-[11px] text-ink-3"
+                  // Said plainly rather than with a bare dot: the owner needs
+                  // to know this tag is a guess before they trust a number
+                  // built on it.
+                  title="Tagged automatically from the page text"
+                >
+                  guessed
+                </span>
+              )}
             </span>
             <div className="flex items-center gap-2">
               {savingPage === page.pageNumber && (

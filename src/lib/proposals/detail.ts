@@ -7,6 +7,8 @@ import type { PageSection, ProposalStatus } from '#/lib/supabase/types'
 export type ProposalPage = {
   pageNumber: number
   section: PageSection
+  /** The section is the classifier's guess until the owner picks one. */
+  sectionAuto: boolean
   label: string | null
 }
 
@@ -68,7 +70,7 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
         .maybeSingle(),
       supabase
         .from('proposal_pages')
-        .select('page_number, section, label')
+        .select('page_number, section, section_auto, label')
         .eq('proposal_id', data.id)
         .order('page_number'),
       supabase
@@ -95,6 +97,7 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
       pages: (pages ?? []).map((p) => ({
         pageNumber: p.page_number,
         section: p.section,
+        sectionAuto: p.section_auto,
         label: p.label,
       })),
       shareLinks: (links ?? []).map((l) => ({

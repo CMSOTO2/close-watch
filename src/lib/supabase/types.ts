@@ -50,6 +50,8 @@ type ProposalPageRow = {
   proposal_id: string
   page_number: number
   section: PageSection
+  /** True while `section` is the classifier's guess, not the owner's choice. */
+  section_auto: boolean
   label: string | null
 }
 

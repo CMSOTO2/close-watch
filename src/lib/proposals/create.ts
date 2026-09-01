@@ -1,7 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { randomUUID } from 'node:crypto'
+import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
+import type { PageSection } from '#/lib/supabase/types'
 import {
+  PAGE_SECTIONS,
   PDF_MAX_BYTES,
   PDF_MAX_MB,
   PDF_MAX_PAGES,
@@ -16,6 +19,8 @@ type ParsedInput = {
   clientName: string
   dealValueCents: number | null
   pageCount: number
+  /** Classifier guesses, one per page. Empty when the PDF had no text. */
+  sections: Array<PageSection>
   bytes: ArrayBuffer
 }
 
@@ -53,7 +58,27 @@ export const createProposal = createServerFn({ method: 'POST' })
       dealValueCents = Math.round(dollars * 100)
     }
 
-    return { title, clientName, dealValueCents, pageCount, bytes: await file.arrayBuffer() }
+    // Guessed page tags. Never trusted: an unknown value or a length that does
+    // not match the page count is dropped wholesale rather than half-applied,
+    // which leaves the owner tagging by hand exactly as they did before.
+    let sections: Array<PageSection> = []
+    const rawSections = data.get('sections')
+    if (typeof rawSections === 'string' && rawSections !== '') {
+      const parsed = z
+        .array(z.enum(PAGE_SECTIONS))
+        .length(pageCount)
+        .safeParse(JSON.parse(rawSections))
+      if (parsed.success) sections = parsed.data
+    }
+
+    return {
+      title,
+      clientName,
+      dealValueCents,
+      pageCount,
+      sections,
+      bytes: await file.arrayBuffer(),
+    }
   })
   .handler(async ({ data }): Promise<CreateProposalResult> => {
     const supabase = getSupabaseServerClient()
@@ -104,10 +129,18 @@ export const createProposal = createServerFn({ method: 'POST' })
       throw new Error(`Could not save proposal: ${proposalError.message}`)
     }
 
-    const pages = Array.from({ length: data.pageCount }, (_, i) => ({
-      proposal_id: proposalId,
-      page_number: i + 1,
-    }))
+    // section_auto only where a section was actually guessed: a page the
+    // classifier could not place stays a plain untagged 'other', so the detail
+    // page does not offer to "confirm" a guess nobody made.
+    const pages = Array.from({ length: data.pageCount }, (_, i) => {
+      const section = data.sections[i] ?? 'other'
+      return {
+        proposal_id: proposalId,
+        page_number: i + 1,
+        section,
+        section_auto: section !== 'other',
+      }
+    })
     const { error: pagesError } = await supabase.from('proposal_pages').insert(pages)
     if (pagesError) {
       await supabase.from('proposals').delete().eq('id', proposalId)

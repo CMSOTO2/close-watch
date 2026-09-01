@@ -3,6 +3,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
+import { classifyPages } from '#/lib/proposals/classify'
+import type { PageText } from '#/lib/proposals/classify'
+import type { PageSection } from '#/lib/supabase/types'
 import { PageContainer } from '#/components/page-container'
 import { BackLink } from '#/components/back-link'
 import { useToast } from '#/components/toast'
@@ -12,8 +15,14 @@ export const Route = createFileRoute('/_authed/proposals/new')({
   component: NewProposal,
 })
 
-/** Reads the page count from the chosen PDF without a full render. */
-async function readPageCount(file: File): Promise<number> {
+type ReadPdf = { pageCount: number; sections: Array<PageSection>; textless: boolean }
+
+/**
+ * Reads the page count and the text of each page from the chosen PDF, without
+ * rendering it. The text is only used to guess what each page is; it is never
+ * uploaded, so a proposal's contents stay in the file and out of the database.
+ */
+async function readPdf(file: File): Promise<ReadPdf> {
   // The pdfjs bundle is fetched on demand, so this request can fail long after
   // the page itself loaded: a deploy replaces the hashed chunk under an open
   // tab, or a dev server restarts beneath it. The browser's own words for that
@@ -33,9 +42,25 @@ async function readPageCount(file: File): Promise<number> {
   const data = new Uint8Array(await file.arrayBuffer())
   const loadingTask = pdfjs.getDocument({ data })
   const doc = await loadingTask.promise
-  const pages = doc.numPages
+  const pageCount = doc.numPages
+
+  const pages: Array<PageText> = []
+  for (let n = 1; n <= pageCount; n++) {
+    const page = await doc.getPage(n)
+    const content = await page.getTextContent()
+    // pdfjs hands back positioned runs, not lines. Joining with spaces loses
+    // the layout, which the classifier does not use and cannot be misled by.
+    const text = content.items
+      .map((item) => ('str' in item ? item.str : ''))
+      .join(' ')
+    pages.push({ pageNumber: n, text })
+    page.cleanup()
+  }
+
   await loadingTask.destroy()
-  return pages
+
+  const { sections, textless } = classifyPages(pages)
+  return { pageCount, sections, textless }
 }
 
 function NewProposal() {
@@ -55,7 +80,7 @@ function NewProposal() {
       setSubmitError(null)
       try {
         const file = value.file!
-        const pageCount = await readPageCount(file)
+        const { pageCount, sections, textless } = await readPdf(file)
 
         const data = new FormData()
         data.set('title', value.title)
@@ -63,13 +88,23 @@ function NewProposal() {
         data.set('dealValue', value.dealValue)
         data.set('file', file)
         data.set('pageCount', String(pageCount))
+        data.set('sections', JSON.stringify(sections))
 
         await createProposal({ data })
 
         // Fired before the navigation, not after: the provider lives above the
         // router, so the toast rides across to the dashboard and lands next to
         // the row it is talking about.
-        notify(`${value.clientName.trim()} proposal created`, 'good')
+        //
+        // A scanned PDF has no text to read, so every page comes back Other.
+        // Say so here rather than letting the owner find nine Others and
+        // conclude the tagging is broken.
+        notify(
+          textless
+            ? `${value.clientName.trim()} proposal created \u2014 no readable text, so tag the pages yourself`
+            : `${value.clientName.trim()} proposal created`,
+          textless ? 'neutral' : 'good',
+        )
 
         await queryClient.invalidateQueries({
           queryKey: queryKeys.proposalSummaries,
