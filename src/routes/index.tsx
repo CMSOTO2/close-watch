@@ -5,6 +5,7 @@ import { PageContainer } from '#/components/page-container'
 import { ThemeToggle } from '#/components/theme-toggle'
 import { Button } from '#/components/ui/button'
 import { Faq } from '#/components/landing/faq'
+import { Pricing } from '#/components/landing/pricing'
 import {
   AttentionShot,
   DashboardShot,
@@ -66,6 +67,12 @@ function Home() {
               className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
             >
               How it works
+            </a>
+            <a
+              href="#pricing"
+              className="hidden rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:block"
+            >
+              Pricing
             </a>
             <a
               href="#faq"
@@ -225,6 +232,23 @@ function Home() {
               body="Repeat opens, pricing dwell, depth of read, forwards, downloads and prints each contribute a fixed number of points. No model and no black box. Every proposal lists the reasons behind its own number, because the reasons are what you act on."
               shot={<IntentShot />}
             />
+          </PageContainer>
+        </section>
+
+        {/* Pricing. Canvas rather than surface: the deep-dives above it are
+            already a surface block, and the cards carry their own. */}
+        <section id="pricing" className="scroll-mt-16">
+          <PageContainer className="py-16 sm:py-20">
+            <p className="kicker text-brand">Pricing</p>
+            <h2 className="mt-3 max-w-[24ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+              One recovered deal pays for a decade of this.
+            </h2>
+            <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
+              Start free and send a real proposal through it. If the first one
+              tells you something you did not know, the rest is nineteen
+              dollars.
+            </p>
+            <Pricing />
           </PageContainer>
         </section>
 

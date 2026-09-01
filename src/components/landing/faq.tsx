@@ -94,6 +94,18 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     ),
   },
   {
+    q: 'What happens when I hit the free limit?',
+    a: (
+      <>
+        Nothing you have already sent stops working. Two proposals can be
+        active at once on the free plan; a third needs one of them closed, or a
+        paid plan. Links you have already sent keep tracking either way, because
+        a proposal going quiet on your side is not a reason to break a link
+        sitting in a client&rsquo;s inbox.
+      </>
+    ),
+  },
+  {
     q: 'What can I upload?',
     a: (
       <>
