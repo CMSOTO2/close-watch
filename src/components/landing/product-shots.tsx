@@ -8,8 +8,8 @@ import { cn } from '#/lib/utils'
  *
  * These are built from the same tokens as the app rather than captured as
  * images, for two reasons that images cannot meet: they follow the reader's
- * theme the moment it changes — one set of markup instead of a light PNG and a
- * dark PNG that drift apart — and they cannot go stale, because a token or
+ * theme the moment it changes, one set of markup instead of a light PNG and a
+ * dark PNG that drift apart, and they cannot go stale, because a token or
  * spacing change lands here as well. They are also a fraction of the weight
  * and stay sharp at any zoom.
  *
@@ -279,7 +279,7 @@ export function ForwardShot() {
         ))}
       </ul>
       <p className="mt-3 border-t border-line-soft pt-2.5 text-xs text-ink-2">
-        One link went to Dana. Three people read it — so it reached the people
+        One link went to Dana. Three people read it, so it reached the people
         who sign.
       </p>
     </Frame>
@@ -293,7 +293,7 @@ const SIGNALS = [
   { label: 'Printed it', points: 18 },
 ]
 
-/** Why a deal is hot, itemised — the reasons are the product. */
+/** Why a deal is hot, itemised. The reasons are the product. */
 export function IntentShot() {
   return (
     <Frame label="Northwind Studio · Why this is hot">
@@ -343,7 +343,7 @@ export function LinkShot() {
         </div>
       </div>
       <p className="mt-3 text-xs text-ink-2">
-        One link per recipient. That is how you tell who is reading — and your
+        One link per recipient. That is how you tell who is reading, and your
         client just sees the proposal.
       </p>
     </Frame>

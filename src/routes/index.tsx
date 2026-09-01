@@ -14,15 +14,15 @@ import {
 } from '#/components/landing/product-shots'
 import { PDF_MAX_MB } from '#/constants'
 
-const TITLE = 'Closewatch — know which proposals are actually being read'
+const TITLE = 'Closewatch: know which proposals are actually being read'
 const DESCRIPTION =
   'Turn the proposal PDF you already send into a tracked link. See who opened it, how long they spent on pricing, and whether it was forwarded to the person who signs.'
 
 export const Route = createFileRoute('/')({
   // The landing page is the one URL that gets pasted into a chat or a search
   // result, so it carries its own title and description rather than inheriting
-  // the app's bare "Closewatch". No og:image until there is a real one — a tag
-  // pointing at nothing renders worse than no tag at all.
+  // the app's bare "Closewatch". No og:image until there is a real one,
+  // since a tag pointing at nothing renders worse than no tag at all.
   head: () => ({
     meta: [
       { title: TITLE },
@@ -40,7 +40,7 @@ const STEPS = [
   {
     n: '01',
     title: 'Upload the PDF you already send',
-    body: `Any proposal up to ${PDF_MAX_MB} MB. Nothing to rebuild, no template to adopt — it is the same document you were about to email.`,
+    body: `Any proposal up to ${PDF_MAX_MB} MB. Nothing to rebuild and no template to adopt. It is the same document you were about to email.`,
   },
   {
     n: '02',
@@ -82,7 +82,7 @@ function Home() {
       </header>
 
       <main>
-        {/* ---------- Hero ---------- */}
+        {/* Hero */}
         <PageContainer className="pb-16 pt-14 sm:pb-20 sm:pt-20">
           <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
             <div>
@@ -93,8 +93,8 @@ function Home() {
               <p className="mt-5 max-w-[54ch] text-[17px] leading-relaxed text-ink-2">
                 Closewatch turns the proposal PDF you already send into a
                 tracked link. You see who opened it, how long they spent on your
-                pricing, and whether it got forwarded to the person who signs —
-                so you know which deal to chase today, and which one to let go.
+                pricing, and whether it got forwarded to the person who signs,
+                so you know which deal to chase today and which one to let go.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -122,7 +122,7 @@ function Home() {
           </div>
         </PageContainer>
 
-        {/* ---------- The problem ---------- */}
+        {/* The problem */}
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-14 sm:py-16">
             <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
@@ -134,7 +134,7 @@ function Home() {
                   You send the PDF and the line goes dead. Was it read? Did it
                   reach the person with the budget? Did the number scare them,
                   or did it never get opened at all? Without an answer, every
-                  follow-up is a guess — sent too early, too late, or to the
+                  follow-up is a guess, sent too early, too late, or to the
                   wrong person entirely.
                 </p>
                 <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
@@ -170,7 +170,7 @@ function Home() {
           </PageContainer>
         </section>
 
-        {/* ---------- How it works ---------- */}
+        {/* How it works */}
         <section id="how" className="scroll-mt-16">
           <PageContainer className="py-16 sm:py-20">
             <p className="kicker text-brand">How it works</p>
@@ -200,32 +200,32 @@ function Home() {
           </PageContainer>
         </section>
 
-        {/* ---------- Feature deep-dives ---------- */}
+        {/* Feature deep-dives */}
         <section className="border-y border-line bg-surface">
           <PageContainer className="flex flex-col gap-16 py-16 sm:gap-20 sm:py-20">
             <Feature
               kicker="Attention, page by page"
               title="See exactly where they slowed down."
-              body="Closewatch measures visible attention on every page, so a proposal is not one number but a shape. Tag your pricing page and it gets tracked by name — because two minutes there means something very different from two minutes on your cover."
+              body="Closewatch measures visible attention on every page, so a proposal is not one number but a shape. Tag your pricing page and it gets tracked by name, because two minutes there means something very different from two minutes on your cover."
               shot={<AttentionShot />}
             />
             <Feature
               reverse
               kicker="Forwarding"
               title="Know when it reached the person who signs."
-              body="One link per recipient is the whole trick. When a link you sent to one person is opened by a second and a third, the proposal is being circulated internally — the clearest sign a deal is moving that you can observe from outside the room."
+              body="One link per recipient is the whole trick. When a link you sent to one person is opened by a second and a third, the proposal is being circulated internally. That is the clearest sign a deal is moving that you can observe from outside the room."
               shot={<ForwardShot />}
             />
             <Feature
               kicker="Intent, explained"
               title="A score that shows its working."
-              body="Repeat opens, pricing dwell, depth of read, forwards, downloads and prints each contribute a fixed number of points. No model, no black box — every proposal lists the reasons behind its own number, because the reasons are what you act on."
+              body="Repeat opens, pricing dwell, depth of read, forwards, downloads and prints each contribute a fixed number of points. No model and no black box. Every proposal lists the reasons behind its own number, because the reasons are what you act on."
               shot={<IntentShot />}
             />
           </PageContainer>
         </section>
 
-        {/* ---------- FAQ ---------- */}
+        {/* FAQ */}
         <section id="faq" className="scroll-mt-16">
           <PageContainer className="py-16 sm:py-20">
             <p className="kicker text-brand">Questions</p>
@@ -236,7 +236,7 @@ function Home() {
           </PageContainer>
         </section>
 
-        {/* ---------- Closing CTA ---------- */}
+        {/* Closing CTA */}
         <section className="border-t border-line bg-surface">
           <PageContainer className="py-16 text-center sm:py-20">
             <h2 className="mx-auto max-w-[20ch] font-display text-3xl font-semibold tracking-[-0.025em] sm:text-4xl">

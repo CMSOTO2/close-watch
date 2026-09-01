@@ -2,8 +2,8 @@ import { ChevronDown } from 'lucide-react'
 import { PDF_MAX_MB, SHARE_LINK_TTL_DAYS } from '#/constants'
 
 /**
- * Every answer here is checked against what the code does — the three-second
- * qualification line, the link TTL, the size cap — and reads from the same
+ * Every answer here is checked against what the code does: the three-second
+ * qualification line, the link TTL, the size cap. Each reads from the same
  * constants where there is one, so the page cannot quietly start lying when a
  * limit changes.
  */
@@ -12,7 +12,7 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     q: 'Does my client have to install or sign up for anything?',
     a: (
       <>
-        No. They get a normal link and the proposal opens in their browser — no
+        No. They get a normal link and the proposal opens in their browser. No
         account, no plugin, no app. As far as they are concerned you sent them a
         PDF.
       </>
@@ -25,7 +25,7 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
         There is no notice on the document, in the same way an email read
         receipt or a website analytics tag is not announced. You are measuring
         engagement with your own proposal. If you would rather tell them, the
-        link works exactly the same either way — and plenty of people do say
+        link works exactly the same either way, and plenty of people do say
         &ldquo;let me know if the pricing page needs work,&rdquo; which is the
         same conversation from the other end.
       </>
@@ -39,8 +39,8 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
         excluded outright, and a visit only counts once it has accumulated{' '}
         <strong className="font-semibold text-ink">
           three seconds of visible attention
-        </strong>{' '}
-        — the line between a scanner fetching a page and a person reading it.
+        </strong>
+        , the line between a scanner fetching a page and a person reading it.
         Everything on your dashboard is drawn from those qualified reads only.
       </>
     ),
@@ -50,7 +50,7 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     a: (
       <>
         You create one link per recipient. If a link you sent to one person is
-        opened by a second and third distinct reader, it travelled — which
+        opened by a second and third distinct reader, it travelled, which
         usually means it reached someone with budget authority. That is the
         strongest single signal Closewatch scores, and the one worth acting on
         fastest.
@@ -61,12 +61,13 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     q: 'What is the intent score, really?',
     a: (
       <>
-        A rules-based tally, not a model — and it shows its working. Repeat
-        opens, time on your pricing page, depth of read normalised by document
-        length, forwarding, downloads and prints each add a fixed number of
-        points. Every proposal lists the reasons behind its own score. A number
-        on its own is a horoscope; &ldquo;they came back Tuesday and spent four
-        minutes on pricing&rdquo; is something you can act on before lunch.
+        A rules-based tally rather than a model, and it shows its working.
+        Repeat opens, time on your pricing page, depth of read normalised by
+        document length, forwarding, downloads and prints each add a fixed
+        number of points. Every proposal lists the reasons behind its own score.
+        A number on its own is a horoscope; &ldquo;they came back Tuesday and
+        spent four minutes on pricing&rdquo; is something you can act on before
+        lunch.
       </>
     ),
   },
@@ -87,7 +88,7 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
       <>
         Mark it lost and it moves to Closed, out of your pipeline, keeping every
         visit, reader and page it collected. What a deal you did not win was
-        read for is worth knowing — and you can reopen it if the client comes
+        read for is worth knowing, and you can reopen it if the client comes
         back.
       </>
     ),
@@ -114,7 +115,7 @@ export function Faq() {
          * not they are open, so a search engine reads them and ctrl-F finds
          * them; keyboard and screen-reader behaviour is the browser's, already
          * correct; and it works before any JavaScript arrives. The shared
-         * `name` makes it exclusive — opening one closes the rest — which is
+         * `name` makes it exclusive, so opening one closes the rest, which is
          * the single-open behaviour hand-rolled accordions reach for JS to get.
          */
         <details

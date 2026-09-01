@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 /**
  * True once the element has been scrolled into view, and true forever after.
  *
- * The landing page's product shots animate themselves in — bars filling, rows
- * arriving — and an animation that plays on mount is one nobody sees, because
+ * The landing page's product shots animate themselves in: bars filling, rows
+ * arriving. An animation that plays on mount is one nobody sees, because
  * these sit well below the fold. Latching on rather than toggling means the
  * demo plays once and then holds, instead of replaying on every scroll past.
  */
@@ -20,7 +20,7 @@ export function useInView<T extends HTMLElement>() {
 
     // Anything already on screen when the page loads is left at its finished
     // state. Rewinding it to zero and playing it forward would be a flicker on
-    // something the reader is looking at — the animation is only worth having
+    // something the reader is looking at. The animation is only worth having
     // for the shots they scroll down to.
     const box = el.getBoundingClientRect()
     if (box.top < window.innerHeight && box.bottom > 0) return
