@@ -90,8 +90,12 @@ function Privacy() {
           cannot be read by JavaScript, and lasts a year.
         </p>
         <p>
-          There are no advertising cookies, no analytics scripts from other
-          companies, and nothing that follows anyone around the rest of the web.
+          There are no advertising cookies and nothing that follows anyone
+          around the rest of the web. Our own pages &mdash; the home page,
+          sign-in and the dashboard &mdash; count visits with
+          Cloudflare Web Analytics, which sets no cookies and does not
+          fingerprint anyone. It never loads on a share link: the page a reader
+          is sent runs no analytics script at all.
         </p>
       </Clause>
 
@@ -103,7 +107,7 @@ function Privacy() {
         <Bullets
           items={[
             'Supabase: the database, sign-in, and file storage.',
-            'Cloudflare: hosting and serving the application.',
+            'Cloudflare: hosting the application, and counting visits to our own pages.',
             'Resend: sending notification email, when that is switched on.',
             'Google: only if you choose to sign in with Google.',
           ]}

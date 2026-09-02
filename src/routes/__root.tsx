@@ -2,6 +2,7 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  useRouterState,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -10,6 +11,7 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import { THEME_SCRIPT } from '#/components/theme-toggle'
 import { ToastProvider } from '#/components/toast'
+import { publicEnv } from '#/env'
 
 import appCss from '../styles.css?url'
 
@@ -63,6 +65,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  // Never on a share link. A reader's visit is already recorded by our own
+  // ingest, and the counts on the dashboard are the ones the account holder is
+  // paying for — a second, coarser count of the same visit is noise. It also
+  // keeps the promise the privacy policy makes to readers: the page they were
+  // sent loads no analytics script at all.
+  const beaconToken = pathname.startsWith('/p/')
+    ? undefined
+    : publicEnv.VITE_CF_BEACON_TOKEN
+
   return (
     // The pre-paint script below sets `class="dark"` on this element before
     // React hydrates, which is the whole point of it — it beats the flash of a
@@ -88,6 +100,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           ]}
         />
         <Scripts />
+        {beaconToken && (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({ token: beaconToken })}
+          />
+        )}
       </body>
     </html>
   )

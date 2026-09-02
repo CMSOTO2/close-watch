@@ -4,12 +4,16 @@ const publicSchema = z.object({
   VITE_SUPABASE_URL: z.string().url(),
   VITE_SUPABASE_PUBLISHABLE_KEY: z.string().startsWith('sb_publishable_'),
   VITE_PUBLIC_URL: z.string().url().default('http://localhost:3000'),
+  // Optional. Site token from Cloudflare dashboard -> Web Analytics. Empty
+  // means no beacon is rendered, which is what happens in dev and in CI.
+  VITE_CF_BEACON_TOKEN: z.string().optional(),
 })
 
 export const publicEnv = publicSchema.parse({
   VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
   VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
   VITE_PUBLIC_URL: import.meta.env.VITE_PUBLIC_URL,
+  VITE_CF_BEACON_TOKEN: import.meta.env.VITE_CF_BEACON_TOKEN || undefined,
 })
 
 const serverSchema = z.object({

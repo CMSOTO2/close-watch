@@ -23,6 +23,8 @@ Create a Supabase project, then fill in `.env`:
 - `IP_HASH_SALT` any long random string
 - `VITE_PUBLIC_URL` the public origin used to build share links (defaults to
   `http://localhost:3000`)
+- `VITE_CF_BEACON_TOKEN` (optional) the Cloudflare Web Analytics site token. See
+  [Traffic](#traffic) below
 - `RESEND_API_KEY` (optional) the `re_…` key from Resend. The first-qualified-open
   email stays disabled until this is set. `EMAIL_FROM` sets the sender and defaults
   to `onboarding@resend.dev`, which only delivers to your own Resend account address
@@ -62,6 +64,27 @@ reach the script.
 serves both the app and `/p/:token` from it. It publishes the working tree, not a branch:
 see [docs/PRODUCTION.md](docs/PRODUCTION.md) for the secrets that have to exist on the
 Worker first.
+
+## Traffic
+
+Visits to the app's own pages are counted by Cloudflare Web Analytics. Create the site
+in the Cloudflare dashboard under Analytics & Logs → Web Analytics → Add a site
+(`getclosewatch.com`), copy the site token out of the JS snippet it shows, put it in
+`VITE_CF_BEACON_TOKEN`, and deploy. The token is a public identifier, not a secret: it
+ships in the client bundle, which is why it is a `VITE_` variable and why changing it
+needs a rebuild rather than a `wrangler secret put`.
+
+Use the manual snippet, not the automatic setup. Automatic injection only happens for
+responses the edge rewrites on the way out of an origin, and this site is a Worker.
+
+The beacon does not run on `/p/:token`. Those visits are the product's own measurement
+and belong on the proposal's activity page, not in an aggregate that also counts the
+account holder reloading their dashboard. It also keeps the privacy policy's promise to
+readers literally true.
+
+Web Analytics does not log query strings, so `?utm_source=…` on a link posted somewhere
+buys nothing. Referrers do show up: that is what tells apart a Hacker News thread from a
+Reddit one.
 
 The PNG icons in `public/` are generated, not hand-drawn. If the mark changes, rerun
 `python3 scripts/generate-icons.py` rather than exporting from a design tool: SVG
