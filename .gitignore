@@ -13,3 +13,4 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+supabase/.temp

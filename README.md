@@ -29,6 +29,9 @@ Create a Supabase project, then fill in `.env`:
   email stays disabled until this is set. `EMAIL_FROM` sets the sender and defaults
   to `onboarding@resend.dev`, which only delivers to your own Resend account address
   until you verify a domain
+- `SIGNUP_NOTIFY_TO` (optional) your own address. Set it and you get an email the
+  first time each new account reaches a session; leave it empty and signups pass
+  unannounced
 
 To let returning users sign in with Google, enable the Google provider under
 Authentication → Providers in the Supabase dashboard and add
@@ -118,8 +121,8 @@ converters routinely fill the mark's stroked ring and turn it into a blob.
 
 The whole MVP loop: magic-link and Google sign-in, a profile for your sender name, PDF
 upload to private storage, per-recipient share links, the public tracked viewer with
-download and print, engagement ingest, intent scoring, per-proposal activity, and the
-first-qualified-open email.
+download and print, engagement ingest, intent scoring, per-proposal activity, the
+first-qualified-open email, and a signup notification to you.
 
 Around it: a dashboard that sorts by intent and can group by client, search, heat
 filtering, keyboard navigation, a "since you last looked" diff, one-click link copying,

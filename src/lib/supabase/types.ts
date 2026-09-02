@@ -29,6 +29,8 @@ type ProfileRow = {
   full_name: string | null
   company_name: string | null
   created_at: string
+  /** Set when the signup notification was sent. Claimed atomically. */
+  signup_notified_at: string | null
 }
 
 type SubscriptionRow = {

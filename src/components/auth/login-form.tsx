@@ -1,6 +1,7 @@
 import { useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
+import { announceSignup } from '#/lib/notify/announce-signup'
 import { getSupabaseBrowserClient } from '#/lib/supabase/client'
 import { AuthField } from './auth-field'
 import { GoogleButton } from './google-button'
@@ -40,12 +41,17 @@ export function LoginForm() {
           },
         })
         if (error) return setSubmitError(error.message)
-        // No session means the project requires email confirmation first.
+        // No session means the project requires email confirmation first, and
+        // the signup gets announced when they come back through /auth/callback.
         if (!data.session) {
           return setNotice(
             `Check ${value.email} to confirm your account, then sign in.`,
           )
         }
+        // With confirmation off there is a session already and no callback to
+        // hang it off, so announce it from here. Not awaited: nobody waits on
+        // the dashboard for our email.
+        void announceSignup().catch(() => {})
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: value.email,

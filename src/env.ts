@@ -23,6 +23,9 @@ const serverSchema = z.object({
   // app runs fine locally and in CI without one.
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().optional(),
+  // Optional: where the "someone signed up" note goes. Unset means no signup
+  // notification is sent at all, which is what local and CI runs want.
+  SIGNUP_NOTIFY_TO: z.string().email().optional(),
   // Optional in the same way: without them the app runs and the free plan
   // works, and every billing path answers "not switched on yet" rather than
   // throwing. The webhook secret comes from the endpoint in the Stripe
@@ -42,6 +45,9 @@ export function serverEnv() {
     IP_HASH_SALT: process.env.IP_HASH_SALT,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
+    // `|| undefined` for the same reason as the Stripe keys below: left empty
+    // in .env it arrives as '' and fails the email check.
+    SIGNUP_NOTIFY_TO: process.env.SIGNUP_NOTIFY_TO || undefined,
     // `|| undefined` matters: these are prefixed checks, and a key left empty
     // in .env arrives as '' rather than missing, which fails startsWith and
     // takes down every server path that reads the env at all.
