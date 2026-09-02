@@ -29,6 +29,16 @@ export const startSoloCheckout = createServerFn({ method: 'POST' }).handler(
       .maybeSingle()
 
     let customerId = existing?.stripe_customer_id ?? null
+
+    // A cached id can outlive the customer it names: deleting one in the Stripe
+    // dashboard leaves the row pointing at nothing, and Checkout refuses a
+    // deleted customer. Better to notice here than to hand the user a dead
+    // upgrade button forever.
+    if (customerId) {
+      const customer = await stripe.customers.retrieve(customerId).catch(() => null)
+      if (!customer || customer.deleted) customerId = null
+    }
+
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: auth.user.email ?? undefined,
