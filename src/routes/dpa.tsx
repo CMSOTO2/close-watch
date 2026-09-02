@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
+import { canonical } from '#/lib/seo'
 
 export const Route = createFileRoute('/dpa')({
   head: () => ({
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/dpa')({
           'The terms on which Closewatch processes the client data an account holder collects: scope, sub-processors, security, deletion and audit.',
       },
     ],
+    links: canonical('/dpa'),
   }),
   component: Dpa,
 })

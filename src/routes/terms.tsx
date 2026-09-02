@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { canonical } from '#/lib/seo'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
 import {
   FREE_DRAFT_PROPOSALS,
@@ -17,6 +18,7 @@ export const Route = createFileRoute('/terms')({
           'The terms you agree to when you use Closewatch to track a proposal.',
       },
     ],
+    links: canonical('/terms'),
   }),
   component: Terms,
 })

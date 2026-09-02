@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
+import { canonical } from '#/lib/seo'
 import { SHARE_LINK_TTL_DAYS } from '#/constants'
 
 export const Route = createFileRoute('/privacy')({
@@ -12,6 +13,7 @@ export const Route = createFileRoute('/privacy')({
           'What Closewatch records, who it is shared with, and how long it is kept.',
       },
     ],
+    links: canonical('/privacy'),
   }),
   component: Privacy,
 })

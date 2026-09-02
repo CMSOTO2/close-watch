@@ -2,7 +2,18 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { Wordmark } from '#/components/brand-mark'
 import { LoginForm } from '#/components/auth/login-form'
 
-export const Route = createFileRoute('/login')({ component: LoginPage })
+export const Route = createFileRoute('/login')({
+  // A sign-in form has nothing to offer a search result, and an indexed one
+  // competes with the landing page for the brand query. `follow` so the links
+  // out of it still carry weight to terms and privacy.
+  head: () => ({
+    meta: [
+      { title: 'Sign in · Closewatch' },
+      { name: 'robots', content: 'noindex, follow' },
+    ],
+  }),
+  component: LoginPage,
+})
 
 function LoginPage() {
   return (

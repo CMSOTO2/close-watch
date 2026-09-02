@@ -15,6 +15,8 @@ import { Route as DemoRouteImport } from './routes/demo'
 import { Route as DpaRouteImport } from './routes/dpa'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed.dashboard'
 import { Route as AuthedSettingsRouteImport } from './routes/_authed.settings'
@@ -53,6 +55,16 @@ const LoginRoute = LoginRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -112,6 +124,8 @@ export interface FileRoutesByFullPath {
   '/dpa': typeof DpaRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/settings': typeof AuthedSettingsRoute
@@ -129,6 +143,8 @@ export interface FileRoutesByTo {
   '/dpa': typeof DpaRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/settings': typeof AuthedSettingsRoute
@@ -148,6 +164,8 @@ export interface FileRoutesById {
   '/dpa': typeof DpaRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
   '/_authed/settings': typeof AuthedSettingsRoute
@@ -167,6 +185,8 @@ export interface FileRouteTypes {
     | '/dpa'
     | '/login'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/terms'
     | '/dashboard'
     | '/settings'
@@ -184,6 +204,8 @@ export interface FileRouteTypes {
     | '/dpa'
     | '/login'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/terms'
     | '/dashboard'
     | '/settings'
@@ -202,6 +224,8 @@ export interface FileRouteTypes {
     | '/dpa'
     | '/login'
     | '/privacy'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/terms'
     | '/_authed/dashboard'
     | '/_authed/settings'
@@ -221,6 +245,8 @@ export interface RootRouteChildren {
   DpaRoute: typeof DpaRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   PTokenRoute: typeof PTokenRoute
@@ -271,6 +297,20 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -370,6 +410,8 @@ const rootRouteChildren: RootRouteChildren = {
   DpaRoute: DpaRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   PTokenRoute: PTokenRoute,

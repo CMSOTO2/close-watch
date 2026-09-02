@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { canonical } from '#/lib/seo'
 import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { ProposalDemo } from '#/components/demo/proposal-demo'
@@ -38,6 +39,7 @@ export const Route = createFileRoute('/demo')({
       },
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
+    links: canonical('/demo'),
   }),
 })
 
