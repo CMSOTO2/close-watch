@@ -38,6 +38,17 @@ export const SECTION_LABELS: Record<PageSection, string> = {
   other: 'Other',
 }
 
+// --- Plans ------------------------------------------------------------------
+/**
+ * Active proposals a free account may have at once: draft or sent. Closing a
+ * deal or archiving it gives the slot back, so the free plan is a standing
+ * offer rather than a two-use trial.
+ *
+ * The enforced copy of this number lives in the `free plan proposal cap` policy
+ * in supabase/migrations/20260902000100_billing.sql. Change one, change both.
+ */
+export const FREE_ACTIVE_PROPOSALS = 2
+
 // --- Share links ------------------------------------------------------------
 /**
  * How long a new share link stays valid before it auto-expires. A link is a
@@ -56,6 +67,7 @@ export const queryKeys = {
   profile: ['profile'] as const,
   securedTotals: ['secured-totals'] as const,
   proposalSummaries: ['proposal-summaries'] as const,
+  entitlements: ['entitlements'] as const,
   proposal: (id: string) => ['proposal', id] as const,
   proposalAnalytics: (id: string) => ['proposal-analytics', id] as const,
 }

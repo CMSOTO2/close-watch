@@ -1,5 +1,5 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
@@ -9,13 +9,21 @@ import type { PageSection } from '#/lib/supabase/types'
 import { PageContainer } from '#/components/page-container'
 import { BackLink } from '#/components/back-link'
 import { useToast } from '#/components/toast'
+import { AtLimitPanel } from '#/components/billing/at-limit'
+import { entitlementsQuery } from '#/lib/billing/entitlements'
 import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, queryKeys } from '#/constants'
 
 export const Route = createFileRoute('/_authed/proposals/new')({
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(entitlementsQuery),
   component: NewProposal,
 })
 
-type ReadPdf = { pageCount: number; sections: Array<PageSection>; textless: boolean }
+type ReadPdf = {
+  pageCount: number
+  sections: Array<PageSection>
+  textless: boolean
+}
 
 /**
  * Reads the page count and the text of each page from the chosen PDF, without
@@ -68,6 +76,7 @@ function NewProposal() {
   const queryClient = useQueryClient()
   const notify = useToast()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const { data: entitlements } = useSuspenseQuery(entitlementsQuery)
 
   const form = useForm({
     defaultValues: {
@@ -132,145 +141,149 @@ function NewProposal() {
           Upload a PDF. You&rsquo;ll get a tracked link to send to your client.
         </p>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            form.handleSubmit()
-          }}
-          className="mt-8 space-y-5"
-        >
-          <form.Field
-            name="title"
-            validators={{
-              onChange: ({ value }) =>
-                value.trim() ? undefined : 'Title is required',
+        {!entitlements.canCreateProposal ? (
+          <AtLimitPanel activeProposals={entitlements.activeProposals} />
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit()
             }}
+            className="mt-8 space-y-5"
           >
-            {(field) => (
-              <Field
-                label="Title"
-                hint="For your eyes — the client never sees it."
-                field={field}
-              >
-                <input
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Brand identity — Q3"
-                  className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
-                />
-              </Field>
-            )}
-          </form.Field>
-
-          <form.Field
-            name="clientName"
-            validators={{
-              onChange: ({ value }) =>
-                value.trim() ? undefined : 'Client name is required',
-            }}
-          >
-            {(field) => (
-              <Field label="Client name" field={field}>
-                <input
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  placeholder="Acme Studio"
-                  className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
-                />
-              </Field>
-            )}
-          </form.Field>
-
-          <form.Field
-            name="dealValue"
-            validators={{
-              onChange: ({ value }) =>
-                !value || Number(value) >= 0
-                  ? undefined
-                  : 'Deal value must be a positive number',
-            }}
-          >
-            {(field) => (
-              <Field
-                label="Deal value"
-                hint="Optional. Used to rank which proposals matter most."
-                field={field}
-              >
-                <div className="flex items-center rounded-md border border-line bg-surface px-3 transition-colors focus-within:border-brand-2 hover:border-ink-3">
-                  <span className="font-display text-sm text-ink-3">$</span>
+            <form.Field
+              name="title"
+              validators={{
+                onChange: ({ value }) =>
+                  value.trim() ? undefined : 'Title is required',
+              }}
+            >
+              {(field) => (
+                <Field
+                  label="Title"
+                  hint="For your eyes — the client never sees it."
+                  field={field}
+                >
                   <input
-                    type="number"
-                    min="0"
-                    step="0.01"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="12000"
-                    className="w-full bg-transparent px-2 py-2 text-sm tnum text-ink outline-none placeholder:text-ink-3"
+                    placeholder="Brand identity — Q3"
+                    className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
                   />
-                </div>
-              </Field>
-            )}
-          </form.Field>
-
-          <form.Field
-            name="file"
-            validators={{
-              onChange: ({ value }) =>
-                !value
-                  ? 'Choose a PDF to upload'
-                  : value.type !== PDF_MIME
-                    ? 'File must be a PDF'
-                    : value.size > PDF_MAX_BYTES
-                      ? `PDF must be ${PDF_MAX_MB} MB or smaller`
-                      : undefined,
-            }}
-          >
-            {(field) => (
-              <Field label="Proposal PDF" field={field}>
-                <input
-                  type="file"
-                  accept={PDF_MIME}
-                  onChange={(e) =>
-                    field.handleChange(e.target.files?.[0] ?? null)
-                  }
-                  className="block w-full cursor-pointer rounded-md border border-dashed border-line bg-surface px-3 py-3 text-[13px] text-ink-2 transition-colors hover:border-ink-3 file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground"
-                />
-              </Field>
-            )}
-          </form.Field>
-
-          {submitError && (
-            <p className="rounded-md border border-line bg-danger-soft px-3 py-2 text-[13px] text-danger">
-              {submitError}
-            </p>
-          )}
-
-          <div className="flex items-center gap-3 pt-2">
-            <form.Subscribe
-              selector={(s) => [s.canSubmit, s.isSubmitting] as const}
-            >
-              {([canSubmit, isSubmitting]) => (
-                <button
-                  type="submit"
-                  disabled={!canSubmit}
-                  className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
-                >
-                  {isSubmitting ? 'Uploading…' : 'Create proposal'}
-                </button>
+                </Field>
               )}
-            </form.Subscribe>
-            <button
-              type="button"
-              onClick={() => router.navigate({ to: '/dashboard' })}
-              className="text-[13px] text-ink-2 transition-colors hover:text-ink"
+            </form.Field>
+
+            <form.Field
+              name="clientName"
+              validators={{
+                onChange: ({ value }) =>
+                  value.trim() ? undefined : 'Client name is required',
+              }}
             >
-              Cancel
-            </button>
-          </div>
-        </form>
+              {(field) => (
+                <Field label="Client name" field={field}>
+                  <input
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="Acme Studio"
+                    className="w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+                  />
+                </Field>
+              )}
+            </form.Field>
+
+            <form.Field
+              name="dealValue"
+              validators={{
+                onChange: ({ value }) =>
+                  !value || Number(value) >= 0
+                    ? undefined
+                    : 'Deal value must be a positive number',
+              }}
+            >
+              {(field) => (
+                <Field
+                  label="Deal value"
+                  hint="Optional. Used to rank which proposals matter most."
+                  field={field}
+                >
+                  <div className="flex items-center rounded-md border border-line bg-surface px-3 transition-colors focus-within:border-brand-2 hover:border-ink-3">
+                    <span className="font-display text-sm text-ink-3">$</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder="12000"
+                      className="w-full bg-transparent px-2 py-2 text-sm tnum text-ink outline-none placeholder:text-ink-3"
+                    />
+                  </div>
+                </Field>
+              )}
+            </form.Field>
+
+            <form.Field
+              name="file"
+              validators={{
+                onChange: ({ value }) =>
+                  !value
+                    ? 'Choose a PDF to upload'
+                    : value.type !== PDF_MIME
+                      ? 'File must be a PDF'
+                      : value.size > PDF_MAX_BYTES
+                        ? `PDF must be ${PDF_MAX_MB} MB or smaller`
+                        : undefined,
+              }}
+            >
+              {(field) => (
+                <Field label="Proposal PDF" field={field}>
+                  <input
+                    type="file"
+                    accept={PDF_MIME}
+                    onChange={(e) =>
+                      field.handleChange(e.target.files?.[0] ?? null)
+                    }
+                    className="block w-full cursor-pointer rounded-md border border-dashed border-line bg-surface px-3 py-3 text-[13px] text-ink-2 transition-colors hover:border-ink-3 file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground"
+                  />
+                </Field>
+              )}
+            </form.Field>
+
+            {submitError && (
+              <p className="rounded-md border border-line bg-danger-soft px-3 py-2 text-[13px] text-danger">
+                {submitError}
+              </p>
+            )}
+
+            <div className="flex items-center gap-3 pt-2">
+              <form.Subscribe
+                selector={(s) => [s.canSubmit, s.isSubmitting] as const}
+              >
+                {([canSubmit, isSubmitting]) => (
+                  <button
+                    type="submit"
+                    disabled={!canSubmit}
+                    className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Uploading…' : 'Create proposal'}
+                  </button>
+                )}
+              </form.Subscribe>
+              <button
+                type="button"
+                onClick={() => router.navigate({ to: '/dashboard' })}
+                className="text-[13px] text-ink-2 transition-colors hover:text-ink"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </PageContainer>
   )

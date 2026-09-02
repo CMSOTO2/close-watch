@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import type { PageSection } from '#/lib/supabase/types'
+import { assertCanCreateProposal } from '#/lib/billing/entitlements'
 import {
   PAGE_SECTIONS,
   PDF_MAX_BYTES,
@@ -101,6 +102,11 @@ export const createProposal = createServerFn({ method: 'POST' })
       { onConflict: 'id', ignoreDuplicates: true },
     )
     if (profileError) throw new Error(`Could not prepare your profile: ${profileError.message}`)
+
+    // Before the upload, not after: the `free plan proposal cap` policy would
+    // reject the insert anyway, but only once the PDF was already in storage
+    // and only with a sentence about row-level security.
+    await assertCanCreateProposal(supabase, auth.user.id)
 
     const proposalId = randomUUID()
     const storagePath = `${auth.user.id}/${proposalId}.pdf`

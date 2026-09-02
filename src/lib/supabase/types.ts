@@ -10,6 +10,8 @@ export type Json = string | number | boolean | null | { [key: string]: Json } | 
 
 export type ProposalStatus = 'draft' | 'sent' | 'won' | 'lost' | 'archived'
 
+export type BillingPlan = 'free' | 'solo' | 'studio'
+
 export type PageSection =
   | 'cover'
   | 'summary'
@@ -27,6 +29,18 @@ type ProfileRow = {
   full_name: string | null
   company_name: string | null
   created_at: string
+}
+
+type SubscriptionRow = {
+  user_id: string
+  plan: BillingPlan
+  /** Stripe's own status string, stored verbatim. Null before the first sync. */
+  status: string | null
+  stripe_customer_id: string | null
+  stripe_subscription_id: string | null
+  current_period_end: string | null
+  cancel_at_period_end: boolean
+  updated_at: string
 }
 
 type ProposalRow = {
@@ -155,6 +169,20 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: SubscriptionRow
+        Insert: Partial<SubscriptionRow> & Pick<SubscriptionRow, 'user_id'>
+        Update: Partial<SubscriptionRow>
+        Relationships: [
+          {
+            foreignKeyName: 'subscriptions_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       share_links: {
         Row: ShareLinkRow
         Insert: Partial<ShareLinkRow> & Pick<ShareLinkRow, 'proposal_id' | 'token'>
@@ -238,10 +266,23 @@ export type Database = {
         Args: { p_visit_id: string; p_engaged_ms: number; p_pages: Json }
         Returns: undefined
       }
+      has_active_plan: {
+        Args: { uid: string }
+        Returns: boolean
+      }
+      active_proposal_count: {
+        Args: { uid: string; excluding?: string | null }
+        Returns: number
+      }
+      can_create_proposal: {
+        Args: { uid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       proposal_status: ProposalStatus
       page_section: PageSection
+      billing_plan: BillingPlan
     }
     CompositeTypes: Record<never, never>
   }

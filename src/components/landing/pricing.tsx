@@ -6,6 +6,12 @@ import { cn } from '#/lib/utils'
 /**
  * The three plans from POSITIONING.md.
  *
+ * Free is not a crippled tier. Every feature is on it and history never
+ * expires; the only thing $19 buys is the right to have more than two deals
+ * open at once. A feature gate teaches people the product is worse than it is,
+ * and the number that actually predicts whether someone will pay is how many
+ * proposals they have in flight.
+ *
  * Checkout is not wired: the paid buttons are inert on purpose until there is
  * a Stripe account behind them. Free is the exception — signing up is the one
  * thing on this table that already works, so it links where it says it does
@@ -45,11 +51,12 @@ const PLANS: Array<Plan> = [
     name: 'Free',
     price: '$0',
     cadence: null,
-    who: 'Enough to watch one deal and see whether any of this is true.',
+    who: 'Two live deals at a time, with nothing switched off.',
     features: [
-      { text: '2 active proposals' },
-      { text: '30 days of history' },
-      { text: 'Tracked links and intent scoring' },
+      { text: '2 active proposals at a time' },
+      { text: 'Tracked links, intent scoring, page attention' },
+      { text: 'Forwarding detection and email alerts' },
+      { text: 'Full history, nothing expires' },
     ],
     cta: 'Start free',
     featured: true,
@@ -59,12 +66,10 @@ const PLANS: Array<Plan> = [
     name: 'Solo',
     price: '$19',
     cadence: '/mo',
-    who: 'For one person sending their own proposals.',
+    who: 'For one person with more than two deals in the air.',
     features: [
-      { text: 'Unlimited proposals' },
-      { text: 'Full history' },
-      { text: 'Email the moment a proposal is opened' },
-      { text: 'Page-by-page attention and forwarding' },
+      { text: 'Unlimited active proposals' },
+      { text: 'Everything on the free plan' },
     ],
     cta: 'Choose Solo',
     // POSITIONING.md: do not price below $19, and do not hide it. No badge

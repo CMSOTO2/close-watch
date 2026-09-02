@@ -17,6 +17,7 @@ import {
   sinceLabel,
   useSinceLastVisit,
 } from '#/components/dashboard/since-last-visit'
+import { entitlementsQuery } from '#/lib/billing/entitlements'
 import { PageContainer } from '#/components/page-container'
 import { Button } from '#/components/ui/button'
 import { SummaryStrip } from '#/components/dashboard/summary-strip'
@@ -55,6 +56,7 @@ export const Route = createFileRoute('/_authed/dashboard')({
     Promise.all([
       context.queryClient.query(summariesQuery),
       context.queryClient.query(securedQuery),
+      context.queryClient.query(entitlementsQuery),
     ]),
   component: Dashboard,
 })
@@ -62,6 +64,7 @@ export const Route = createFileRoute('/_authed/dashboard')({
 function Dashboard() {
   const { data } = useSuspenseQuery(summariesQuery)
   const { data: secured } = useSuspenseQuery(securedQuery)
+  const { data: entitlements } = useSuspenseQuery(entitlementsQuery)
   useListKeys()
   const { deltas, since } = useSinceLastVisit(data)
   const [tab, setTab] = useState<'active' | 'closed'>('active')
@@ -118,6 +121,7 @@ function Dashboard() {
   const otherTabMatches =
     tab === 'active' ? closedMatched.length : activeMatched.length
   const news = since === null ? null : summarizeNews(deltas, since)
+  const limit = entitlements.activeProposalLimit
   const entries = grouped
     ? groupByClient(list)
     : list.map((proposal) => ({ kind: 'single' as const, proposal }))
@@ -137,6 +141,19 @@ function Dashboard() {
           <p className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-brand">
             <span aria-hidden className="size-1.5 rounded-full bg-brand" />
             {news}
+          </p>
+        )}
+        {/* Only within one slot of the cap. A free plan that announces itself
+            on every visit is an advert; this is a warning, and a warning that
+            fires early enough to be useful. */}
+        {limit !== null && entitlements.activeProposals >= limit - 1 && (
+          <p className="mt-1.5 text-[13px] text-ink-2">
+            {entitlements.activeProposals} of {limit} free slots used.{' '}
+            <Link to="/settings" className="text-brand hover:underline">
+              {entitlements.activeProposals >= limit
+                ? 'Close one out or go Solo'
+                : 'Go Solo for unlimited'}
+            </Link>
           </p>
         )}
       </div>
