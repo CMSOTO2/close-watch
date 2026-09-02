@@ -14,6 +14,11 @@ import { cn } from '#/lib/utils'
  * Features that do not exist yet are marked, not omitted. The plan needs the
  * shape it will have to be worth reading, and a small "soon" is the difference
  * between a roadmap and a page that sells three things you cannot deliver.
+ *
+ * Free carries the warm ground and the solid button for as long as checkout is
+ * off. Weighting a card whose button cannot be pressed points the eye at the
+ * one thing nobody can do, and leaves the only working button looking like the
+ * cheap option nobody meant. Move it back to Solo the day Stripe is wired.
  */
 
 type Feature = { text: string; soon?: boolean }
@@ -25,8 +30,14 @@ type Plan = {
   who: string
   features: Array<Feature>
   cta: string
-  /** The anchor. POSITIONING.md: do not price below $19, and do not hide it. */
+  /** Warm ground and a solid button. One plan at a time. */
   featured?: boolean
+  /**
+   * Small caps line above the price. Whatever it says has to be true today:
+   * this page is read by people who check, and there is nothing to lose more
+   * cheaply than the claim that others already bought.
+   */
+  badge?: string
 }
 
 const PLANS: Array<Plan> = [
@@ -41,6 +52,8 @@ const PLANS: Array<Plan> = [
       { text: 'Tracked links and intent scoring' },
     ],
     cta: 'Start free',
+    featured: true,
+    badge: 'Works today',
   },
   {
     name: 'Solo',
@@ -54,7 +67,9 @@ const PLANS: Array<Plan> = [
       { text: 'Page-by-page attention and forwarding' },
     ],
     cta: 'Choose Solo',
-    featured: true,
+    // POSITIONING.md: do not price below $19, and do not hide it. No badge
+    // while checkout is off. The price is the anchor on its own, and a second
+    // caps line in a row of three cards is noise.
   },
   {
     name: 'Studio',
@@ -90,9 +105,14 @@ export function Pricing() {
               <p className="font-display text-base font-semibold tracking-tight">
                 {plan.name}
               </p>
-              {plan.featured && (
-                <span className="rounded-sm bg-surface/70 px-1.5 py-0.5 font-mono text-[10px] tracking-wider text-brand uppercase">
-                  Most take this
+              {plan.badge && (
+                <span
+                  className={cn(
+                    'shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-[10px] tracking-wider text-brand uppercase',
+                    plan.featured ? 'bg-surface/70' : 'bg-surface-2',
+                  )}
+                >
+                  {plan.badge}
                 </span>
               )}
             </div>
