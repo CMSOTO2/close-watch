@@ -3,18 +3,25 @@ import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { ProposalDemo } from '#/components/demo/proposal-demo'
 
+const TITLE = 'Closewatch demo: read a proposal, then see what the sender saw'
+const DESCRIPTION =
+  'Read a sample proposal the way a client would, then see the attention report it produces. No sign-up, nothing stored.'
+
+// The demo is the link worth pasting into a thread, so it carries the same
+// social tags the landing page does. A title and description alone leave the
+// card to whatever the scraper guesses, and the card is most of what anyone
+// sees in a feed. No og:image here either, for the reason given in
+// `landingMeta`: a tag pointing at nothing renders worse than no tag.
 export const Route = createFileRoute('/demo')({
   component: DemoPage,
   head: () => ({
     meta: [
-      {
-        title: 'Closewatch demo: read a proposal, then see what the sender saw',
-      },
-      {
-        name: 'description',
-        content:
-          'Read a sample proposal the way a client would, then see the attention report it produces. No sign-up, nothing stored.',
-      },
+      { title: TITLE },
+      { name: 'description', content: DESCRIPTION },
+      { property: 'og:title', content: TITLE },
+      { property: 'og:description', content: DESCRIPTION },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary' },
     ],
   }),
 })
