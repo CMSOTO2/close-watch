@@ -20,8 +20,14 @@ const TITLE = 'Closewatch: know which proposals are actually being read'
 const DESCRIPTION =
   'Turn the proposal PDF you already send into a tracked link. See who opened it, how long they spent on pricing, and whether it was forwarded to the person who signs.'
 
-/** The card every scraper shows. Regenerate with scripts/generate-og-image.py. */
-export const OG_IMAGE = `${publicEnv.VITE_PUBLIC_URL}/og.png`
+/**
+ * The card every scraper shows. Regenerate with scripts/generate-og-image.py.
+ *
+ * The version is a cache-buster, and bumping it is part of changing the card:
+ * scrapers key their copy on the URL, so a redesign at the same path can sit
+ * unseen behind the old one for weeks.
+ */
+export const OG_IMAGE = `${publicEnv.VITE_PUBLIC_URL}/og.png?v=2`
 
 // The landing page is the one URL that gets pasted into a chat or a search
 // result, so it carries its own title and description rather than inheriting

@@ -15,16 +15,18 @@
 <link rel="stylesheet" href="og-fonts.css" />
 <style>
 
+  /* The dark palette from src/styles.css. Dark on purpose: a feed is mostly
+     white cards, and this one stops the scroll by not being one. */
   :root {
-    --canvas: #f5f1e9;
-    --surface: #ffffff;
-    --surface-2: #ebe5d9;
-    --ink: #1a1815;
-    --ink-2: #57524b;
-    --ink-3: #736d61;
-    --line: #ddd6c8;
-    --brand: #875809;
-    --brand-soft: #f4e3bc;
+    --canvas: #131211;
+    --surface: #1a1917;
+    --surface-2: #211f1c;
+    --ink: #f0ede7;
+    --ink-2: #a39c90;
+    --ink-3: #746e65;
+    --line: #2d2a25;
+    --brand: #dfa954;
+    --brand-soft: #2a2318;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -80,7 +82,7 @@
   /* A fragment of the report rather than a screenshot of it: at 300px wide a
      real screenshot is grey mush, and this still reads as the product. */
   .report {
-    flex: 0 0 330px;
+    flex: 0 0 366px;
     border: 1px solid var(--line);
     border-radius: 14px;
     background: var(--surface);
@@ -94,22 +96,47 @@
     text-transform: uppercase;
     color: var(--brand);
   }
-  .score {
+  /* The deal's value, which is the argument for the price without making it.
+     Nobody weighs $19 a month against an $18,000 deal for long. */
+  .value {
     margin-top: 10px;
     font-family: 'Instrument Sans', 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 62px;
+    font-size: 58px;
     line-height: 1;
     letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
   }
-  .score em {
-    font-style: normal;
-    font-size: 24px;
-    color: var(--ink-3);
-    letter-spacing: 0;
+  .heat {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--brand);
   }
-  .rows { margin-top: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .heat b {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--ink-3);
+    margin-left: auto;
+  }
+  /* Three rising bars, the same mark the dashboard uses for heat. */
+  .bars { display: flex; align-items: flex-end; gap: 3px; height: 17px; }
+  .bars i { width: 5px; background: var(--brand); border-radius: 1px; }
+  .bars i:nth-child(1) { height: 7px; }
+  .bars i:nth-child(2) { height: 12px; }
+  .bars i:nth-child(3) { height: 17px; }
+  .rows {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
   .rows div {
     display: flex;
     align-items: baseline;
@@ -132,7 +159,7 @@
     justify-content: space-between;
     font-family: 'JetBrains Mono', monospace;
     font-size: 21px;
-    color: var(--ink-3);
+    color: var(--ink-2);
   }
   .foot b {
     font-weight: 500;
@@ -145,13 +172,14 @@
 </style>
 
 <div class="brand">
-  <!-- public/favicon.svg, with the light-mode pairing inlined: a PNG cannot
-       answer prefers-color-scheme, and this one sits on the warm canvas. -->
+  <!-- public/favicon.svg with the dark-mode pairing inlined: light tile, deep
+       brass mark. A PNG cannot answer prefers-color-scheme, and the dark tile
+       would all but vanish against this ground. -->
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-    <rect width="32" height="32" rx="8.5" fill="#1a1815" />
-    <circle cx="16" cy="16" r="9" fill="none" stroke="#c08a2e" stroke-width="3"
+    <rect width="32" height="32" rx="8.5" fill="#f0ede7" />
+    <circle cx="16" cy="16" r="9" fill="none" stroke="#875809" stroke-width="3"
             stroke-linecap="round" stroke-dasharray="44.3 12.25" />
-    <circle cx="22.99" cy="10.34" r="2.7" fill="#c08a2e" />
+    <circle cx="22.99" cy="10.34" r="2.7" fill="#875809" />
   </svg>
   <span>Closewatch</span>
 </div>
@@ -163,12 +191,16 @@
   </div>
 
   <div class="report">
-    <p class="kicker">Intent</p>
-    <p class="score">84<em>/100</em></p>
+    <p class="kicker">Northwind Studio</p>
+    <p class="value">$18,000</p>
+    <p class="heat">
+      <span class="bars"><i></i><i></i><i></i></span>
+      Hot <b>86 / 100</b>
+    </p>
     <div class="rows">
-      <div><i></i><span>Opened 3 times</span></div>
-      <div><i></i><span>4m 12s on Pricing</span></div>
-      <div><i></i><span>Forwarded to 2 readers</span></div>
+      <div><i></i><span>Shared with 2 other people</span></div>
+      <div><i></i><span>2m 14s on pricing</span></div>
+      <div><i></i><span>Opened 4 times</span></div>
     </div>
   </div>
 </div>
