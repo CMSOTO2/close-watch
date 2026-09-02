@@ -112,6 +112,19 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     ),
   },
   {
+    q: 'How do I cancel?',
+    a: (
+      <>
+        One click in Settings, which opens Stripe&rsquo;s billing portal. The
+        plan runs to the end of the month you have paid for and then stops. What
+        happens next is the same as if you had never upgraded: nothing is
+        deleted, every proposal stays readable, every link you have sent keeps
+        tracking, and you simply cannot start a new proposal until you are back
+        within the free limit.
+      </>
+    ),
+  },
+  {
     q: 'What can I upload?',
     a: (
       <>

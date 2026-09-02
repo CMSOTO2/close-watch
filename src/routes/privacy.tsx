@@ -20,7 +20,7 @@ function Privacy() {
   return (
     <LegalPage
       title="Privacy policy"
-      updated="1 September 2026"
+      updated="2 September 2026"
       intro="Closewatch measures how people read the proposals you send. That means we record things about your clients, so this page says plainly what is collected, why, who it reaches, and how long it is kept."
     >
       <Clause heading="Two different people are described here">
@@ -41,6 +41,7 @@ function Privacy() {
             'If you sign in with Google, the email address and name on that Google account. We ask Google for nothing else, and we cannot see your Google password.',
             'The proposal PDFs you upload, which are held in private storage that is not publicly listable.',
             'A session cookie so you stay signed in.',
+            'On a paid plan, an identifier for your Stripe customer record and what Stripe reports about the subscription: its state and when the period ends. Your card number is typed on Stripe\u2019s own pages and never reaches us.',
           ]}
         />
       </Clause>
@@ -109,6 +110,7 @@ function Privacy() {
             'Supabase: the database, sign-in, and file storage.',
             'Cloudflare: hosting the application, and counting visits to our own pages.',
             'Resend: sending notification email, when that is switched on.',
+            'Stripe: taking payment, for account holders on a paid plan.',
             'Google: only if you choose to sign in with Google.',
           ]}
         />

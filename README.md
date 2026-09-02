@@ -126,8 +126,13 @@ filtering, keyboard navigation, a "since you last looked" diff, one-click link c
 won/lost outcomes that keep their tracking history, toasts and confirmations on the
 actions that deserve them, and a light/dark design system.
 
-Public surface: a landing page, a privacy policy and terms (both linked from Google's
-OAuth consent screen), and the brand mark and favicons.
+Billing: a free plan capped at two active proposals by a restrictive RLS policy rather
+than by application code, Stripe Checkout for Solo, Stripe's billing portal for changing
+or cancelling it, and a webhook that is the only thing allowed to write the table the
+paywall reads.
+
+Public surface: a landing page, a privacy policy, terms and a DPA (the first two linked
+from Google's OAuth consent screen), and the brand mark and favicons.
 
 See [docs/PRODUCTION.md](docs/PRODUCTION.md) for what is still operational rather than
 built.

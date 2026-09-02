@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
-import { PDF_MAX_MB, SHARE_LINK_TTL_DAYS } from '#/constants'
+import { FREE_ACTIVE_PROPOSALS, PDF_MAX_MB, SHARE_LINK_TTL_DAYS } from '#/constants'
 
 export const Route = createFileRoute('/terms')({
   head: () => ({
@@ -20,7 +20,7 @@ function Terms() {
   return (
     <LegalPage
       title="Terms of service"
-      updated="1 September 2026"
+      updated="2 September 2026"
       intro="These are the terms you agree to by using Closewatch. They are written to be read rather than skipped, and they are short because the service is simple."
     >
       <Clause heading="What Closewatch does">
@@ -85,9 +85,43 @@ function Terms() {
 
       <Clause heading="Limits">
         <p>
-          Proposals are PDFs of up to {PDF_MAX_MB} MB. We may add or adjust
-          usage limits to keep the service running for everyone, and will give
-          notice before a change that would affect what you are already doing.
+          Proposals are PDFs of up to {PDF_MAX_MB} MB. The free plan holds{' '}
+          {FREE_ACTIVE_PROPOSALS} active proposals at a time; marking one won or
+          lost, or archiving it, frees the slot and keeps its history. We may
+          add or adjust usage limits to keep the service running for everyone,
+          and will give notice before a change that would affect what you are
+          already doing.
+        </p>
+      </Clause>
+
+      <Clause heading="Paying">
+        <p>
+          Every feature is on the free plan. A paid plan lifts the limit on how
+          many proposals can be active at once, and nothing else changes.
+        </p>
+        <p>
+          Solo is $19 per month, charged in advance, and renews each month until
+          you cancel. Cancel whenever you like from Settings: the plan stays on
+          until the end of the period you have already paid for, and then stops.
+          We do not pro-rate a part-used month, and we do not charge to close an
+          account.
+        </p>
+        <p>
+          Payment is handled by Stripe on their own pages. We never see or store
+          your card number.
+        </p>
+        <p>
+          If a subscription ends while more than{' '}
+          {FREE_ACTIVE_PROPOSALS} proposals are active, nothing is deleted or
+          hidden. Everything stays readable and every link you have sent keeps
+          tracking; you simply cannot start a new proposal until you are back
+          within the free limit.
+        </p>
+        <p>
+          We will give at least 30 days&rsquo; notice by email before changing
+          the price of a plan you are on, and the change takes effect at your
+          next renewal. If a payment fails, we will retry and email you before
+          anything stops working.
         </p>
       </Clause>
 

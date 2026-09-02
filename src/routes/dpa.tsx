@@ -87,6 +87,7 @@ function Dpa() {
             'Supabase — database, authentication and file storage.',
             'Cloudflare — application hosting and delivery.',
             'Resend — notification email, where enabled.',
+            'Stripe — payment processing for account holders on a paid plan. It never receives reader data.',
             'Google — only where an account holder chooses to sign in with Google.',
           ]}
         />
