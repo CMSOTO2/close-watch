@@ -116,6 +116,39 @@ if (endpoint) {
   console.log(`webhook   ${endpoint.id} (created)`)
 }
 
+// --- billing portal ----------------------------------------------------------
+// Cancelling happens in Stripe's hosted portal, and the portal refuses to open
+// until the account has a configuration. Sandbox creates a default one the first
+// time you ask for a session; live mode does not always, and a "Manage billing"
+// button that throws is the worst possible moment to find that out. So it is
+// created here, explicitly, with cancelling switched on.
+const configs = await stripe.billingPortal.configurations.list({ limit: 10 })
+const existingConfig = configs.data.find((c) => c.is_default && c.active)
+if (existingConfig?.features.subscription_cancel?.enabled) {
+  console.log(`portal    ${existingConfig.id} (existing, cancel enabled)`)
+} else if (existingConfig) {
+  const updated = await stripe.billingPortal.configurations.update(existingConfig.id, {
+    features: { subscription_cancel: { enabled: true, mode: 'at_period_end' } },
+  })
+  console.log(`portal    ${updated.id} (cancel switched on)`)
+} else {
+  const created = await stripe.billingPortal.configurations.create({
+    business_profile: {
+      privacy_policy_url: 'https://getclosewatch.com/privacy',
+      terms_of_service_url: 'https://getclosewatch.com/terms',
+    },
+    features: {
+      // At period end, not immediately: they paid for the month.
+      subscription_cancel: { enabled: true, mode: 'at_period_end' },
+      payment_method_update: { enabled: true },
+      invoice_history: { enabled: true },
+      customer_update: { enabled: true, allowed_updates: ['email', 'address'] },
+    },
+    default_return_url: 'https://getclosewatch.com/settings',
+  })
+  console.log(`portal    ${created.id} (created, cancel enabled)`)
+}
+
 // --- push to the Worker ------------------------------------------------------
 function putSecret(name, value) {
   execFileSync('npx', ['wrangler', 'secret', 'put', name], {
