@@ -83,8 +83,19 @@ account holder reloading their dashboard. It also keeps the privacy policy's pro
 readers literally true.
 
 Web Analytics does not log query strings, so `?utm_source=…` on a link posted somewhere
-buys nothing. Referrers do show up: that is what tells apart a Hacker News thread from a
-Reddit one.
+buys nothing. Paths are logged, which is what `/r/$source` is for: post
+`getclosewatch.com/r/hn` in a Hacker News thread and `/r/reddit` in a Reddit one, and
+each shows up as its own row under Top pages. Any word works, `/r/whatever` included, so
+keep the spelling consistent or the same thread lands in two rows.
+
+Those paths serve the landing page rather than redirecting to `/`. A redirect returns no
+HTML, so the beacon never runs and the visit is never counted, which was the entire
+point. Every `/r/…` page carries a canonical link to `/` so search engines do not treat
+them as duplicates of the home page.
+
+Referrers are logged too and need no special link, but they go missing often enough to
+be worth the belt and braces: apps that open links in a webview, a paste into a DM, a
+client that strips the header.
 
 The PNG icons in `public/` are generated, not hand-drawn. If the mark changes, rerun
 `python3 scripts/generate-icons.py` rather than exporting from a design tool: SVG

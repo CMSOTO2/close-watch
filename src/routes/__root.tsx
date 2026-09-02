@@ -102,7 +102,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
         {beaconToken && (
           <script
-            defer
+            type="module"
             src="https://static.cloudflareinsights.com/beacon.min.js"
             data-cf-beacon={JSON.stringify({ token: beaconToken })}
           />

@@ -20,6 +20,7 @@ import { Route as AuthedDashboardRouteImport } from './routes/_authed.dashboard'
 import { Route as AuthedSettingsRouteImport } from './routes/_authed.settings'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as PTokenRouteImport } from './routes/p.$token'
+import { Route as RSourceRouteImport } from './routes/r.$source'
 import { Route as AuthedProposalsIdRouteImport } from './routes/_authed.proposals.$id'
 import { Route as AuthedProposalsNewRouteImport } from './routes/_authed.proposals.new'
 import { Route as ApiTrackVisitIdRouteImport } from './routes/api/track.$visitId'
@@ -78,6 +79,11 @@ const PTokenRoute = PTokenRouteImport.update({
   path: '/p/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RSourceRoute = RSourceRouteImport.update({
+  id: '/r/$source',
+  path: '/r/$source',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedProposalsIdRoute = AuthedProposalsIdRouteImport.update({
   id: '/proposals/$id',
   path: '/proposals/$id',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
+  '/r/$source': typeof RSourceRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
   '/proposals/new': typeof AuthedProposalsNewRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
+  '/r/$source': typeof RSourceRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
   '/proposals/new': typeof AuthedProposalsNewRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/_authed/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
+  '/r/$source': typeof RSourceRoute
   '/_authed/proposals/$id': typeof AuthedProposalsIdRoute
   '/_authed/proposals/new': typeof AuthedProposalsNewRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/auth/callback'
     | '/p/$token'
+    | '/r/$source'
     | '/proposals/$id'
     | '/proposals/new'
     | '/api/track/$visitId'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/auth/callback'
     | '/p/$token'
+    | '/r/$source'
     | '/proposals/$id'
     | '/proposals/new'
     | '/api/track/$visitId'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/_authed/settings'
     | '/auth/callback'
     | '/p/$token'
+    | '/r/$source'
     | '/_authed/proposals/$id'
     | '/_authed/proposals/new'
     | '/api/track/$visitId'
@@ -200,6 +212,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   PTokenRoute: typeof PTokenRoute
+  RSourceRoute: typeof RSourceRoute
   ApiTrackVisitIdRoute: typeof ApiTrackVisitIdRoute
 }
 
@@ -282,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/r/$source': {
+      id: '/r/$source'
+      path: '/r/$source'
+      fullPath: '/r/$source'
+      preLoaderRoute: typeof RSourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authed/proposals/$id': {
       id: '/_authed/proposals/$id'
       path: '/proposals/$id'
@@ -333,6 +353,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   PTokenRoute: PTokenRoute,
+  RSourceRoute: RSourceRoute,
   ApiTrackVisitIdRoute: ApiTrackVisitIdRoute,
 }
 export const routeTree = rootRouteImport
