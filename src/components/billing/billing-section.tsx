@@ -38,6 +38,9 @@ export function BillingSection({
   const [error, setError] = useState<string | null>(null)
 
   const paid = entitlements.plan !== 'free'
+  // Comped accounts have no Stripe customer, so there is nothing for the portal
+  // to open and nothing to buy. Offering either would be a button that throws.
+  const comped = entitlements.comped
   // A scheduled cancellation carries its own date, which is not always the end
   // of the current period.
   const endsOn = entitlements.cancelAt ?? entitlements.currentPeriodEnd
@@ -89,7 +92,17 @@ export function BillingSection({
         {entitlements.activeProposals === 1 ? 'is' : 'are'} open right now.
       </p>
 
-      {paid && entitlements.cancelAtPeriodEnd && endsOn && (
+      {comped && (
+        <p className="mt-2 text-[13px] text-ink-2">
+          This one is on the house
+          {entitlements.compedUntil
+            ? `, until ${formatDate(entitlements.compedUntil)}`
+            : ''}
+          . There is nothing to pay and no card on file.
+        </p>
+      )}
+
+      {paid && !comped && entitlements.cancelAtPeriodEnd && endsOn && (
         <p className="mt-2 text-[13px] text-ink-2">
           Cancelled. It stays on until {formatDate(endsOn)}, then drops to Free.
           Nothing is deleted: proposals over the free limit stay readable, you
@@ -99,6 +112,7 @@ export function BillingSection({
       )}
 
       {paid &&
+        !comped &&
         !entitlements.cancelAtPeriodEnd &&
         entitlements.currentPeriodEnd && (
           <p className="mt-2 text-[13px] text-ink-2">
@@ -107,7 +121,7 @@ export function BillingSection({
         )}
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        {paid ? (
+        {comped ? null : paid ? (
           <Button
             type="button"
             variant="outline"
@@ -133,7 +147,7 @@ export function BillingSection({
         {error && <span className="text-[13px] text-danger">{error}</span>}
       </div>
 
-      {!paid && !entitlements.billingEnabled && (
+      {!paid && !comped && !entitlements.billingEnabled && (
         <p className="mt-3 text-[13px] text-ink-3">
           Card payments are not switched on yet. The free plan is fully working
           in the meantime.

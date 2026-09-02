@@ -19,6 +19,10 @@ export type Entitlements = {
   currentPeriodEnd: string | null
   /** When the plan ends, if it is ending. Preferred over currentPeriodEnd there. */
   cancelAt: string | null
+  /** True when the plan was granted rather than bought. No card, nothing to manage. */
+  comped: boolean
+  /** When a granted plan runs out. Null means it does not. */
+  compedUntil: string | null
   /** False until the Stripe keys are on the Worker. The UI says so rather than
    *  offering a button that throws. */
   billingEnabled: boolean
@@ -36,6 +40,8 @@ export const FREE_ENTITLEMENTS: Entitlements = {
   cancelAtPeriodEnd: false,
   currentPeriodEnd: null,
   cancelAt: null,
+  comped: false,
+  compedUntil: null,
   billingEnabled: false,
 }
 
@@ -60,11 +66,12 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
 
     // Both reads are RLS-scoped to this user: the subscription row by the
     // "read own subscription" policy, the count by "own proposals".
-    const [subscription, active] = await Promise.all([
+    const [subscription, comp, active] = await Promise.all([
       supabase
         .from('subscriptions')
         .select('plan, status, cancel_at_period_end, cancel_at, current_period_end')
         .maybeSingle(),
+      supabase.from('comps').select('plan, until').maybeSingle(),
       supabase
         .from('proposals')
         .select('id', { count: 'exact', head: true })
@@ -73,11 +80,21 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
 
     const row = subscription.data
     const paying = !!row && row.plan !== 'free' && PAYING.has(row.status ?? '')
+
+    // Mirrors has_active_plan's second door: a granted plan, still in date.
+    const granted = comp.data
+    const comped =
+      !!granted &&
+      granted.plan !== 'free' &&
+      (granted.until === null || new Date(granted.until) > new Date())
+
     const activeProposals = active.count ?? 0
-    const limit = paying ? null : FREE_ACTIVE_PROPOSALS
+    const limit = paying || comped ? null : FREE_ACTIVE_PROPOSALS
 
     return {
-      plan: row?.plan ?? 'free',
+      // A comp is the plan as far as the product is concerned. Where both
+      // exist, the paid one wins: it is the one with a card behind it.
+      plan: paying ? row.plan : comped ? granted.plan : 'free',
       status: row?.status ?? null,
       activeProposals,
       activeProposalLimit: limit,
@@ -85,6 +102,8 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
       cancelAtPeriodEnd: row?.cancel_at_period_end ?? false,
       currentPeriodEnd: row?.current_period_end ?? null,
       cancelAt: row?.cancel_at ?? null,
+      comped: comped && !paying,
+      compedUntil: comped && !paying ? granted.until : null,
       billingEnabled,
     }
   },

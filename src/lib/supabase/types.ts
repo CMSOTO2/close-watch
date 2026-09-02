@@ -45,6 +45,15 @@ type SubscriptionRow = {
   updated_at: string
 }
 
+type CompRow = {
+  user_id: string
+  plan: BillingPlan
+  /** Null runs indefinitely. */
+  until: string | null
+  note: string | null
+  granted_at: string
+}
+
 type ProposalRow = {
   id: string
   owner_id: string
@@ -185,6 +194,20 @@ export type Database = {
           },
         ]
       }
+      comps: {
+        Row: CompRow
+        Insert: Partial<CompRow> & Pick<CompRow, 'user_id'>
+        Update: Partial<CompRow>
+        Relationships: [
+          {
+            foreignKeyName: 'comps_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       share_links: {
         Row: ShareLinkRow
         Insert: Partial<ShareLinkRow> & Pick<ShareLinkRow, 'proposal_id' | 'token'>
@@ -278,6 +301,19 @@ export type Database = {
       }
       can_create_proposal: {
         Args: { uid: string }
+        Returns: boolean
+      }
+      grant_comp: {
+        Args: {
+          user_email: string
+          comp_plan?: BillingPlan
+          until?: string | null
+          note?: string | null
+        }
+        Returns: CompRow
+      }
+      revoke_comp: {
+        Args: { user_email: string }
         Returns: boolean
       }
     }
