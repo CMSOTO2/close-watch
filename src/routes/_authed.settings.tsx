@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_authed/settings')({
   // Stripe sends people back here after checkout. Anything else in the query
   // string is ignored rather than being an error the user cannot fix.
   validateSearch: z.object({
-    billing: z.enum(['done', 'cancelled']).optional(),
+    billing: z.enum(['done', 'cancelled', 'managed']).optional(),
   }),
   loader: ({ context }) =>
     Promise.all([
@@ -139,7 +139,10 @@ function SettingsPage() {
           </div>
         </form>
 
-        <BillingSection justPaid={billing === 'done'} />
+        <BillingSection
+          justPaid={billing === 'done'}
+          justManaged={billing === 'managed'}
+        />
 
         {profile?.email && (
           <p className="mt-8 border-t border-line pt-5 text-xs text-ink-3">

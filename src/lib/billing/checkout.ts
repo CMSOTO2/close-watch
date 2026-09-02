@@ -98,7 +98,7 @@ export const openBillingPortal = createServerFn({ method: 'POST' }).handler(
 
     const session = await getStripe().billingPortal.sessions.create({
       customer: row.stripe_customer_id,
-      return_url: `${publicEnv.VITE_PUBLIC_URL}/settings`,
+      return_url: `${publicEnv.VITE_PUBLIC_URL}/settings?billing=managed`,
     })
     return { url: session.url }
   },

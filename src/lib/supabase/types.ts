@@ -40,6 +40,8 @@ type SubscriptionRow = {
   stripe_subscription_id: string | null
   current_period_end: string | null
   cancel_at_period_end: boolean
+  /** When a scheduled cancellation takes effect. Null unless one is scheduled. */
+  cancel_at: string | null
   updated_at: string
 }
 

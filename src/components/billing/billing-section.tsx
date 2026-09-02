@@ -26,12 +26,21 @@ function formatDate(iso: string): string {
  * there is no card form here to see one with, which is the entire reason the
  * upgrade path is a redirect rather than a form.
  */
-export function BillingSection({ justPaid }: { justPaid: boolean }) {
+export function BillingSection({
+  justPaid,
+  justManaged,
+}: {
+  justPaid: boolean
+  justManaged: boolean
+}) {
   const { data: entitlements } = useSuspenseQuery(entitlementsQuery)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const paid = entitlements.plan !== 'free'
+  // A scheduled cancellation carries its own date, which is not always the end
+  // of the current period.
+  const endsOn = entitlements.cancelAt ?? entitlements.currentPeriodEnd
 
   async function go(start: () => Promise<{ url: string }>) {
     setBusy(true)
@@ -50,6 +59,13 @@ export function BillingSection({ justPaid }: { justPaid: boolean }) {
       <h2 className="font-display text-lg font-semibold tracking-tight">
         Plan
       </h2>
+
+      {justManaged && (
+        <p className="mt-3 rounded-md border border-line bg-surface-2 px-3 py-2 text-[13px] text-ink-2">
+          Back from Stripe. If you changed something there, it can take a few
+          seconds to show here — reload if this still looks stale.
+        </p>
+      )}
 
       {justPaid && !paid && (
         // The webhook is usually faster than the redirect, but not always, and
@@ -73,17 +89,14 @@ export function BillingSection({ justPaid }: { justPaid: boolean }) {
         {entitlements.activeProposals === 1 ? 'is' : 'are'} open right now.
       </p>
 
-      {paid &&
-        entitlements.cancelAtPeriodEnd &&
-        entitlements.currentPeriodEnd && (
-          <p className="mt-2 text-[13px] text-ink-2">
-            Cancelled. It stays on until{' '}
-            {formatDate(entitlements.currentPeriodEnd)}, then drops to Free.
-            Nothing is deleted: proposals over the free limit stay readable, you
-            just cannot start a new one until you are back under{' '}
-            {FREE_ACTIVE_PROPOSALS}.
-          </p>
-        )}
+      {paid && entitlements.cancelAtPeriodEnd && endsOn && (
+        <p className="mt-2 text-[13px] text-ink-2">
+          Cancelled. It stays on until {formatDate(endsOn)}, then drops to Free.
+          Nothing is deleted: proposals over the free limit stay readable, you
+          just cannot start a new one until you are back under{' '}
+          {FREE_ACTIVE_PROPOSALS}.
+        </p>
+      )}
 
       {paid &&
         !entitlements.cancelAtPeriodEnd &&

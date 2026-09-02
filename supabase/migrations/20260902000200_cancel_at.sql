@@ -1,0 +1,11 @@
+-- When a scheduled cancellation actually takes effect.
+--
+-- Stripe has two ways of saying "this ends at the end of the period": the older
+-- `cancel_at_period_end` boolean, and a `cancel_at` timestamp. The billing
+-- portal uses the timestamp, so a subscription cancelled by the customer looked
+-- exactly like one that was renewing, and Settings told them so.
+--
+-- Both are stored. The boolean answers "is this ending?", the timestamp answers
+-- "when?", and the timestamp is the one to show, since a cancellation scheduled
+-- for a specific date is not always the end of the current period.
+alter table public.subscriptions add column cancel_at timestamptz;

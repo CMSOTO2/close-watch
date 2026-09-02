@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { getSupabaseAdminClient } from '#/lib/supabase/server'
 import { serverEnv } from '#/env'
-import { getStripe, periodEnd, planForPrice } from '#/lib/billing/stripe'
+import { cancellation, getStripe, periodEnd, planForPrice } from '#/lib/billing/stripe'
 import Stripe from 'stripe'
 import type { BillingPlan } from '#/lib/supabase/types'
 
@@ -67,6 +67,8 @@ async function syncSubscription(subscription: Stripe.Subscription): Promise<void
     ? 'free'
     : planForPrice(subscription.items.data[0]?.price.id)
 
+  const ending = cancellation(subscription)
+
   const { error } = await admin.from('subscriptions').upsert(
     {
       user_id: userId,
@@ -75,7 +77,8 @@ async function syncSubscription(subscription: Stripe.Subscription): Promise<void
       stripe_customer_id: customerId,
       stripe_subscription_id: subscription.id,
       current_period_end: periodEnd(subscription),
-      cancel_at_period_end: subscription.cancel_at_period_end,
+      cancel_at_period_end: ending.ending,
+      cancel_at: ending.at,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'user_id' },

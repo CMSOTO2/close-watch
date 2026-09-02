@@ -51,3 +51,25 @@ export function periodEnd(subscription: Stripe.Subscription): string | null {
     (subscription as unknown as { current_period_end?: number }).current_period_end
   return typeof seconds === 'number' ? new Date(seconds * 1000).toISOString() : null
 }
+
+/**
+ * Whether a subscription is scheduled to end, and when.
+ *
+ * Stripe says this two ways. `cancel_at_period_end` is the boolean the API sets
+ * when you cancel through it; `cancel_at` is a timestamp, and it is what the
+ * billing portal sets when a customer cancels there. Reading only the boolean
+ * meant a customer who cancelled was told their subscription renews.
+ *
+ * Trust either. The timestamp is the better date to show, because a
+ * cancellation is not always scheduled for the end of the current period.
+ */
+export function cancellation(subscription: Stripe.Subscription): {
+  ending: boolean
+  at: string | null
+} {
+  const at =
+    typeof subscription.cancel_at === 'number'
+      ? new Date(subscription.cancel_at * 1000).toISOString()
+      : null
+  return { ending: subscription.cancel_at_period_end || at !== null, at }
+}

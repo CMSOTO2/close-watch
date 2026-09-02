@@ -17,6 +17,8 @@ export type Entitlements = {
   /** Set while a paid plan is running out its notice period. */
   cancelAtPeriodEnd: boolean
   currentPeriodEnd: string | null
+  /** When the plan ends, if it is ending. Preferred over currentPeriodEnd there. */
+  cancelAt: string | null
   /** False until the Stripe keys are on the Worker. The UI says so rather than
    *  offering a button that throws. */
   billingEnabled: boolean
@@ -33,6 +35,7 @@ export const FREE_ENTITLEMENTS: Entitlements = {
   canCreateProposal: true,
   cancelAtPeriodEnd: false,
   currentPeriodEnd: null,
+  cancelAt: null,
   billingEnabled: false,
 }
 
@@ -60,7 +63,7 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
     const [subscription, active] = await Promise.all([
       supabase
         .from('subscriptions')
-        .select('plan, status, cancel_at_period_end, current_period_end')
+        .select('plan, status, cancel_at_period_end, cancel_at, current_period_end')
         .maybeSingle(),
       supabase
         .from('proposals')
@@ -81,6 +84,7 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
       canCreateProposal: limit === null || activeProposals < limit,
       cancelAtPeriodEnd: row?.cancel_at_period_end ?? false,
       currentPeriodEnd: row?.current_period_end ?? null,
+      cancelAt: row?.cancel_at ?? null,
       billingEnabled,
     }
   },
