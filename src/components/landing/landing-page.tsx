@@ -37,8 +37,13 @@ export function landingMeta() {
     { property: 'og:title', content: TITLE },
     { property: 'og:description', content: DESCRIPTION },
     { property: 'og:type', content: 'website' },
+    { property: 'og:site_name', content: 'Closewatch' },
     { property: 'og:url', content: `${publicEnv.VITE_PUBLIC_URL}/` },
     { property: 'og:image', content: OG_IMAGE },
+    // Meta's scraper reads secure_url and type where they exist. Not required,
+    // and cheap enough not to argue with.
+    { property: 'og:image:secure_url', content: OG_IMAGE },
+    { property: 'og:image:type', content: 'image/png' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     {
