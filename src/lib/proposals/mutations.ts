@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
+import { assertCanSendProposal } from '#/lib/billing/entitlements'
 import { PAGE_SECTIONS, PROPOSALS_BUCKET, SHARE_LINK_TTL_DAYS, shareUrl } from '#/constants'
 
 function newToken(): string {
@@ -21,6 +22,17 @@ export const createShareLink = createServerFn({ method: 'POST' })
   )
   .handler(async ({ data }): Promise<{ id: string; token: string; url: string }> => {
     const supabase = getSupabaseServerClient()
+
+    const { data: auth } = await supabase.auth.getUser()
+    if (!auth.user) throw new Error('Not signed in')
+
+    // The first link is what puts a proposal in front of a client, so this is
+    // where the free plan's live cap pushes back. Checked here so the user gets
+    // a sentence rather than the RLS policy's "new row violates row-level
+    // security"; the `free plan send cap` policy is the one that is actually
+    // true.
+    await assertCanSendProposal(supabase, auth.user.id, data.proposalId)
+
     const token = newToken()
 
     const expiresAt = new Date(Date.now() + SHARE_LINK_TTL_DAYS * 24 * 60 * 60 * 1000)
@@ -40,6 +52,15 @@ export const createShareLink = createServerFn({ method: 'POST' })
       .maybeSingle()
 
     if (error || !link) throw new Error(error?.message ?? 'Could not create the link')
+
+    // A proposal with a link has been sent, and that is what the free cap
+    // counts. Scoped to drafts so adding a link to a won deal does not quietly
+    // reopen it.
+    await supabase
+      .from('proposals')
+      .update({ status: 'sent' })
+      .eq('id', data.proposalId)
+      .eq('status', 'draft')
 
     return {
       id: link.id,

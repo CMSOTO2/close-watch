@@ -40,14 +40,28 @@ export const SECTION_LABELS: Record<PageSection, string> = {
 
 // --- Plans ------------------------------------------------------------------
 /**
- * Active proposals a free account may have at once: draft or sent. Closing a
- * deal or archiving it gives the slot back, so the free plan is a standing
- * offer rather than a two-use trial.
+ * Live proposals a free account may have at once. Live means sent: it has at
+ * least one share link and a client can open it. Closing a deal or archiving it
+ * gives the slot back, so the free plan is a standing offer rather than a
+ * two-use trial.
  *
- * The enforced copy of this number lives in the `free plan proposal cap` policy
- * in supabase/migrations/20260902000100_billing.sql. Change one, change both.
+ * Drafts do not count. The cap used to include them, which meant someone could
+ * upload three PDFs on their first evening, share none, and meet a paywall
+ * having received nothing from the product.
+ *
+ * The enforced copy of this number lives in `can_send_proposal` in
+ * supabase/migrations/20260902000500_send_cap.sql. Change one, change both.
  */
-export const FREE_ACTIVE_PROPOSALS = 2
+export const FREE_LIVE_PROPOSALS = 2
+
+/**
+ * Drafts a free account may stack up. Loose on purpose: a draft costs storage
+ * and nothing else, and this exists so one account cannot upload into the
+ * bucket forever, not to sell anything. A real user should never meet it.
+ *
+ * Enforced by `can_create_proposal` in the same migration.
+ */
+export const FREE_DRAFT_PROPOSALS = 10
 
 // --- Share links ------------------------------------------------------------
 /**

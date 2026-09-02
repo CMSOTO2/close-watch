@@ -8,7 +8,7 @@ import { cn } from '#/lib/utils'
  *
  * Free is not a crippled tier. Every feature is on it and history never
  * expires; the only thing $19 buys is the right to have more than two deals
- * open at once. A feature gate teaches people the product is worse than it is,
+ * live at once. A feature gate teaches people the product is worse than it is,
  * and the number that actually predicts whether someone will pay is how many
  * proposals they have in flight.
  *
@@ -56,7 +56,8 @@ const PLANS: Array<Plan> = [
     cadence: null,
     who: 'Two live deals at a time, with nothing switched off.',
     features: [
-      { text: '2 active proposals at a time' },
+      { text: '2 proposals live with clients at a time' },
+      { text: 'Drafts you are still preparing do not count' },
       { text: 'Tracked links, intent scoring, page attention' },
       { text: 'Forwarding detection and email alerts' },
       { text: 'Full history, nothing expires' },
@@ -72,7 +73,7 @@ const PLANS: Array<Plan> = [
     cadence: '/mo',
     who: 'For one person with more than two deals in the air.',
     features: [
-      { text: 'Unlimited active proposals' },
+      { text: 'Unlimited live proposals' },
       { text: 'Everything on the free plan' },
     ],
     cta: 'Choose Solo',

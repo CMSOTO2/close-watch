@@ -9,7 +9,7 @@ import type { PageSection } from '#/lib/supabase/types'
 import { PageContainer } from '#/components/page-container'
 import { BackLink } from '#/components/back-link'
 import { useToast } from '#/components/toast'
-import { AtLimitPanel } from '#/components/billing/at-limit'
+import { AtLimitPanel, DraftLimitPanel } from '#/components/billing/at-limit'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
 import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, queryKeys } from '#/constants'
 
@@ -141,8 +141,16 @@ function NewProposal() {
           Upload a PDF. You&rsquo;ll get a tracked link to send to your client.
         </p>
 
+        {/* The live cap does not block an upload any more. Preparing the next
+            proposal while two are out with clients is normal, so this explains
+            the wall they will meet at the send step and leaves the form alone.
+            Only the draft ceiling, which is a storage guard, stops them here. */}
+        {entitlements.canCreateProposal && !entitlements.canSendProposal && (
+          <AtLimitPanel liveProposals={entitlements.liveProposals} />
+        )}
+
         {!entitlements.canCreateProposal ? (
-          <AtLimitPanel activeProposals={entitlements.activeProposals} />
+          <DraftLimitPanel draftProposals={entitlements.draftProposals} />
         ) : (
           <form
             onSubmit={(e) => {

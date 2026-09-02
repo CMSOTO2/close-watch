@@ -3,7 +3,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { Button } from '#/components/ui/button'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
 import { openBillingPortal, startSoloCheckout } from '#/lib/billing/checkout'
-import { FREE_ACTIVE_PROPOSALS } from '#/constants'
+import { FREE_LIVE_PROPOSALS } from '#/constants'
 
 const PLAN_NAMES: Record<string, string> = {
   free: 'Free',
@@ -85,11 +85,15 @@ export function BillingSection({
         <strong className="font-semibold text-ink">
           {PLAN_NAMES[entitlements.plan]}
         </strong>
-        {entitlements.activeProposalLimit === null
-          ? ', with no limit on how many proposals are open at once. '
-          : `, which holds ${entitlements.activeProposalLimit} active proposals at a time. `}
-        {entitlements.activeProposals}{' '}
-        {entitlements.activeProposals === 1 ? 'is' : 'are'} open right now.
+        {entitlements.liveProposalLimit === null
+          ? ', with no limit on how many proposals are live at once. '
+          : `, which keeps ${entitlements.liveProposalLimit} proposals live at a time. `}
+        {entitlements.liveProposals}{' '}
+        {entitlements.liveProposals === 1 ? 'is' : 'are'} live right now
+        {entitlements.draftProposals > 0
+          ? `, and ${entitlements.draftProposals} unsent ${entitlements.draftProposals === 1 ? 'draft' : 'drafts'} that cost nothing`
+          : ''}
+        .
       </p>
 
       {comped && (
@@ -106,8 +110,8 @@ export function BillingSection({
         <p className="mt-2 text-[13px] text-ink-2">
           Cancelled. It stays on until {formatDate(endsOn)}, then drops to Free.
           Nothing is deleted: proposals over the free limit stay readable, you
-          just cannot start a new one until you are back under{' '}
-          {FREE_ACTIVE_PROPOSALS}.
+          just cannot send a new one until you are back under{' '}
+          {FREE_LIVE_PROPOSALS}.
         </p>
       )}
 

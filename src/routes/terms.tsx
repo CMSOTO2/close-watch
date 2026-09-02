@@ -1,6 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
-import { FREE_ACTIVE_PROPOSALS, PDF_MAX_MB, SHARE_LINK_TTL_DAYS } from '#/constants'
+import {
+  FREE_DRAFT_PROPOSALS,
+  FREE_LIVE_PROPOSALS,
+  PDF_MAX_MB,
+  SHARE_LINK_TTL_DAYS,
+} from '#/constants'
 
 export const Route = createFileRoute('/terms')({
   head: () => ({
@@ -85,9 +90,11 @@ function Terms() {
 
       <Clause heading="Limits">
         <p>
-          Proposals are PDFs of up to {PDF_MAX_MB} MB. The free plan holds{' '}
-          {FREE_ACTIVE_PROPOSALS} active proposals at a time; marking one won or
-          lost, or archiving it, frees the slot and keeps its history. We may
+          Proposals are PDFs of up to {PDF_MAX_MB} MB. The free plan keeps{' '}
+          {FREE_LIVE_PROPOSALS} proposals live at a time. A proposal is live once
+          you create its first share link; marking it won or lost, or archiving
+          it, frees the slot and keeps its history. Drafts you have not shared do
+          not count against that, up to {FREE_DRAFT_PROPOSALS} at a time. We may
           add or adjust usage limits to keep the service running for everyone,
           and will give notice before a change that would affect what you are
           already doing.
@@ -97,7 +104,7 @@ function Terms() {
       <Clause heading="Paying">
         <p>
           Every feature is on the free plan. A paid plan lifts the limit on how
-          many proposals can be active at once, and nothing else changes.
+          many proposals can be live at once, and nothing else changes.
         </p>
         <p>
           Solo is $19 per month, charged in advance, and renews each month until
@@ -112,9 +119,9 @@ function Terms() {
         </p>
         <p>
           If a subscription ends while more than{' '}
-          {FREE_ACTIVE_PROPOSALS} proposals are active, nothing is deleted or
+          {FREE_LIVE_PROPOSALS} proposals are live, nothing is deleted or
           hidden. Everything stays readable and every link you have sent keeps
-          tracking; you simply cannot start a new proposal until you are back
+          tracking; you simply cannot send a new proposal until you are back
           within the free limit.
         </p>
         <p>
