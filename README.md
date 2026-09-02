@@ -97,6 +97,19 @@ Referrers are logged too and need no special link, but they go missing often eno
 be worth the belt and braces: apps that open links in a webview, a paste into a DM, a
 client that strips the header.
 
+`public/og.png` is the card every scraper shows. It is generated too:
+
+```bash
+python3 scripts/generate-og-image.py   # renders scripts/og-image.html at 1200x630
+```
+
+Edit `scripts/og-image.html`, rerun, and commit the PNG. Headless Chrome does the
+drawing so the card uses the site's real webfonts, which are embedded in
+`scripts/og-fonts.css` by `scripts/fetch-og-fonts.py` rather than fetched: Chrome
+photographs the page the instant it paints, and fonts still in flight produce a card
+with no words on it. Scrapers cache the image hard, so if the card changes, share the
+link with a `?v=2` once to make them look again.
+
 The PNG icons in `public/` are generated, not hand-drawn. If the mark changes, rerun
 `python3 scripts/generate-icons.py` rather than exporting from a design tool: SVG
 converters routinely fill the mark's stroked ring and turn it into a blob.

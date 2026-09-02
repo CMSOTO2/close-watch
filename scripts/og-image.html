@@ -1,0 +1,179 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Closewatch social card</title>
+<!--
+  The source for public/og.png. Rendered by scripts/generate-og-image.py, not
+  opened by anyone: it is a 1200x630 page that exists to be photographed.
+
+  It uses the real webfonts and the palette out of src/styles.css so the card
+  matches the page it links to. Keep the two in step by hand; a card in last
+  season's brass is worse than no card.
+-->
+<!-- The faces are embedded, not fetched: headless Chrome photographs this page
+     the moment it paints, and a card whose fonts were still in flight comes out
+     with no words on it. See scripts/fetch-og-fonts.py. -->
+<link rel="stylesheet" href="og-fonts.css" />
+<style>
+
+  :root {
+    --canvas: #f5f1e9;
+    --surface: #ffffff;
+    --surface-2: #ebe5d9;
+    --ink: #1a1815;
+    --ink-2: #57524b;
+    --ink-3: #736d61;
+    --line: #ddd6c8;
+    --brand: #875809;
+    --brand-soft: #f4e3bc;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1200px;
+    height: 630px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 44px;
+    padding: 72px 76px;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand svg { width: 46px; height: 46px; }
+  .brand span {
+    font-family: 'Instrument Sans', 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+  }
+
+  .body { display: flex; align-items: flex-end; justify-content: space-between; gap: 56px; }
+
+  /* Three lines, no orphan. `balance` keeps it that way if the words ever
+     change; the width is what stops "read it." landing on a line of its own. */
+  h1 {
+    max-width: 13ch;
+    text-wrap: balance;
+    font-family: 'Instrument Sans', 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 74px;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  /* The card is read at thumbnail size more often than not, so the subline
+     carries the three nouns and nothing else. Full sentences vanish. */
+  .sub {
+    margin-top: 26px;
+    max-width: 30ch;
+    font-size: 26px;
+    font-weight: 450;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  /* A fragment of the report rather than a screenshot of it: at 300px wide a
+     real screenshot is grey mush, and this still reads as the product. */
+  .report {
+    flex: 0 0 330px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    padding: 26px 28px 28px;
+  }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+  }
+  .score {
+    margin-top: 10px;
+    font-family: 'Instrument Sans', 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 62px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .score em {
+    font-style: normal;
+    font-size: 24px;
+    color: var(--ink-3);
+    letter-spacing: 0;
+  }
+  .rows { margin-top: 22px; display: flex; flex-direction: column; gap: 12px; }
+  .rows div {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 19px;
+    color: var(--ink-2);
+  }
+  .rows i {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--brand);
+    transform: translateY(-3px);
+  }
+
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 21px;
+    color: var(--ink-3);
+  }
+  .foot b {
+    font-weight: 500;
+    color: var(--brand);
+    background: var(--brand-soft);
+    border-radius: 6px;
+    padding: 7px 12px;
+    letter-spacing: 0.04em;
+  }
+</style>
+
+<div class="brand">
+  <!-- public/favicon.svg, with the light-mode pairing inlined: a PNG cannot
+       answer prefers-color-scheme, and this one sits on the warm canvas. -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <rect width="32" height="32" rx="8.5" fill="#1a1815" />
+    <circle cx="16" cy="16" r="9" fill="none" stroke="#c08a2e" stroke-width="3"
+            stroke-linecap="round" stroke-dasharray="44.3 12.25" />
+    <circle cx="22.99" cy="10.34" r="2.7" fill="#c08a2e" />
+  </svg>
+  <span>Closewatch</span>
+</div>
+
+<div class="body">
+  <div>
+    <h1>Stop guessing whether they read it.</h1>
+    <p class="sub">Who opened it. How long they spent on your pricing. Who they forwarded it to.</p>
+  </div>
+
+  <div class="report">
+    <p class="kicker">Intent</p>
+    <p class="score">84<em>/100</em></p>
+    <div class="rows">
+      <div><i></i><span>Opened 3 times</span></div>
+      <div><i></i><span>4m 12s on Pricing</span></div>
+      <div><i></i><span>Forwarded to 2 readers</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <span>getclosewatch.com</span>
+  <b>Free to start</b>
+</div>

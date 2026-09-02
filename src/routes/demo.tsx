@@ -2,6 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { ProposalDemo } from '#/components/demo/proposal-demo'
+import { OG_IMAGE } from '#/components/landing/landing-page'
+import { publicEnv } from '#/env'
 
 const TITLE = 'Closewatch demo: read a proposal, then see what the sender saw'
 const DESCRIPTION =
@@ -10,8 +12,9 @@ const DESCRIPTION =
 // The demo is the link worth pasting into a thread, so it carries the same
 // social tags the landing page does. A title and description alone leave the
 // card to whatever the scraper guesses, and the card is most of what anyone
-// sees in a feed. No og:image here either, for the reason given in
-// `landingMeta`: a tag pointing at nothing renders worse than no tag.
+// sees in a feed. Same image as the landing page: it says what the product is,
+// which is the job here too. og:url points at /demo rather than home, because
+// this one is a destination on its own.
 export const Route = createFileRoute('/demo')({
   component: DemoPage,
   head: () => ({
@@ -21,7 +24,16 @@ export const Route = createFileRoute('/demo')({
       { property: 'og:title', content: TITLE },
       { property: 'og:description', content: DESCRIPTION },
       { property: 'og:type', content: 'website' },
-      { name: 'twitter:card', content: 'summary' },
+      { property: 'og:url', content: `${publicEnv.VITE_PUBLIC_URL}/demo` },
+      { property: 'og:image', content: OG_IMAGE },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      {
+        property: 'og:image:alt',
+        content:
+          'Closewatch: stop guessing whether they read it. An intent score of 84 beside three lines of activity, opened 3 times, 4m 12s on pricing, forwarded to 2 readers.',
+      },
+      { name: 'twitter:card', content: 'summary_large_image' },
     ],
   }),
 })

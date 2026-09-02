@@ -14,15 +14,22 @@ import {
   LinkShot,
 } from '#/components/landing/product-shots'
 import { PDF_MAX_MB } from '#/constants'
+import { publicEnv } from '#/env'
 
 const TITLE = 'Closewatch: know which proposals are actually being read'
 const DESCRIPTION =
   'Turn the proposal PDF you already send into a tracked link. See who opened it, how long they spent on pricing, and whether it was forwarded to the person who signs.'
 
+/** The card every scraper shows. Regenerate with scripts/generate-og-image.py. */
+export const OG_IMAGE = `${publicEnv.VITE_PUBLIC_URL}/og.png`
+
 // The landing page is the one URL that gets pasted into a chat or a search
 // result, so it carries its own title and description rather than inheriting
-// the app's bare "Closewatch". No og:image until there is a real one, since a
-// tag pointing at nothing renders worse than no tag at all.
+// the app's bare "Closewatch".
+//
+// og:url is the home page even on /r/hn and the rest. Without it a scraper
+// keys the card off whatever URL it was handed, and the same page shared from
+// three threads becomes three unrelated cards.
 export function landingMeta() {
   return [
     { title: TITLE },
@@ -30,7 +37,16 @@ export function landingMeta() {
     { property: 'og:title', content: TITLE },
     { property: 'og:description', content: DESCRIPTION },
     { property: 'og:type', content: 'website' },
-    { name: 'twitter:card', content: 'summary' },
+    { property: 'og:url', content: `${publicEnv.VITE_PUBLIC_URL}/` },
+    { property: 'og:image', content: OG_IMAGE },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    {
+      property: 'og:image:alt',
+      content:
+        'Closewatch: stop guessing whether they read it. An intent score of 84 beside three lines of activity, opened 3 times, 4m 12s on pricing, forwarded to 2 readers.',
+    },
+    { name: 'twitter:card', content: 'summary_large_image' },
   ]
 }
 
