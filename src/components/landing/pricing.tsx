@@ -12,10 +12,9 @@ import { cn } from '#/lib/utils'
  * and the number that actually predicts whether someone will pay is how many
  * proposals they have in flight.
  *
- * Checkout is not wired: the paid buttons are inert on purpose until there is
- * a Stripe account behind them. Free is the exception — signing up is the one
- * thing on this table that already works, so it links where it says it does
- * rather than pretending along with the others.
+ * Solo points at Settings rather than straight at a checkout: the subscription
+ * has to attach to an account, so signing in comes first either way. Studio has
+ * no price behind it yet and says so on hover rather than pretending.
  *
  * Features that do not exist yet are marked, not omitted. The plan needs the
  * shape it will have to be worth reading, and a small "soon" is the difference
@@ -36,6 +35,10 @@ type Plan = {
   who: string
   features: Array<Feature>
   cta: string
+  /** Where the button goes. Absent means it is not a button anyone can press. */
+  to?: '/login' | '/settings'
+  /** Shown on hover when there is no `to`, and the reason there isn't one. */
+  unavailable?: string
   /** Warm ground and a solid button. One plan at a time. */
   featured?: boolean
   /**
@@ -59,6 +62,7 @@ const PLANS: Array<Plan> = [
       { text: 'Full history, nothing expires' },
     ],
     cta: 'Start free',
+    to: '/login',
     featured: true,
     badge: 'Works today',
   },
@@ -72,6 +76,10 @@ const PLANS: Array<Plan> = [
       { text: 'Everything on the free plan' },
     ],
     cta: 'Choose Solo',
+    // Settings, not a checkout link: the upgrade needs a signed-in account to
+    // attach the subscription to, and that page is where Stripe sends people
+    // back to afterwards.
+    to: '/settings',
     // POSITIONING.md: do not price below $19, and do not hide it. No badge
     // while checkout is off. The price is the anchor on its own, and a second
     // caps line in a row of three cards is noise.
@@ -88,6 +96,7 @@ const PLANS: Array<Plan> = [
       { text: 'Your own domain on share links', soon: true },
     ],
     cta: 'Choose Studio',
+    unavailable: 'Studio is not open yet',
   },
 ]
 
@@ -160,19 +169,16 @@ export function Pricing() {
             {/* Pushes every button to the same line however tall the list is. */}
             <div className="mt-6 grow" />
 
-            {plan.cta === 'Start free' ? (
+            {plan.to ? (
               <Button asChild variant={plan.featured ? 'default' : 'outline'}>
-                <Link to="/login">{plan.cta}</Link>
+                <Link to={plan.to}>{plan.cta}</Link>
               </Button>
             ) : (
               <Button
                 type="button"
                 variant={plan.featured ? 'default' : 'outline'}
-                // TODO: open Stripe checkout for this plan. Inert until there is
-                // an account behind it — a button that silently does nothing is
-                // worse than one that says it is not ready.
                 disabled
-                title="Card payments are not switched on yet"
+                title={plan.unavailable}
               >
                 {plan.cta}
               </Button>
@@ -181,12 +187,13 @@ export function Pricing() {
         ))}
       </div>
 
-      {/* Three greyed-out buttons with no explanation read as a broken page.
-          Said out loud, the same three read as a plan that has not opened yet,
-          and the free tier — which does work — becomes the obvious move. */}
+      {/* True whether or not the keys are on the Worker yet: Settings is where
+          the upgrade lives either way, and it is the page that knows whether
+          Stripe is switched on. */}
       <p className="mt-4 text-[13px] text-ink-3">
-        Card payments are not switched on yet. The free plan works today, and it
-        is the one that shows you whether the rest is worth paying for.
+        Start free and upgrade from Settings the day two proposals stop being
+        enough. Solo is billed by Stripe; cancelling is one click in their
+        portal and never touches what you have already sent.
       </p>
     </>
   )

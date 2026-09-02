@@ -23,6 +23,7 @@ import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as RSourceRouteImport } from './routes/r.$source'
 import { Route as AuthedProposalsIdRouteImport } from './routes/_authed.proposals.$id'
 import { Route as AuthedProposalsNewRouteImport } from './routes/_authed.proposals.new'
+import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
 import { Route as ApiTrackVisitIdRouteImport } from './routes/api/track.$visitId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -94,6 +95,11 @@ const AuthedProposalsNewRoute = AuthedProposalsNewRouteImport.update({
   path: '/proposals/new',
   getParentRoute: () => AuthedRoute,
 } as any)
+const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
+  id: '/api/stripe/webhook',
+  path: '/api/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiTrackVisitIdRoute = ApiTrackVisitIdRouteImport.update({
   id: '/api/track/$visitId',
   path: '/api/track/$visitId',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/r/$source': typeof RSourceRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
   '/proposals/new': typeof AuthedProposalsNewRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
 }
 export interface FileRoutesByTo {
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/r/$source': typeof RSourceRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
   '/proposals/new': typeof AuthedProposalsNewRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
 }
 export interface FileRoutesById {
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/r/$source': typeof RSourceRoute
   '/_authed/proposals/$id': typeof AuthedProposalsIdRoute
   '/_authed/proposals/new': typeof AuthedProposalsNewRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
 }
 export interface FileRouteTypes {
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/r/$source'
     | '/proposals/$id'
     | '/proposals/new'
+    | '/api/stripe/webhook'
     | '/api/track/$visitId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/r/$source'
     | '/proposals/$id'
     | '/proposals/new'
+    | '/api/stripe/webhook'
     | '/api/track/$visitId'
   id:
     | '__root__'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/r/$source'
     | '/_authed/proposals/$id'
     | '/_authed/proposals/new'
+    | '/api/stripe/webhook'
     | '/api/track/$visitId'
   fileRoutesById: FileRoutesById
 }
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   PTokenRoute: typeof PTokenRoute
   RSourceRoute: typeof RSourceRoute
+  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
   ApiTrackVisitIdRoute: typeof ApiTrackVisitIdRoute
 }
 
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedProposalsNewRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/api/stripe/webhook': {
+      id: '/api/stripe/webhook'
+      path: '/api/stripe/webhook'
+      fullPath: '/api/stripe/webhook'
+      preLoaderRoute: typeof ApiStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/track/$visitId': {
       id: '/api/track/$visitId'
       path: '/api/track/$visitId'
@@ -354,6 +374,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   PTokenRoute: PTokenRoute,
   RSourceRoute: RSourceRoute,
+  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
   ApiTrackVisitIdRoute: ApiTrackVisitIdRoute,
 }
 export const routeTree = rootRouteImport

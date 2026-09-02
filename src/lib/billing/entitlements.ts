@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { queryOptions } from '@tanstack/react-query'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
+import { serverEnv } from '#/env'
 import { FREE_ACTIVE_PROPOSALS, queryKeys } from '#/constants'
 import type { BillingPlan } from '#/lib/supabase/types'
 
@@ -16,6 +17,9 @@ export type Entitlements = {
   /** Set while a paid plan is running out its notice period. */
   cancelAtPeriodEnd: boolean
   currentPeriodEnd: string | null
+  /** False until the Stripe keys are on the Worker. The UI says so rather than
+   *  offering a button that throws. */
+  billingEnabled: boolean
 }
 
 /** Statuses Stripe reports while the money is still good. Mirrors has_active_plan. */
@@ -29,6 +33,7 @@ export const FREE_ENTITLEMENTS: Entitlements = {
   canCreateProposal: true,
   cancelAtPeriodEnd: false,
   currentPeriodEnd: null,
+  billingEnabled: false,
 }
 
 /**
@@ -42,8 +47,13 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Entitlements> => {
     const supabase = getSupabaseServerClient()
 
+    // Read straight from the env rather than importing the Stripe module, so
+    // nothing can drag the SDK into the client bundle through this file.
+    const env = serverEnv()
+    const billingEnabled = !!env.STRIPE_SECRET_KEY && !!env.STRIPE_PRICE_SOLO
+
     const { data: auth } = await supabase.auth.getUser()
-    if (!auth.user) return FREE_ENTITLEMENTS
+    if (!auth.user) return { ...FREE_ENTITLEMENTS, billingEnabled }
 
     // Both reads are RLS-scoped to this user: the subscription row by the
     // "read own subscription" policy, the count by "own proposals".
@@ -71,6 +81,7 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
       canCreateProposal: limit === null || activeProposals < limit,
       cancelAtPeriodEnd: row?.cancel_at_period_end ?? false,
       currentPeriodEnd: row?.current_period_end ?? null,
+      billingEnabled,
     }
   },
 )

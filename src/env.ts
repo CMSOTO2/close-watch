@@ -23,6 +23,14 @@ const serverSchema = z.object({
   // app runs fine locally and in CI without one.
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().optional(),
+  // Optional in the same way: without them the app runs and the free plan
+  // works, and every billing path answers "not switched on yet" rather than
+  // throwing. The webhook secret comes from the endpoint in the Stripe
+  // dashboard, not from the API keys page.
+  STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
+  STRIPE_PRICE_SOLO: z.string().startsWith('price_').optional(),
+  STRIPE_PRICE_STUDIO: z.string().startsWith('price_').optional(),
 })
 
 let cached: z.infer<typeof serverSchema> | null = null
@@ -34,6 +42,13 @@ export function serverEnv() {
     IP_HASH_SALT: process.env.IP_HASH_SALT,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
+    // `|| undefined` matters: these are prefixed checks, and a key left empty
+    // in .env arrives as '' rather than missing, which fails startsWith and
+    // takes down every server path that reads the env at all.
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || undefined,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || undefined,
+    STRIPE_PRICE_SOLO: process.env.STRIPE_PRICE_SOLO || undefined,
+    STRIPE_PRICE_STUDIO: process.env.STRIPE_PRICE_STUDIO || undefined,
   })
   return cached
 }

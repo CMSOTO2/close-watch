@@ -6,7 +6,10 @@ import {
 } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
+import { z } from 'zod'
 import { getProfile, updateProfile } from '#/lib/profile'
+import { entitlementsQuery } from '#/lib/billing/entitlements'
+import { BillingSection } from '#/components/billing/billing-section'
 import { PageContainer } from '#/components/page-container'
 import { BackLink } from '#/components/back-link'
 import { queryKeys } from '#/constants'
@@ -17,11 +20,21 @@ const profileQuery = queryOptions({
 })
 
 export const Route = createFileRoute('/_authed/settings')({
-  loader: ({ context }) => context.queryClient.query(profileQuery),
+  // Stripe sends people back here after checkout. Anything else in the query
+  // string is ignored rather than being an error the user cannot fix.
+  validateSearch: z.object({
+    billing: z.enum(['done', 'cancelled']).optional(),
+  }),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.query(profileQuery),
+      context.queryClient.query(entitlementsQuery),
+    ]),
   component: SettingsPage,
 })
 
 function SettingsPage() {
+  const { billing } = Route.useSearch()
   const queryClient = useQueryClient()
   const { data: profile } = useSuspenseQuery(profileQuery)
   const [error, setError] = useState<string | null>(null)
@@ -125,6 +138,8 @@ function SettingsPage() {
             {error && <span className="text-[13px] text-danger">{error}</span>}
           </div>
         </form>
+
+        <BillingSection justPaid={billing === 'done'} />
 
         {profile?.email && (
           <p className="mt-8 border-t border-line pt-5 text-xs text-ink-3">
