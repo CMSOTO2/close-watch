@@ -3,6 +3,7 @@ import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
+import { createShareLink } from '#/lib/proposals/mutations'
 import { classifyPages } from '#/lib/proposals/classify'
 import type { PageText } from '#/lib/proposals/classify'
 import type { PageSection } from '#/lib/supabase/types'
@@ -169,6 +170,7 @@ function NewProposal() {
     defaultValues: {
       title: '',
       clientName: '',
+      recipientName: '',
       dealValue: '',
       file: null as File | null,
     },
@@ -186,7 +188,29 @@ function NewProposal() {
         data.set('pageCount', String(pageCount))
         data.set('sections', JSON.stringify(sections))
 
-        await createProposal({ data })
+        const { id } = await createProposal({ data })
+
+        // The link is cut here rather than inside createProposal, as a second
+        // call, so the upload cannot fail because of the send cap. A proposal
+        // saved as a draft that could not be shared is a good outcome: the PDF
+        // is in, and the only thing missing is the thing the free plan actually
+        // limits. Folding the two together would put the wall back in front of
+        // the upload, which is exactly what the send_cap migration moved it off.
+        const recipient = value.recipientName.trim()
+        let link: { url: string } | null = null
+        let capped = false
+        if (recipient) {
+          try {
+            link = await createShareLink({
+              data: { proposalId: id, recipientName: recipient },
+            })
+          } catch (err) {
+            // Any failure here leaves a usable draft, so it is reported as the
+            // milder thing it is rather than as a failed upload.
+            capped = true
+            console.error('[upload] could not create the first link', err)
+          }
+        }
 
         // Fired before the navigation, not after: the provider lives above the
         // router, so the toast rides across to the dashboard and lands next to
@@ -202,17 +226,31 @@ function NewProposal() {
         // branch is reached when extraction simply fails on the device, and
         // telling someone their perfectly ordinary proposal is unreadable is
         // both wrong and the first thing they see after uploading it.
+        const client = value.clientName.trim()
         notify(
-          textless
-            ? `${value.clientName.trim()} proposal created \u2014 tag the pages yourself`
-            : `${value.clientName.trim()} proposal created`,
-          textless ? 'neutral' : 'good',
+          capped
+            ? `${client} proposal saved as a draft \u2014 no link yet`
+            : textless
+              ? `${client} proposal created \u2014 tag the pages yourself`
+              : `${client} proposal created`,
+          capped ? 'neutral' : textless ? 'neutral' : 'good',
         )
 
         await queryClient.invalidateQueries({
           queryKey: queryKeys.proposalSummaries,
         })
-        await router.navigate({ to: '/dashboard' })
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.entitlements,
+        })
+
+        // Somewhere with the link on it, not the dashboard, whenever there is a
+        // link. A proposal nobody has been sent is not finished, and the
+        // dashboard is where you go when you are done rather than mid-task.
+        await router.navigate(
+          link
+            ? { to: '/proposals/$id', params: { id }, search: { sent: true } }
+            : { to: '/dashboard' },
+        )
       } catch (err) {
         setSubmitError(
           err instanceof Error
@@ -291,6 +329,33 @@ function NewProposal() {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="Acme Studio"
+                    className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+                  />
+                </Field>
+              )}
+            </form.Field>
+
+            {/* Optional, and it has to stay optional. A required recipient
+                would cut a link on every upload, which makes every upload a
+                send, which puts the free plan's live cap back in front of
+                someone still working out what this does. Blank keeps today's
+                behaviour exactly: a draft that costs nothing. */}
+            <form.Field name="recipientName">
+              {(field) => (
+                <Field
+                  label="Send to"
+                  hint={
+                    entitlements.canSendProposal
+                      ? 'Optional. Name them and you get the link straight away.'
+                      : 'Leave blank for now — you are at your live proposal limit.'
+                  }
+                  field={field}
+                >
+                  <input
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="Jordan at Acme"
                     className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
                   />
                 </Field>

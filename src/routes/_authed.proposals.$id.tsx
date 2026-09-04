@@ -9,9 +9,10 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
-import { Download } from 'lucide-react'
+import { Check, Copy, Download, Send } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
+import { z } from 'zod'
 import { getProposalDetail, getProposalFileUrl } from '#/lib/proposals/detail'
 import {
   confirmPageSections,
@@ -35,7 +36,7 @@ import { BackLink } from '#/components/back-link'
 import { cn, formatMoney } from '#/lib/utils'
 import { formatDay, useTimeZone } from '#/lib/local-date'
 import { deadLinkLabel, partitionLinks } from '#/lib/proposals/link-status'
-import { SECTION_LABELS, queryKeys } from '#/constants'
+import { SECTION_LABELS, queryKeys, shareUrl } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
 
 const detailQuery = (id: string) =>
@@ -45,6 +46,10 @@ const detailQuery = (id: string) =>
   })
 
 export const Route = createFileRoute('/_authed/proposals/$id')({
+  // Set only by the upload form, and only when it managed to cut a link. It
+  // decides whether this page opens with the hand-off banner or the ordinary
+  // detail view.
+  validateSearch: z.object({ sent: z.boolean().optional() }),
   loader: async ({ context, params }) => {
     const [proposal] = await Promise.all([
       context.queryClient.query(detailQuery(params.id)),
@@ -83,6 +88,73 @@ function expiryInfo(
   return { label: `Expires ${formatDay(iso, timeZone)}`, soon: false }
 }
 
+/**
+ * The hand-off, shown once, straight after upload.
+ *
+ * Closewatch does not send anything. The owner sends the link, from their own
+ * inbox, and until they do the proposal is a file we are holding and no client
+ * has seen. That step used to be invisible: uploading landed you on the
+ * dashboard next to a new row, which looks like the job is finished, and the
+ * link was two clicks away in a column halfway down this page.
+ *
+ * So it gets its own block at the top, with the URL in full and one button. It
+ * is deliberately loud and deliberately temporary — the ordinary list below is
+ * where you come back for the link later, and this disappears on reload.
+ */
+function SendHandoff({
+  url,
+  recipient,
+  client,
+}: {
+  url: string
+  recipient: string
+  client: string
+}) {
+  const notify = useToast()
+  const [copied, setCopied] = useState(false)
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+      notify(`Link for ${client} copied`)
+    } catch {
+      notify('Could not copy — select the link and copy it manually', 'danger')
+    }
+  }
+
+  return (
+    <div className="mt-6 rounded-lg border border-brand-2 bg-brand-soft/60 px-4 py-4">
+      <p className="flex items-center gap-2 font-display text-base font-semibold tracking-tight text-ink">
+        <Send aria-hidden className="size-4 text-brand" />
+        Now send this link to {recipient}
+      </p>
+      <p className="mt-1 text-[13px] leading-relaxed text-ink-2">
+        Closewatch does not email it for you. Paste it into your own message,
+        the way you would have attached the PDF. Tracking starts the moment it
+        is opened.
+      </p>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {/* Selectable, and showing the whole URL: someone who does not trust a
+            copy button should be able to read what they are about to send. */}
+        <code className="min-w-0 flex-1 truncate rounded-md border border-line bg-surface px-3 py-2 font-mono text-[13px] text-ink-2">
+          {url}
+        </code>
+        <Button type="button" variant="brand" onClick={() => void copy()}>
+          {copied ? (
+            <Check aria-hidden className="size-3.5" />
+          ) : (
+            <Copy aria-hidden className="size-3.5" />
+          )}
+          {copied ? 'Copied' : 'Copy link'}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 /** Who a link was cut for — used in the list and in the revoke confirmation. */
 function recipientOf(link: {
   recipientName: string | null
@@ -93,6 +165,7 @@ function recipientOf(link: {
 
 function ProposalDetail() {
   const { id } = Route.useParams()
+  const { sent } = Route.useSearch()
   const router = useRouter()
   const queryClient = useQueryClient()
   const { data: proposal } = useSuspenseQuery(detailQuery(id))
@@ -102,6 +175,13 @@ function ProposalDetail() {
 
   // notFound in the loader means this is always present past that point.
   if (!proposal) return null
+
+  // The newest link that still opens, and only when the upload form sent us
+  // here. Read from the proposal rather than passed through the URL, so the
+  // token never sits in history or a Referer header.
+  const justSent = sent
+    ? (partitionLinks(proposal.shareLinks).live.at(0)?.link ?? null)
+    : null
 
   async function runDelete() {
     setDeleting(true)
@@ -169,6 +249,14 @@ function ProposalDetail() {
 
         <DownloadPdfButton id={id} />
       </div>
+
+      {justSent && (
+        <SendHandoff
+          url={shareUrl(justSent.token)}
+          recipient={recipientOf(justSent)}
+          client={proposal.clientName}
+        />
+      )}
 
       <Outcome proposalId={id} />
       <ProposalActivity proposalId={id} />
