@@ -197,3 +197,25 @@ account has thousands of visits.
 **Rules-based intent scoring.** `intent.ts` is deterministic and explainable, and the reasons
 it emits are the actual product. Replace the weights with something learned only after there
 is outcome data to learn from, and keep emitting reasons either way.
+
+Two of its rules look like arbitrary constants and are not. Both were added after a real
+80-page proposal opened once for 43 seconds came back warm, on reasons that were entirely
+"Printed it" and "Downloaded a copy".
+
+- **`DEPTH_PAGE_CAP` caps the divisor at twelve pages.** Depth is engaged time per page, and
+  dividing by the true page count is right up to a point and absurd past it: at 45s a page an
+  80-page document needed an hour of reading before it counted as read closely. Nobody spends
+  that, so on long documents the depth signal was dead and the score fell to whatever the
+  forward and offline signals said. Twelve is where a proposal's argument tends to end and its
+  appendices begin. Removing the cap does not make the score stricter, it makes long proposals
+  unscoreable.
+- **Printing and downloading are capped together at 20.** Separately they were 18 and 15, and
+  33 clears the warm floor of 30 on its own, so someone who saved and printed a document they
+  had barely read came back warm on no reading at all. They are two halves of one act.
+
+A third constant lives in `classify.ts`. **`PRICING_SPREAD_SHARE` demotes density-only pricing
+pages** when they run to more than a quarter of a document of eight pages or more. Amounts
+beside short labels are a price table on one page and a rate card across thirty; the same
+80-page proposal came back with 30 pages tagged pricing, which made "time on pricing" mean
+time on the numeric half of the deck. Pages that name a pricing word are never demoted,
+because the owner's own headings are better evidence than the classifier is.

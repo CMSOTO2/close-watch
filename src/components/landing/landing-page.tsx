@@ -219,7 +219,7 @@ export function LandingPage() {
             <Feature
               kicker="Intent, explained"
               title="A score that shows its working."
-              body="Repeat opens, pricing dwell, depth of read, forwards, downloads and prints each contribute a fixed number of points. No model and no black box. Every proposal lists the reasons behind its own number, because the reasons are what you act on."
+              body="Repeat opens, pricing dwell, depth of read, forwards, downloads and prints all add points on a fixed scale. No model and no black box. Every proposal lists the reasons behind its own number, because the reasons are what you act on."
               shot={<IntentShot />}
             />
           </PageContainer>

@@ -81,8 +81,8 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
       <>
         A rules-based tally rather than a model, and it shows its working.
         Repeat opens, time on your pricing page, depth of read normalised by
-        document length, forwarding, downloads and prints each add a fixed
-        number of points. Every proposal lists the reasons behind its own score.
+        document length, forwarding, downloads and prints all add points on a
+        fixed scale. Every proposal lists the reasons behind its own score.
         A number on its own is a horoscope; &ldquo;they came back Tuesday and
         spent four minutes on pricing&rdquo; is something you can act on before
         lunch.
