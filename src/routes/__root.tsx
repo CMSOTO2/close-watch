@@ -40,6 +40,21 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         rel: 'stylesheet',
         href: appCss,
       },
+      // Fonts, in the head rather than behind an @import in styles.css. An
+      // @import is only discovered once our own stylesheet has been fetched and
+      // parsed, and it then costs two more serialised round trips before a
+      // glyph exists — googleapis for the declarations, gstatic for the files —
+      // all of it blocking the render. Declared here they start with everything
+      // else.
+      //
+      // React hoists every precedence-managed stylesheet above these, so the
+      // preconnects end up a few hundred bytes further down the head than they
+      // read here. That is not worth fighting: the preload scanner takes the
+      // head in one bite, and the round trip these save was the expensive part.
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap',
+      },
       // The SVG is the real one: it is the only format that can answer
       // prefers-color-scheme, which the mark needs so its tile does not sit as
       // a dark square on a dark tab strip. The PNGs are the fallback for

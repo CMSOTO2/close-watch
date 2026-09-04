@@ -1,4 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+/* The webfonts are requested from the document head in routes/__root.tsx, not
+   with an @import here. An @import is discovered only after this stylesheet has
+   been fetched and parsed, and it then costs two more serialised round trips —
+   one to fonts.googleapis.com for the face declarations, another to
+   fonts.gstatic.com for the files — none of which the browser can start early
+   because it does not know they exist. All of it is render-blocking. In the
+   head they are in the initial HTML, so preconnect and the fetch begin with
+   everything else. */
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
@@ -34,7 +41,7 @@
   --surface-3: #ddd5c5;
   --ink: #1a1815;
   --ink-2: #57524b;
-  --ink-3: #736d61;
+  --ink-3: #6c665a;
   --line: #ddd6c8;
   --line-soft: #eee9e0;
 
@@ -141,7 +148,7 @@
   --surface-3: #2a2723;
   --ink: #f0ede7;
   --ink-2: #a39c90;
-  --ink-3: #746e65;
+  --ink-3: #8c867d;
   --line: #2d2a25;
   --line-soft: #232120;
 
