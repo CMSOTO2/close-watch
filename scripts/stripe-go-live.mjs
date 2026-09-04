@@ -36,6 +36,14 @@ const AMOUNT_CENTS = 1900
 const CURRENCY = 'usd'
 const TAG = { closewatch_plan: 'solo' }
 
+// What the customer sees on their card statement. Without it Stripe falls back
+// to the account's business name, which is how a charge ends up looking like it
+// came from a company the customer has never heard of — the most common reason
+// someone calls their bank instead of us. Set on the product because that is
+// what subscription invoices read; also worth setting under Settings ->
+// Public details so one-off charges match.
+const STATEMENT_DESCRIPTOR = 'CLOSEWATCH'
+
 const recreateWebhook = process.argv.includes('--recreate-webhook')
 
 function envFromFile(path = '.env') {
@@ -62,6 +70,14 @@ console.log(`Mode: ${live ? 'LIVE — real cards' : 'sandbox'}\n`)
 
 const stripe = new Stripe(key)
 
+// --- which account is this? --------------------------------------------------
+// Printed before anything is created, because the whole hazard of running this
+// is having grabbed a key from the wrong business. Read it before you answer
+// the prompts.
+const account = await stripe.accounts.retrieve()
+console.log(`Account:  ${account.settings?.dashboard?.display_name ?? '(unnamed)'} — ${account.id}`)
+console.log(`          charges ${account.charges_enabled ? 'enabled' : 'NOT ENABLED — finish activation first'}\n`)
+
 // --- product and price -------------------------------------------------------
 const found = await stripe.products.search({ query: `metadata['closewatch_plan']:'solo'` })
 let product = found.data.find((p) => p.active)
@@ -71,9 +87,19 @@ if (product) {
   product = await stripe.products.create({
     name: 'Closewatch Solo',
     description: 'Unlimited active proposals. Everything on the free plan, without the ceiling.',
+    statement_descriptor: STATEMENT_DESCRIPTOR,
     metadata: TAG,
   })
   console.log(`product   ${product.id} (created)`)
+}
+
+// An existing product from before this script set a descriptor would otherwise
+// keep billing under the account name forever.
+if (product.statement_descriptor !== STATEMENT_DESCRIPTOR) {
+  product = await stripe.products.update(product.id, {
+    statement_descriptor: STATEMENT_DESCRIPTOR,
+  })
+  console.log(`          statement descriptor set to ${STATEMENT_DESCRIPTOR}`)
 }
 
 const prices = await stripe.prices.list({ product: product.id, active: true, limit: 100 })
