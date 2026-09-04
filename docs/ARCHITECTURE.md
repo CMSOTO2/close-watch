@@ -149,6 +149,16 @@ that difference matters.
 PDFs live in a private storage bucket. The viewer gets a one-hour signed URL, never a public
 one. Viewer IPs are salted and hashed before storage, and the raw IP is never written.
 
+`SECURITY DEFINER` helpers that RLS policies call live in the `private` schema, not in
+`public`. Both halves of that are forced: they have to be definer because they read rows the
+caller cannot see, and `authenticated` has to hold EXECUTE because a policy expression is
+evaluated as the querying role. In `public` those two facts together publish the function as
+a PostgREST RPC, which is how `sent_proposal_count` briefly let a signed-in user read another
+account's pipeline size given a uuid. Revoking EXECUTE is not the fix — it disables the
+policy and every insert fails. Moving the function out of the exposed schema is. The rule is
+not that definer functions are dangerous, it is that a definer function in `public` is a
+public API whether or not anyone meant to publish one.
+
 Sign-in carries a destination through the round-trip, and that destination is attacker
 controlled, so `safeNext` in `src/lib/auth-redirect.ts` is a boundary rather than a
 convenience. It rejects anything that is not a path on this origin, and specifically

@@ -7,5 +7,10 @@
   // Serve the app and /p/:token from the production domain. Provisioned on
   // `wrangler deploy`; requires the getclosewatch.com zone in this Cloudflare
   // account (it is, via Cloudflare Registrar).
-  "routes": [{ "pattern": "getclosewatch.com", "custom_domain": true }]
+  "routes": [{ "pattern": "getclosewatch.com", "custom_domain": true }],
+  // Without this the console.error calls in the ingest endpoint go nowhere the
+  // moment `wrangler tail` is closed, which is every moment that matters. On,
+  // they are queryable in the dashboard under Workers & Pages -> Logs, and a
+  // tracking failure leaves a trace somebody can find days later.
+  "observability": { "enabled": true }
 }
