@@ -48,9 +48,15 @@ Apply the schema with `supabase db push`, or paste the files in
 pnpm dev        # http://localhost:3000
 pnpm build
 pnpm lint
-pnpm test       # unit
-pnpm test:e2e   # end-to-end, needs .env and starts its own dev server
+pnpm test           # unit
+pnpm test:e2e       # end-to-end, needs .env and starts its own dev server
+pnpm test:e2e:ui    # the same, in Playwright's watch-and-time-travel UI
+pnpm test:e2e:headed
 ```
+
+A failing end-to-end test keeps its trace and video; the reporter prints the
+`show-trace` command to open it. Passing runs keep neither, on purpose, because
+a trace is well over a megabyte. `--trace on` overrides that for one run.
 
 `pnpm test` and `pnpm lint` and `pnpm build` also run on every push through
 `.github/workflows/ci.yml`, which matters because `wrangler deploy` publishes the

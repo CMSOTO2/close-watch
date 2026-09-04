@@ -14,6 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check .",
     "deploy": "npm run build && wrangler deploy && node scripts/indexnow.mjs",
