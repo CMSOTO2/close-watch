@@ -45,13 +45,13 @@ Apply the schema with `supabase db push`, or paste the files in
 `supabase/migrations/` into the SQL editor in order.
 
 ```bash
-pnpm dev        # http://localhost:3000
+pnpm dev              # http://localhost:3000
 pnpm build
 pnpm lint
-pnpm test           # unit
-pnpm test:e2e       # end-to-end, needs .env and starts its own dev server
-pnpm test:e2e:ui    # the same, in Playwright's watch-and-time-travel UI
-pnpm test:e2e:headed
+pnpm test             # unit
+pnpm test:e2e         # end-to-end, needs .env and starts its own dev server
+pnpm test:e2e:ui      # the same, in Playwright's watch-and-time-travel UI
+pnpm test:e2e:headed  # watch it drive a real browser window
 ```
 
 A failing end-to-end test keeps its trace and video; the reporter prints the
