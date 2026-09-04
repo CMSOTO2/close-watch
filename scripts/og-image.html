@@ -47,11 +47,25 @@
 
   .brand { display: flex; align-items: center; gap: 14px; }
   .brand svg { width: 46px; height: 46px; }
-  .brand span {
+  .brand .name {
     font-family: 'Instrument Sans', 'Inter', sans-serif;
     font-weight: 600;
     font-size: 32px;
     letter-spacing: -0.02em;
+  }
+  /* Who the card is for, said once and quietly. The headline is the hook and
+     has to stay the hook, so the audience sits beside the wordmark, where a
+     kicker sits on every page of the site anyway. */
+  .brand .who {
+    margin-left: 4px;
+    padding-left: 18px;
+    border-left: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand);
   }
 
   .body { display: flex; align-items: flex-end; justify-content: space-between; gap: 56px; }
@@ -181,13 +195,14 @@
             stroke-linecap="round" stroke-dasharray="44.3 12.25" />
     <circle cx="22.99" cy="10.34" r="2.7" fill="#875809" />
   </svg>
-  <span>Closewatch</span>
+  <span class="name">Closewatch</span>
+  <span class="who">Proposal tracking for agencies</span>
 </div>
 
 <div class="body">
   <div>
     <h1>Stop guessing whether they read it.</h1>
-    <p class="sub">Who opened it. How long they spent on your pricing. Who they forwarded it to.</p>
+    <p class="sub">Which client opened it. How long on your pricing. Who they forwarded it to.</p>
   </div>
 
   <div class="report">

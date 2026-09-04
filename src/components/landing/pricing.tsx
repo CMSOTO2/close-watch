@@ -71,7 +71,7 @@ const PLANS: Array<Plan> = [
     name: 'Solo',
     price: '$19',
     cadence: '/mo',
-    who: 'For one person with more than two deals in the air.',
+    who: 'For the person sending every proposal at a small agency.',
     features: [
       { text: 'Unlimited live proposals' },
       { text: 'Everything on the free plan' },
@@ -89,7 +89,7 @@ const PLANS: Array<Plan> = [
     name: 'Studio',
     price: '$49',
     cadence: '/mo',
-    who: 'For a small team working one pipeline together.',
+    who: 'For an agency team working one pipeline together.',
     features: [
       { text: 'Everything in Solo' },
       { text: '3 seats', soon: true },

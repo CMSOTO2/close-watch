@@ -64,6 +64,18 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     ),
   },
   {
+    q: 'Does it work across all my clients, or one deal at a time?',
+    a: (
+      <>
+        All of them. The dashboard groups proposals under the client they
+        belong to, so an agency running nine deals across six clients reads six
+        accounts rather than nine files, and search, heat filtering and sorting
+        work across the lot. Seats for a team are still to come; today one
+        account holds the whole pipeline.
+      </>
+    ),
+  },
+  {
     q: 'What is the intent score, really?',
     a: (
       <>

@@ -1,14 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { canonical } from '#/lib/seo'
+import { canonical, socialMeta } from '#/lib/seo'
 import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { ProposalDemo } from '#/components/demo/proposal-demo'
-import { OG_IMAGE } from '#/components/landing/landing-page'
-import { publicEnv } from '#/env'
 
-const TITLE = 'Closewatch demo: read a proposal, then see what the sender saw'
+const TITLE = 'Proposal Tracking Demo for Agencies | Closewatch'
 const DESCRIPTION =
-  'Read a sample proposal the way a client would, then see the attention report it produces. No sign-up, nothing stored.'
+  'Read a sample agency proposal the way a client would, then see the attention report your reading produced. No sign-up, nothing stored.'
+
+const SOCIAL_TITLE = 'Read a proposal, then see what the sender saw'
+const SOCIAL_DESCRIPTION =
+  'Read a sample proposal the way a client would, then see the tracking report it produced. No sign-up, nothing stored.'
 
 // The demo is the link worth pasting into a thread, so it carries the same
 // social tags the landing page does. A title and description alone leave the
@@ -22,22 +24,11 @@ export const Route = createFileRoute('/demo')({
     meta: [
       { title: TITLE },
       { name: 'description', content: DESCRIPTION },
-      { property: 'og:title', content: TITLE },
-      { property: 'og:description', content: DESCRIPTION },
-      { property: 'og:type', content: 'website' },
-      { property: 'og:site_name', content: 'Closewatch' },
-      { property: 'og:url', content: `${publicEnv.VITE_PUBLIC_URL}/demo` },
-      { property: 'og:image', content: OG_IMAGE },
-      { property: 'og:image:secure_url', content: OG_IMAGE },
-      { property: 'og:image:type', content: 'image/png' },
-      { property: 'og:image:width', content: '1200' },
-      { property: 'og:image:height', content: '630' },
-      {
-        property: 'og:image:alt',
-        content:
-          'Closewatch: stop guessing whether they read it. An intent score of 84 beside three lines of activity, opened 3 times, 4m 12s on pricing, forwarded to 2 readers.',
-      },
-      { name: 'twitter:card', content: 'summary_large_image' },
+      ...socialMeta({
+        title: SOCIAL_TITLE,
+        description: SOCIAL_DESCRIPTION,
+        path: '/demo',
+      }),
     ],
     links: canonical('/demo'),
   }),

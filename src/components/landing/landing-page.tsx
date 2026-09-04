@@ -14,20 +14,22 @@ import {
   LinkShot,
 } from '#/components/landing/product-shots'
 import { PDF_MAX_MB } from '#/constants'
-import { publicEnv } from '#/env'
+import { socialMeta } from '#/lib/seo'
 
-const TITLE = 'Closewatch: know which proposals are actually being read'
+// Two titles, on purpose. The tab and the search result answer what someone
+// types into Google when they have this problem — "proposal tracking software
+// for agencies" — while the H1 stays the hook, because a page that opens with
+// its own category name sells nothing. Google reads the title for intent and
+// the page for whether it delivers on it.
+const TITLE = 'Proposal Tracking Software for Agencies | Closewatch'
 const DESCRIPTION =
-  'Turn the proposal PDF you already send into a tracked link. See who opened it, how long they spent on pricing, and whether it was forwarded to the person who signs.'
+  'Proposal tracking for agencies: turn the PDF you already send into a link that shows who opened it, how long they spent on pricing, and who they forwarded it to.'
 
-/**
- * The card every scraper shows. Regenerate with scripts/generate-og-image.py.
- *
- * The version is a cache-buster, and bumping it is part of changing the card:
- * scrapers key their copy on the URL, so a redesign at the same path can sit
- * unseen behind the old one for weeks.
- */
-export const OG_IMAGE = `${publicEnv.VITE_PUBLIC_URL}/og.png?v=2`
+// The card, on the other hand, is read in a feed by someone who was not
+// looking for anything. Hook first, audience second.
+const SOCIAL_TITLE = 'Proposal tracking built for agencies'
+const SOCIAL_DESCRIPTION =
+  'Stop guessing whether they read it. See which client opened the proposal, how long they spent on pricing, and whether it reached the person who signs.'
 
 // The landing page is the one URL that gets pasted into a chat or a search
 // result, so it carries its own title and description rather than inheriting
@@ -40,24 +42,11 @@ export function landingMeta() {
   return [
     { title: TITLE },
     { name: 'description', content: DESCRIPTION },
-    { property: 'og:title', content: TITLE },
-    { property: 'og:description', content: DESCRIPTION },
-    { property: 'og:type', content: 'website' },
-    { property: 'og:site_name', content: 'Closewatch' },
-    { property: 'og:url', content: `${publicEnv.VITE_PUBLIC_URL}/` },
-    { property: 'og:image', content: OG_IMAGE },
-    // Meta's scraper reads secure_url and type where they exist. Not required,
-    // and cheap enough not to argue with.
-    { property: 'og:image:secure_url', content: OG_IMAGE },
-    { property: 'og:image:type', content: 'image/png' },
-    { property: 'og:image:width', content: '1200' },
-    { property: 'og:image:height', content: '630' },
-    {
-      property: 'og:image:alt',
-      content:
-        'Closewatch: stop guessing whether they read it. An intent score of 84 beside three lines of activity, opened 3 times, 4m 12s on pricing, forwarded to 2 readers.',
-    },
-    { name: 'twitter:card', content: 'summary_large_image' },
+    ...socialMeta({
+      title: SOCIAL_TITLE,
+      description: SOCIAL_DESCRIPTION,
+      path: '/',
+    }),
   ]
 }
 
@@ -75,7 +64,7 @@ const STEPS = [
   {
     n: '03',
     title: 'Call the deal that is running hot',
-    body: 'Opens, time on pricing, forwards, prints. The list sorts itself so the proposal worth a call today is the one at the top.',
+    body: 'Opens, time on pricing, forwards, prints. Your pipeline sorts itself, so the client worth a call today is the one at the top of the list.',
   },
 ]
 
@@ -89,15 +78,16 @@ export function LandingPage() {
         <PageContainer className="pb-16 pt-14 sm:pb-20 sm:pt-20">
           <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
             <div>
-              <p className="kicker text-brand">Proposal intelligence</p>
+              <p className="kicker text-brand">Proposal tracking for agencies</p>
               <h1 className="mt-4 max-w-[15ch] font-display text-4xl font-semibold leading-[1.03] tracking-[-0.035em] sm:text-5xl lg:text-[3.4rem]">
                 Stop guessing whether they read it.
               </h1>
               <p className="mt-5 max-w-[54ch] text-[17px] leading-relaxed text-ink-2">
-                Closewatch turns the proposal PDF you already send into a
-                tracked link. You see who opened it, how long they spent on your
-                pricing, and whether it got forwarded to the person who signs,
-                so you know which deal to chase today and which one to let go.
+                Closewatch turns the proposal PDF your agency already sends
+                into a tracked link. You see which client opened it, how long
+                they spent on your pricing, and whether it reached the person
+                who signs, so you know which deal to chase this week and which
+                one to let go.
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -133,9 +123,9 @@ export function LandingPage() {
                 <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
                   You send the PDF and the line goes dead. Was it read? Did it
                   reach the person with the budget? Did the number scare them,
-                  or did it never get opened at all? Without an answer, every
-                  follow-up is a guess, sent too early, too late, or to the
-                  wrong person entirely.
+                  or did it never get opened at all? Run five of those at once,
+                  one per client, and every follow-up is a guess: sent too
+                  early, too late, or to the wrong person entirely.
                 </p>
                 <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
                   A tracked link answers it. Not with a vanity open-rate, but
@@ -175,7 +165,7 @@ export function LandingPage() {
           <PageContainer className="py-16 sm:py-20">
             <p className="kicker text-brand">How it works</p>
             <h2 className="mt-3 max-w-[22ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
-              Three steps, and none of them change how you sell.
+              Three steps, and none of them change how your agency sells.
             </h2>
 
             <ol className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
@@ -225,6 +215,48 @@ export function LandingPage() {
               body="Repeat opens, pricing dwell, depth of read, forwards, downloads and prints each contribute a fixed number of points. No model and no black box. Every proposal lists the reasons behind its own number, because the reasons are what you act on."
               shot={<IntentShot />}
             />
+          </PageContainer>
+        </section>
+
+        {/* Who it is for. Sits between the feature deep-dives and the price
+            on purpose: "does this fit the way we work" is the last question
+            anyone asks before looking at what it costs. */}
+        <section id="agencies" className="scroll-mt-16">
+          <PageContainer className="py-16 sm:py-20">
+            <p className="kicker text-brand">For agencies</p>
+            <h2 className="mt-3 max-w-[24ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+              Built for a pipeline with a dozen clients in it.
+            </h2>
+            <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
+              One proposal is easy to keep in your head. Nine of them across six
+              clients, each with a different person reading it, is a pipeline —
+              and that is where a tracked link stops being a curiosity and
+              starts deciding where your week goes.
+            </p>
+
+            <dl className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
+              {[
+                {
+                  k: 'Grouped by client',
+                  v: 'Every proposal rolls up under the client it belongs to, so you read an account rather than a folder of files.',
+                },
+                {
+                  k: 'One link per stakeholder',
+                  v: 'The ops lead and the founder get their own links. When the ops lead\u2019s picks up a second reader, you know it went upstairs.',
+                },
+                {
+                  k: 'Ordered by what to do next',
+                  v: 'The list sorts by intent, so Monday starts with the deal worth a call and not the one you happened to remember.',
+                },
+              ].map((p) => (
+                <div key={p.k} className="bg-surface px-4 py-5">
+                  <dt className="kicker">{p.k}</dt>
+                  <dd className="mt-2 text-[13px] leading-relaxed text-ink-2">
+                    {p.v}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </PageContainer>
         </section>
 

@@ -1,7 +1,8 @@
 # Closewatch
 
-Upload the proposal PDF you already send. Get a link that tells you when the client opened
-it, how long they spent on pricing, and whether they forwarded it to someone else.
+Proposal tracking for agencies. Upload the proposal PDF you already send. Get a link that
+tells you when the client opened it, how long they spent on pricing, and whether they
+forwarded it to someone else.
 
 Live at [getclosewatch.com](https://getclosewatch.com). The name is settled; the
 alternatives that were considered are in [docs/NAMING.md](docs/NAMING.md).
