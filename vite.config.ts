@@ -22,6 +22,11 @@ const config = defineConfig({
       '@tanstack/react-form-start > @tanstack/react-form > @tanstack/react-store',
     ],
   },
+  // The pdfjs worker is an ES module and imports other modules, so the worker
+  // wrapper in src/lib/pdf-worker.ts has to be emitted as one too. Vite's build
+  // default is iife, which would strip the imports and produce a worker that
+  // fails on the first message.
+  worker: { format: 'es' },
   plugins: [
     devtools(),
     cloudflare({ viteEnvironment: { name: 'ssr' } }),

@@ -48,8 +48,23 @@ async function readPdf(file: File): Promise<ReadPdf> {
   }
 
   const data = new Uint8Array(await file.arrayBuffer())
-  const loadingTask = pdfjs.getDocument({ data })
-  const doc = await loadingTask.promise
+
+  // Anything thrown from here down is pdfjs failing to parse or, more often on
+  // an old phone, failing to run at all. Its own message is minified and says
+  // nothing a person can act on — "undefined is not a function (near '...')" —
+  // so it gets a sentence that names the two things actually worth trying, with
+  // the original kept as `cause` for the console.
+  let doc
+  let loadingTask
+  try {
+    loadingTask = pdfjs.getDocument({ data })
+    doc = await loadingTask.promise
+  } catch (cause) {
+    throw new Error(
+      `Could not read that PDF on this device. If you are on a phone, update it and try again, or upload from a computer. (${cause instanceof Error ? cause.message : String(cause)})`,
+      { cause },
+    )
+  }
   const pageCount = doc.numPages
 
   const pages: Array<PageText> = []

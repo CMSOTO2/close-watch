@@ -176,6 +176,15 @@ only ever called by the ingest endpoint through the service-role client.
 
 ## Decisions worth revisiting later
 
+**pdfjs runs in two scopes and both need the same polyfill.** pdfjs v6 calls
+`Promise.withResolvers` in class field initialisers with no feature detection, and that
+landed in Safari 17.4. Every browser on iOS is WebKit underneath — Apple requires it — so
+an iPhone below 17.4 cannot open a PDF in *any* browser while the same person's desktop
+works fine. `src/lib/promise-with-resolvers.ts` fills it, and `src/lib/pdf-worker.ts`
+exists solely to pull it into the worker's own global scope before the pdfjs worker runs.
+Importing the package's worker directly again would fix the main thread and move the
+failure one message deeper, where it reads as a worker dying for no stated reason.
+
 **Client-side PDF rendering.** Fast to build, no worker infrastructure. The costs are mobile
 performance on long documents and the fact that the whole file reaches the browser, so
 per-page gating is impossible. Move to server-side rasterisation when either becomes a real
