@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Wordmark } from '#/components/brand-mark'
+import { LaunchBadge } from '#/components/launch-badge'
 import { PageContainer } from '#/components/page-container'
 
 /**
@@ -34,7 +35,13 @@ export function SiteFooter() {
     <footer className="border-t border-line">
       <PageContainer className="py-10">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
-          <Wordmark />
+          {/* The badge sits under the wordmark rather than in the link rows,
+              because it is not navigation: it is the one outbound link here
+              that a reader clicks to check us out rather than to go deeper. */}
+          <div className="flex flex-col items-start gap-5">
+            <Wordmark />
+            <LaunchBadge />
+          </div>
 
           <nav
             aria-label="Compare"
