@@ -1,10 +1,14 @@
 import { getSupabaseBrowserClient } from '#/lib/supabase/client'
+import { rememberNext } from '#/lib/auth-redirect'
 
-type Props = { onError: (message: string | null) => void }
+type Props = { next?: string; onError: (message: string | null) => void }
 
-export function GoogleButton({ onError }: Props) {
+export function GoogleButton({ next, onError }: Props) {
   async function signInWithGoogle() {
     onError(null)
+    // The browser leaves for Google and comes back to /auth/callback, which
+    // has no idea what this page was for unless it is written down first.
+    rememberNext(next)
     const { error } = await getSupabaseBrowserClient().auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback` },

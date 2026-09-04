@@ -201,15 +201,17 @@ export function Pricing() {
         ))}
       </div>
 
-      {/* Both buttons land on sign-in for a signed-out reader, and saying so
-          is cheaper than letting them find out. Settings is where the upgrade
-          lives either way, and it is the page that knows whether Stripe is
-          switched on. */}
+      {/* Choose Solo sends a signed-out reader through sign-in and then on to
+          Settings, rather than dropping them on the dashboard to find it
+          themselves — see src/lib/auth-redirect.ts. Settings is where the
+          upgrade lives either way, and it is the page that knows whether
+          Stripe is switched on. */}
       <p className="mt-4 text-[13px] text-ink-3">
-        Either button starts at sign-in, because a subscription has to attach to
-        an account. You can also start free and upgrade from Settings the day
-        two proposals stop being enough. Solo is billed by Stripe; cancelling is
-        one click in their portal and never touches what you have already sent.
+        Choosing Solo asks you to sign in first, because a subscription has to
+        attach to an account, and then takes you straight to checkout. You can
+        also start free and upgrade later the day two proposals stop being
+        enough. Solo is billed by Stripe; cancelling is one click in their
+        portal and never touches what you have already sent.
       </p>
     </>
   )

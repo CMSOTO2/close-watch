@@ -15,9 +15,14 @@ import { getSessionUser } from '#/lib/auth'
 import { getSupabaseBrowserClient } from '#/lib/supabase/client'
 
 export const Route = createFileRoute('/_authed')({
-  beforeLoad: async () => {
+  // The bounce to sign-in carries where they were going. Someone who clicked
+  // Choose Solo on the pricing page arrives here, and landing them on the
+  // dashboard afterwards throws away the one thing they told us.
+  beforeLoad: async ({ location }) => {
     const user = await getSessionUser()
-    if (!user) throw redirect({ to: '/login' })
+    if (!user) {
+      throw redirect({ to: '/login', search: { next: location.href } })
+    }
     return { user }
   },
   component: AuthedLayout,

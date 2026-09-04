@@ -2,6 +2,7 @@ import { useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { announceSignup } from '#/lib/notify/announce-signup'
+import { AFTER_SIGN_IN, rememberNext } from '#/lib/auth-redirect'
 import { getSupabaseBrowserClient } from '#/lib/supabase/client'
 import { AuthField } from './auth-field'
 import { GoogleButton } from './google-button'
@@ -12,18 +13,21 @@ import {
 } from './validation'
 import type { Mode } from './validation'
 
-export function LoginForm() {
+export function LoginForm({ next }: { next?: string }) {
   const router = useRouter()
+  const destination = next ?? AFTER_SIGN_IN
   const [mode, setMode] = useState<Mode>('signin')
   // Set while an email link (magic link or signup confirmation) is pending.
   const [notice, setNotice] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
-  async function goToDashboard() {
+  async function goOnwards() {
     // signInWithPassword wrote the session cookies the server reads; invalidate
     // so the _authed guard re-runs against them before we land.
     await router.invalidate()
-    await router.navigate({ to: '/dashboard' })
+    // `href` rather than `to`: the destination is a validated string at
+    // runtime, not one of the router's literal route ids.
+    await router.navigate({ href: destination })
   }
 
   const form = useForm({
@@ -31,6 +35,10 @@ export function LoginForm() {
     onSubmit: async ({ value }) => {
       setSubmitError(null)
       const supabase = getSupabaseBrowserClient()
+
+      // Written before either branch: a signup that needs email confirmation
+      // comes back through /auth/callback, and by then this page is gone.
+      rememberNext(next)
 
       if (mode === 'signup') {
         const { data, error } = await supabase.auth.signUp({
@@ -61,7 +69,7 @@ export function LoginForm() {
         if (error) return setSubmitError('That email or password is not right.')
       }
 
-      await goToDashboard()
+      await goOnwards()
     },
   })
 
@@ -73,6 +81,7 @@ export function LoginForm() {
       return setSubmitError('Enter a valid email first.')
     }
     setSubmitError(null)
+    rememberNext(next)
     const { error } = await getSupabaseBrowserClient().auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
@@ -96,7 +105,7 @@ export function LoginForm() {
       ) : (
         <>
           <div className="mt-6">
-            <GoogleButton onError={setSubmitError} />
+            <GoogleButton next={next} onError={setSubmitError} />
           </div>
 
           <div className="my-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wide text-ink-3">

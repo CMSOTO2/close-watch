@@ -149,6 +149,16 @@ that difference matters.
 PDFs live in a private storage bucket. The viewer gets a one-hour signed URL, never a public
 one. Viewer IPs are salted and hashed before storage, and the raw IP is never written.
 
+Sign-in carries a destination through the round-trip, and that destination is attacker
+controlled, so `safeNext` in `src/lib/auth-redirect.ts` is a boundary rather than a
+convenience. It rejects anything that is not a path on this origin, and specifically
+rejects `//evil.example` and `/\evil.example`, which read as paths to a naive check and as
+another origin to the browser. That is the open redirect, and it is worth a test file of
+its own because the failure is invisible: the redirect works, it just works for somebody
+else. The destination rides in a short-lived cookie rather than in the Supabase redirect
+URL — a query string there has to match the project's redirect allow list, and when it does
+not, Supabase falls back to the Site URL without the code and sign-in breaks outright.
+
 `SECURITY DEFINER` Postgres functions have `EXECUTE` revoked from `anon` and `authenticated`
 so PostgREST does not expose them as RPCs (`handle_new_user`, and `rls_auto_enable`, the
 event-trigger that auto-enables RLS on new tables). `record_engagement` is definer too but is
