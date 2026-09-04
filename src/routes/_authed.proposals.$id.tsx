@@ -144,22 +144,26 @@ function ProposalDetail() {
         onCancel={() => setConfirmOpen(false)}
       />
 
-      <div className="mt-4 flex max-w-3xl flex-wrap items-start justify-between gap-4">
-        <div>
+      {/* The row runs the full shell; only the text is capped. With the cap on
+          the row itself the button landed wherever 768px happened to fall,
+          which on a wide window is the middle of the page rather than the end
+          of anything. Now it sits at the same right edge as Delete above it. */}
+      <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-3xl">
           <h1 className="font-display text-2xl font-semibold tracking-tight">
             {proposal.clientName}
           </h1>
           <p className="text-[13px] text-ink-2">{proposal.title}</p>
-        <p className="mt-2 text-[13px] text-ink-3">
-          {proposal.pageCount} pages
-          {proposal.dealValueCents != null && (
-            <> · {formatMoney(proposal.dealValueCents, proposal.currency)}</>
-          )}
-          {' · '}
-          {proposal.status}
-          {(proposal.owner.name ?? proposal.owner.email) && (
-            <> · Sent by {proposal.owner.name ?? proposal.owner.email}</>
-          )}
+          <p className="mt-2 text-[13px] text-ink-3">
+            {proposal.pageCount} pages
+            {proposal.dealValueCents != null && (
+              <> · {formatMoney(proposal.dealValueCents, proposal.currency)}</>
+            )}
+            {' · '}
+            {proposal.status}
+            {(proposal.owner.name ?? proposal.owner.email) && (
+              <> · Sent by {proposal.owner.name ?? proposal.owner.email}</>
+            )}
           </p>
         </div>
 
@@ -216,7 +220,7 @@ function DownloadPdfButton({ id }: { id: string }) {
   return (
     <Button
       type="button"
-      variant="outline"
+      variant="brand"
       size="sm"
       disabled={busy}
       onClick={() => void download()}
