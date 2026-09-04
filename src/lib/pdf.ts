@@ -4,12 +4,18 @@
 // the pdfjs import would silently stop working.
 import './promise-with-resolvers'
 import * as pdfjs from 'pdfjs-dist'
-// Our own wrapper rather than the package's worker directly, so the polyfill is
-// evaluated inside the worker's scope too — see pdf-worker.ts. `?worker&url`
-// makes Vite build it as a worker entry and hand back the served URL, which is
-// what workerSrc wants. It has to come out as an ES module worker, because the
-// pdfjs worker it imports is one; vite.config.ts sets worker.format for that.
-import workerUrl from './pdf-worker?worker&url'
+// `?url` lets Vite resolve the worker inside the package and hand back a real
+// served URL. `new URL('pdfjs-dist/...', import.meta.url)` does NOT work: it
+// treats the bare specifier as a path relative to the importing module.
+//
+// Deliberately not routed through a wrapper module of ours to get the polyfill
+// into the worker's scope as well. `?worker&url` does that, and it also drags
+// this 1.6 MB file through Vite's dependency optimiser, which answers 504 for
+// it in dev — the worker never loads, pdfjs falls back to its main-thread
+// "fake worker", and the console fills with "Importing a module script failed".
+// The fallback runs in the scope the polyfill is already installed in, so the
+// wrapper bought nothing and cost the dev server.
+import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
