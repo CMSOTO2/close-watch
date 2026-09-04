@@ -17,6 +17,7 @@ const PATHS = [
   '/',
   '/demo',
   '/proposal-tracking-for-agencies',
+  '/proposal-tracking-for-fractional-executives',
   '/vs/proposify',
   '/vs/pandadoc',
   '/vs/docsend',

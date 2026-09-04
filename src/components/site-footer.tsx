@@ -17,6 +17,10 @@ const COMPARE = [
   { label: 'vs PandaDoc', to: '/vs/pandadoc' },
   { label: 'vs DocSend', to: '/vs/docsend' },
   { label: 'For agencies', to: '/proposal-tracking-for-agencies' },
+  {
+    label: 'For fractional execs',
+    to: '/proposal-tracking-for-fractional-executives',
+  },
 ] as const
 
 const LEGAL = [

@@ -10,7 +10,7 @@ const PATH = '/proposal-tracking-for-agencies'
 
 const TITLE = 'Proposal Tracking for Agencies | Closewatch'
 const DESCRIPTION =
-  'Proposal tracking built for agencies running several clients at once. See which proposals are being read, how long they spent on pricing, and whether it reached the person who signs.'
+  'Proposal tracking for agencies running several clients at once. See which proposals are being read, how long they spent on pricing, and who they reached.'
 
 /**
  * The audience page for the query it is named after.

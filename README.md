@@ -136,8 +136,10 @@ cancelling it, and a webhook that is the only thing allowed to write the table t
 reads. Live means sent: a proposal counts once it has a share link, so drafts you are
 still preparing are free.
 
-Public surface: a landing page, a privacy policy, terms and a DPA (the first two linked
-from Google's OAuth consent screen), and the brand mark and favicons.
+Public surface: a landing page, a live demo, three comparison pages and two audience
+pages, a privacy policy, terms and a DPA (the middle two linked from Google's OAuth
+consent screen), and the brand mark and favicons. What each public page claims about
+search is in [docs/SEO.md](docs/SEO.md).
 
 See [docs/PRODUCTION.md](docs/PRODUCTION.md) for what is still operational rather than
 built.
@@ -149,6 +151,7 @@ and they are easy to break by accident.
 ## Docs
 
 - [Positioning](docs/POSITIONING.md) — market, competitors, target customer, pricing
+- [SEO](docs/SEO.md) — which query each public page answers, and the rules for adding one
 - [MVP](docs/MVP.md) — scope, what is deliberately excluded, sequencing
 - [Architecture](docs/ARCHITECTURE.md) — stack, tracking design, security model
 - [Production](docs/PRODUCTION.md) — the checklist before a real launch

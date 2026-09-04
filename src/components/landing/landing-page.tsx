@@ -13,6 +13,7 @@ import {
   IntentShot,
   LinkShot,
 } from '#/components/landing/product-shots'
+import { COMPETITORS } from '#/components/compare/competitors'
 import { PDF_MAX_MB } from '#/constants'
 import { socialMeta } from '#/lib/seo'
 
@@ -49,6 +50,12 @@ export function landingMeta() {
     }),
   ]
 }
+
+const COMPARISONS = [
+  { to: '/vs/proposify', ...COMPETITORS.proposify },
+  { to: '/vs/pandadoc', ...COMPETITORS.pandadoc },
+  { to: '/vs/docsend', ...COMPETITORS.docsend },
+] as const
 
 const STEPS = [
   {
@@ -274,6 +281,65 @@ export function LandingPage() {
               dollars.
             </p>
             <Pricing />
+          </PageContainer>
+        </section>
+
+        {/* Already shopping. Sits after the price because that is when the
+            question arrives, and it links out rather than arguing here: a
+            competitor grid on a landing page is a page about them. It is also
+            the only internal link the comparison pages get from the page with
+            any authority, which is most of why it earns the space. */}
+        <section className="border-y border-line bg-surface">
+          <PageContainer className="py-16 sm:py-20">
+            <p className="kicker text-brand">Weighing it up</p>
+            <h2 className="mt-3 max-w-[26ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+              How this compares to what you were going to buy.
+            </h2>
+            <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
+              Each of these is a good product and each of them is a bigger
+              purchase than this one. The pages say where they win, not just
+              where we do.
+            </p>
+
+            <ul className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
+              {COMPARISONS.map((c) => (
+                <li key={c.to} className="bg-surface">
+                  <Link
+                    to={c.to}
+                    className="flex h-full flex-col px-5 py-6 transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+                  >
+                    <p className="font-display text-base font-semibold tracking-tight">
+                      Closewatch vs {c.name}
+                    </p>
+                    <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
+                      {c.wedge}
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-brand">
+                      Read the comparison
+                      <ArrowRight aria-hidden className="size-3.5" />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-5 text-[13px] text-ink-3">
+              Or read how this works for{' '}
+              <Link
+                to="/proposal-tracking-for-agencies"
+                className="text-ink-2 underline underline-offset-2 hover:text-ink"
+              >
+                agencies
+              </Link>{' '}
+              and{' '}
+              <Link
+                to="/proposal-tracking-for-fractional-executives"
+                className="text-ink-2 underline underline-offset-2 hover:text-ink"
+              >
+                fractional executives
+              </Link>
+              .
+            </p>
           </PageContainer>
         </section>
 

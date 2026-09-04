@@ -52,10 +52,10 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
     name: 'Proposify',
     category: 'a proposal builder',
     pricingUrl: 'https://www.proposify.com/pricing',
-    price: 'from around $19/user/mo',
-    title: 'Closewatch vs Proposify: a Proposify alternative for agencies',
+    price: 'from around $19/mo',
+    title: 'Closewatch vs Proposify: a Proposify alternative',
     description:
-      'Proposify is a proposal builder with analytics attached. Closewatch tracks the proposal PDF you already design, with no editor to move into. An honest comparison for agencies.',
+      'Proposify is a proposal builder with analytics attached. Closewatch tracks the proposal PDF you already design, with no editor to move into.',
     socialTitle: 'Closewatch vs Proposify',
     wedge:
       'Proposify asks you to write your proposals in Proposify. Closewatch tracks the one you already designed.',
@@ -74,7 +74,7 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
       'Your proposals are designed, they are a PDF, and the design is part of how you win work.',
       'You already know how to write a proposal. What you do not know is what happened after you sent it.',
       'You want to start this afternoon rather than migrate a library of templates first.',
-      'You are two to fifteen people and per-seat pricing on an authoring tool is hard to justify for the one person who sends proposals.',
+      'You are two to fifteen people and paying for an authoring tool is hard to justify when one person writes every proposal.',
     ],
     table: [
       {
@@ -110,7 +110,7 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
     price: 'from around $49/seat/mo',
     title: 'Closewatch vs PandaDoc: a lighter PandaDoc alternative',
     description:
-      'PandaDoc is a document and e-signature platform priced per seat. Closewatch tracks the proposal PDF you already send, on a flat price. An honest comparison for agencies.',
+      'PandaDoc is a document and e-signature platform priced per seat. Closewatch tracks the proposal PDF you already send, on a flat price.',
     socialTitle: 'Closewatch vs PandaDoc',
     wedge:
       'PandaDoc is a document platform with tracking in it. Closewatch is the tracking, without the platform.',
@@ -167,9 +167,9 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
     category: 'a document sharing and tracking tool',
     pricingUrl: 'https://www.docsend.com/pricing/',
     price: 'from around $45/user/mo',
-    title: 'Closewatch vs DocSend: a cheaper DocSend alternative for agencies',
+    title: 'Closewatch vs DocSend: a cheaper DocSend alternative',
     description:
-      'DocSend is the brand in document tracking, priced per user with no free plan. Closewatch is narrower, scores intent, and starts free. An honest comparison for agencies.',
+      'DocSend is the brand in document tracking, priced per user with no free plan. Closewatch is narrower, scores intent, and starts free.',
     socialTitle: 'Closewatch vs DocSend',
     wedge:
       'DocSend does more than Closewatch and costs more than Closewatch. The question is whether you need the rest of it.',

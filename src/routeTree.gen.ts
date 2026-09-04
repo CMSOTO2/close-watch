@@ -16,6 +16,7 @@ import { Route as DpaRouteImport } from './routes/dpa'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProposalTrackingForAgenciesRouteImport } from './routes/proposal-tracking-for-agencies'
+import { Route as ProposalTrackingForFractionalExecutivesRouteImport } from './routes/proposal-tracking-for-fractional-executives'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -65,6 +66,12 @@ const ProposalTrackingForAgenciesRoute =
   ProposalTrackingForAgenciesRouteImport.update({
     id: '/proposal-tracking-for-agencies',
     path: '/proposal-tracking-for-agencies',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ProposalTrackingForFractionalExecutivesRoute =
+  ProposalTrackingForFractionalExecutivesRouteImport.update({
+    id: '/proposal-tracking-for-fractional-executives',
+    path: '/proposal-tracking-for-fractional-executives',
     getParentRoute: () => rootRouteImport,
   } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -150,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
+  '/proposal-tracking-for-fractional-executives': typeof ProposalTrackingForFractionalExecutivesRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -173,6 +181,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
+  '/proposal-tracking-for-fractional-executives': typeof ProposalTrackingForFractionalExecutivesRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -198,6 +207,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
+  '/proposal-tracking-for-fractional-executives': typeof ProposalTrackingForFractionalExecutivesRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/proposal-tracking-for-agencies'
+    | '/proposal-tracking-for-fractional-executives'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/proposal-tracking-for-agencies'
+    | '/proposal-tracking-for-fractional-executives'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
@@ -270,6 +282,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/privacy'
     | '/proposal-tracking-for-agencies'
+    | '/proposal-tracking-for-fractional-executives'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
@@ -295,6 +308,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProposalTrackingForAgenciesRoute: typeof ProposalTrackingForAgenciesRoute
+  ProposalTrackingForFractionalExecutivesRoute: typeof ProposalTrackingForFractionalExecutivesRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
@@ -357,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/proposal-tracking-for-agencies'
       fullPath: '/proposal-tracking-for-agencies'
       preLoaderRoute: typeof ProposalTrackingForAgenciesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proposal-tracking-for-fractional-executives': {
+      id: '/proposal-tracking-for-fractional-executives'
+      path: '/proposal-tracking-for-fractional-executives'
+      fullPath: '/proposal-tracking-for-fractional-executives'
+      preLoaderRoute: typeof ProposalTrackingForFractionalExecutivesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -492,6 +513,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ProposalTrackingForAgenciesRoute: ProposalTrackingForAgenciesRoute,
+  ProposalTrackingForFractionalExecutivesRoute:
+    ProposalTrackingForFractionalExecutivesRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
