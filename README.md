@@ -46,8 +46,21 @@ Apply the schema with `supabase db push`, or paste the files in
 pnpm dev        # http://localhost:3000
 pnpm build
 pnpm lint
-pnpm test
+pnpm test       # unit
+pnpm test:e2e   # end-to-end, needs .env and starts its own dev server
 ```
+
+`pnpm test` and `pnpm lint` and `pnpm build` also run on every push through
+`.github/workflows/ci.yml`, which matters because `wrangler deploy` publishes the
+working tree rather than a branch.
+
+The end-to-end tests are the three paths where a break would be silent: a proposal
+that cannot be sent, a read that is never recorded, and a free plan that forgets to
+stop at two. They make their own accounts under `@e2e.closewatch.test` in whatever
+Supabase project `.env` points at, which today is the same one production uses, and
+delete them afterwards. Read the comments in `e2e/support/app.ts` before touching
+them: these pages are server-rendered, and filling a form before React has adopted
+it fails in a way that looks like a broken form rather than a race.
 
 Once your project exists, replace the hand-written schema types:
 

@@ -1,0 +1,88 @@
+# Runs what `pnpm run deploy` does not: the checks, before the code is live.
+#
+# `wrangler deploy` publishes the working tree rather than a branch, so nothing
+# between a broken change and production was automatic. This is that.
+#
+# The public env vars below are deliberate nonsense. `src/env.ts` validates them
+# at module load, so the build needs values shaped right, and it needs nothing
+# that works: no route rendered here talks to Supabase. Real keys in CI would be
+# a secret leak with no upside.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: https://example.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+      VITE_PUBLIC_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+
+      - run: pnpm test
+
+      # Last because it is the slowest, and because a type or lint error is a
+      # more useful thing to be told than a build that fell over for it.
+      - run: pnpm build
+
+  # Skipped until the three repository secrets exist, because the end-to-end
+  # tests make real accounts in a real Supabase project and there is nothing
+  # useful they can do without one. Add them under Settings -> Secrets and this
+  # starts running on its own.
+  e2e:
+    if: ${{ secrets.SUPABASE_SECRET_KEY != '' }}
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      IP_HASH_SALT: ci-only-salt-not-a-secret
+      VITE_PUBLIC_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - run: pnpm test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

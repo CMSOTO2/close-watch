@@ -14,3 +14,7 @@ dist-ssr
 __unconfig*
 todos.json
 supabase/.temp
+
+# Playwright
+test-results/
+playwright-report/
