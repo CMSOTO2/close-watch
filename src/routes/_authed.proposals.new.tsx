@@ -145,12 +145,19 @@ function NewProposal() {
         // router, so the toast rides across to the dashboard and lands next to
         // the row it is talking about.
         //
-        // A scanned PDF has no text to read, so every page comes back Other.
-        // Say so here rather than letting the owner find nine Others and
-        // conclude the tagging is broken.
+        // When nothing could be tagged, every page comes back Other, and an
+        // owner who finds nine Others with no explanation concludes the tagging
+        // is broken. So say the pages need tagging — and only that.
+        //
+        // It used to say "no readable text", which was a diagnosis rather than
+        // a message: it reads as a complaint about the file, and it is not even
+        // reliably true. A scanned PDF really has no text layer, but the same
+        // branch is reached when extraction simply fails on the device, and
+        // telling someone their perfectly ordinary proposal is unreadable is
+        // both wrong and the first thing they see after uploading it.
         notify(
           textless
-            ? `${value.clientName.trim()} proposal created \u2014 no readable text, so tag the pages yourself`
+            ? `${value.clientName.trim()} proposal created \u2014 tag the pages yourself`
             : `${value.clientName.trim()} proposal created`,
           textless ? 'neutral' : 'good',
         )
