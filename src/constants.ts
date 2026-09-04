@@ -4,7 +4,7 @@ import type { PageSection } from '#/lib/supabase/types'
 // --- PDF upload -------------------------------------------------------------
 // The size cap is enforced in three places (client field, server fn, storage
 // bucket); keep this the single source the app code reads.
-export const PDF_MAX_MB = 10
+export const PDF_MAX_MB = 25
 export const PDF_MAX_BYTES = PDF_MAX_MB * 1024 * 1024
 export const PDF_MAX_PAGES = 500
 export const PDF_MIME = 'application/pdf'
