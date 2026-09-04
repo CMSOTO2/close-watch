@@ -153,6 +153,7 @@ and they are easy to break by accident.
 - [Positioning](docs/POSITIONING.md) — market, competitors, target customer, pricing
 - [SEO](docs/SEO.md) — which query each public page answers, and the rules for adding one
 - [Metrics](docs/METRICS.md) — the SQL for the numbers worth watching, all of it runnable
+- [Browsers](docs/BROWSERS.md) — what the viewer owes every reader, and where the app degrades
 - [MVP](docs/MVP.md) — scope, what is deliberately excluded, sequencing
 - [Architecture](docs/ARCHITECTURE.md) — stack, tracking design, security model
 - [Production](docs/PRODUCTION.md) — the checklist before a real launch
