@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
 import { classifyPages } from '#/lib/proposals/classify'
@@ -111,11 +111,58 @@ async function readPdf(file: File): Promise<ReadPdf> {
   return { pageCount, sections, textless }
 }
 
+/**
+ * True on WebKit, which is Safari and every browser on iOS, because Apple
+ * requires the engine there.
+ *
+ * `navigator.vendor` is the discriminator: verified against real engine builds,
+ * WebKit reports "Apple Computer, Inc." and Chromium reports "Google Inc." on
+ * desktop and Android alike, while Firefox reports an empty string. A
+ * user-agent sniff would have to enumerate CriOS, FxiOS and EdgiOS to reach the
+ * same answer and would still miss whatever ships next.
+ *
+ * Read in an effect rather than during render: `navigator` does not exist on
+ * the server, and a notice that appears in the client tree but not the server's
+ * is a hydration mismatch. It flashes in one frame after mount, which for a
+ * line of advice is nobody's problem.
+ */
+function useIsWebkit(): boolean {
+  const [webkit, setWebkit] = useState(false)
+  useEffect(() => {
+    setWebkit(/apple/i.test(navigator.vendor))
+  }, [])
+  return webkit
+}
+
+/**
+ * Says the one true thing and stops.
+ *
+ * Not "use Chrome": on an iPhone there is no other engine to switch to, and
+ * advice that cannot be followed reads as a product that does not understand
+ * its own platform. Not a warning colour either — nothing is broken, the
+ * proposal uploads and tracks exactly the same, and the only difference is
+ * whether the section dropdowns arrive pre-filled.
+ */
+function SafariNotice() {
+  return (
+    <p className="mt-2 flex items-start gap-2 rounded-md bg-surface-2 px-3 py-2 text-[13px] leading-relaxed text-ink-2">
+      <span className="mt-px shrink-0 font-mono text-[10px] tracking-wider text-ink-3 uppercase">
+        Safari
+      </span>
+      <span>
+        Pages may not be tagged automatically here. Everything else works the
+        same &mdash; you can set each page&rsquo;s section after uploading.
+      </span>
+    </p>
+  )
+}
+
 function NewProposal() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const notify = useToast()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const isWebkit = useIsWebkit()
   const { data: entitlements } = useSuspenseQuery(entitlementsQuery)
 
   const form = useForm({
@@ -305,6 +352,7 @@ function NewProposal() {
                     }
                     className="block w-full cursor-pointer rounded-md border border-dashed border-line bg-surface px-3 py-3 text-[13px] text-ink-2 transition-colors hover:border-ink-3 file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground"
                   />
+                  {isWebkit && <SafariNotice />}
                 </Field>
               )}
             </form.Field>
