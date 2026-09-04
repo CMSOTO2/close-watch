@@ -67,20 +67,45 @@ async function readPdf(file: File): Promise<ReadPdf> {
   }
   const pageCount = doc.numPages
 
-  const pages: Array<PageText> = []
-  for (let n = 1; n <= pageCount; n++) {
-    const page = await doc.getPage(n)
-    const content = await page.getTextContent()
-    // pdfjs hands back positioned runs, not lines. Joining with spaces loses
-    // the layout, which the classifier does not use and cannot be misled by.
-    const text = content.items
-      .map((item) => ('str' in item ? item.str : ''))
-      .join(' ')
-    pages.push({ pageNumber: n, text })
-    page.cleanup()
+  // Everything below is the page tagger, and the page tagger is a convenience.
+  // The upload needs `pageCount`, which is already in hand; the guessed tags
+  // save the owner some dropdowns and nothing more. So a failure here degrades
+  // to "we could not read the text" — the same path a scanned PDF takes — and
+  // never stops someone sending a proposal.
+  //
+  // It has done exactly that once already. Reading the page count barely wakes
+  // the pdfjs worker, while getTextContent drives its font and text machinery
+  // hard, so the two fail on different devices. This step was added on
+  // 2026-09-01 and took uploading with it on iOS, where every browser is WebKit
+  // underneath and there is no second engine to fall back to.
+  let pages: Array<PageText> = []
+  let unreadable = false
+  try {
+    for (let n = 1; n <= pageCount; n++) {
+      const page = await doc.getPage(n)
+      const content = await page.getTextContent()
+      // pdfjs hands back positioned runs, not lines. Joining with spaces loses
+      // the layout, which the classifier does not use and cannot be misled by.
+      const text = content.items
+        .map((item) => ('str' in item ? item.str : ''))
+        .join(' ')
+      pages.push({ pageNumber: n, text })
+      page.cleanup()
+    }
+  } catch (cause) {
+    // Logged rather than swallowed: this is the only place the real reason is
+    // visible, and on the device where it happens there is no other way to see
+    // it. The owner gets the untagged-pages toast, not an error.
+    console.error('[upload] page text extraction failed', cause)
+    pages = []
+    unreadable = true
   }
 
-  await loadingTask.destroy()
+  // Not awaited past a failure: destroy() on a transport that has already
+  // errored can reject too, and by this point there is nothing left to save.
+  await loadingTask.destroy().catch(() => {})
+
+  if (unreadable) return { pageCount, sections: [], textless: true }
 
   const { sections, textless } = classifyPages(pages)
   return { pageCount, sections, textless }
