@@ -62,7 +62,9 @@ function envFromFile(path = '.env') {
 
 const key = process.env.STRIPE_SECRET_KEY || envFromFile().STRIPE_SECRET_KEY
 if (!key) {
-  console.error('No STRIPE_SECRET_KEY. Pass it inline:\n  STRIPE_SECRET_KEY=sk_live_… node scripts/stripe-go-live.mjs')
+  console.error(
+    'No STRIPE_SECRET_KEY. Pass it inline:\n  STRIPE_SECRET_KEY=sk_live_… node scripts/stripe-go-live.mjs',
+  )
   process.exit(1)
 }
 const live = !key.includes('_test_')
@@ -75,18 +77,28 @@ const stripe = new Stripe(key)
 // is having grabbed a key from the wrong business. Read it before you answer
 // the prompts.
 const account = await stripe.accounts.retrieve()
-console.log(`Account:  ${account.settings?.dashboard?.display_name ?? '(unnamed)'} — ${account.id}`)
-console.log(`          charges ${account.charges_enabled ? 'enabled' : 'NOT ENABLED — finish activation first'}\n`)
+console.log(
+  `Account:  ${account.settings?.dashboard?.display_name ?? '(unnamed)'} — ${account.id}`,
+)
+console.log(
+  `          charges ${account.charges_enabled ? 'enabled' : 'NOT ENABLED — finish activation first'}\n`,
+)
 
 // --- product and price -------------------------------------------------------
-const found = await stripe.products.search({ query: `metadata['closewatch_plan']:'solo'` })
-let product = found.data.find((p) => p.active)
+// `list` and filter, not `products.search`. Search runs off an index that
+// trails writes, and an empty result here does not mean "no product" — it means
+// "not indexed yet". Believing it would create a second live product and price
+// and then push the new price id to the Worker, leaving existing subscribers on
+// the old price and every new checkout on another. `list` reads live objects.
+const found = await stripe.products.list({ active: true, limit: 100 })
+let product = found.data.find((p) => p.metadata?.closewatch_plan === 'solo')
 if (product) {
   console.log(`product   ${product.id} (existing)`)
 } else {
   product = await stripe.products.create({
     name: 'Closewatch Solo',
-    description: 'Unlimited active proposals. Everything on the free plan, without the ceiling.',
+    description:
+      'Unlimited active proposals. Everything on the free plan, without the ceiling.',
     statement_descriptor: STATEMENT_DESCRIPTOR,
     metadata: TAG,
   })
@@ -102,9 +114,16 @@ if (product.statement_descriptor !== STATEMENT_DESCRIPTOR) {
   console.log(`          statement descriptor set to ${STATEMENT_DESCRIPTOR}`)
 }
 
-const prices = await stripe.prices.list({ product: product.id, active: true, limit: 100 })
+const prices = await stripe.prices.list({
+  product: product.id,
+  active: true,
+  limit: 100,
+})
 let price = prices.data.find(
-  (p) => p.unit_amount === AMOUNT_CENTS && p.currency === CURRENCY && p.recurring?.interval === 'month',
+  (p) =>
+    p.unit_amount === AMOUNT_CENTS &&
+    p.currency === CURRENCY &&
+    p.recurring?.interval === 'month',
 )
 if (price) {
   console.log(`price     ${price.id} (existing)`)
@@ -131,7 +150,9 @@ if (endpoint && recreateWebhook) {
 }
 
 if (endpoint) {
-  console.log(`webhook   ${endpoint.id} (existing — its secret cannot be re-read)`)
+  console.log(
+    `webhook   ${endpoint.id} (existing — its secret cannot be re-read)`,
+  )
 } else {
   endpoint = await stripe.webhookEndpoints.create({
     url: WEBHOOK_URL,
@@ -153,9 +174,14 @@ const existingConfig = configs.data.find((c) => c.is_default && c.active)
 if (existingConfig?.features.subscription_cancel?.enabled) {
   console.log(`portal    ${existingConfig.id} (existing, cancel enabled)`)
 } else if (existingConfig) {
-  const updated = await stripe.billingPortal.configurations.update(existingConfig.id, {
-    features: { subscription_cancel: { enabled: true, mode: 'at_period_end' } },
-  })
+  const updated = await stripe.billingPortal.configurations.update(
+    existingConfig.id,
+    {
+      features: {
+        subscription_cancel: { enabled: true, mode: 'at_period_end' },
+      },
+    },
+  )
   console.log(`portal    ${updated.id} (cancel switched on)`)
 } else {
   const created = await stripe.billingPortal.configurations.create({
