@@ -51,6 +51,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       // preconnects end up a few hundred bytes further down the head than they
       // read here. That is not worth fighting: the preload scanner takes the
       // head in one bite, and the round trip these save was the expensive part.
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      // crossOrigin because font files are fetched anonymously; without it the
+      // browser opens a second connection to the same host and the preconnect
+      // has warmed the wrong one.
+      {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossOrigin: 'anonymous',
+      },
       {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap',
