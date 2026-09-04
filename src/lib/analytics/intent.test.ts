@@ -37,12 +37,24 @@ describe('scoreIntent', () => {
   })
 
   it('normalises read depth by document length', () => {
-    // 300s over 5 pages is 60s/page: read closely. The same 300s over 60 pages
-    // is 5s/page and earns nothing. Length must not decide intent.
-    const shallowOverLong = scoreIntent({ ...base, pageCount: 60, totalEngagedMs: 300_000 })
+    // 300s over 5 pages is 60s/page: read closely.
     const deepOverShort = scoreIntent({ ...base, pageCount: 5, totalEngagedMs: 300_000 })
-    expect(shallowOverLong.signals.some((s) => /per page|whole thing/.test(s.label))).toBe(false)
-    expect(deepOverShort.signals).toContainEqual({ label: 'Read closely (60s per page)', points: 20 })
+    expect(deepOverShort.signals).toContainEqual({ label: 'Read closely (5m)', points: 20 })
+  })
+
+  it('caps the divisor so a long proposal can still be read closely', () => {
+    // Twelve minutes is a real read of an 80-page document. Divided by 80 it
+    // was 9s/page and scored nothing, which put every long proposal out of
+    // reach of the depth signal entirely.
+    const long = scoreIntent({ ...base, pageCount: 80, totalEngagedMs: 720_000 })
+    expect(long.signals).toContainEqual({ label: 'Read closely (12m)', points: 20 })
+  })
+
+  it('still scores a long skim as no read at all', () => {
+    // The case that started this: 43 seconds across an 80-page proposal. Under
+    // the cap that is 3.6s per effective page, which is not a read.
+    const skim = scoreIntent({ ...base, pageCount: 80, totalEngagedMs: 43_198 })
+    expect(skim.signals.some((s) => /Read/.test(s.label))).toBe(false)
   })
 
   it('rewards taking the proposal offline, printing above downloading', () => {
@@ -51,6 +63,30 @@ describe('scoreIntent', () => {
     expect(printed.signals).toContainEqual({ label: 'Printed it', points: 18 })
     expect(downloaded.signals).toContainEqual({ label: 'Downloaded a copy', points: 15 })
     expect(printed.score).toBeGreaterThan(downloaded.score)
+  })
+
+  it('caps printing and downloading together below the warm floor', () => {
+    // Two halves of one act. Summed they were 33 and warm on their own, so a
+    // barely-opened proposal came back looking like a live deal.
+    const both = scoreIntent({ ...base, printed: true, downloaded: true })
+    expect(both.signals).toContainEqual({ label: 'Printed and downloaded it', points: 20 })
+    expect(both.band).toBe('cold')
+  })
+
+  it('leaves the 80-page skim that started this cold', () => {
+    // Ridge View Cabins as it actually happened: one open, 43s engaged across
+    // 80 pages, 7s on pages tagged pricing, printed and downloaded while the
+    // owner was testing those buttons. It scored 33 and read warm.
+    const r = scoreIntent({
+      ...base,
+      pageCount: 80,
+      totalEngagedMs: 43_198,
+      pricingEngagedMs: 7_104,
+      printed: true,
+      downloaded: true,
+    })
+    expect(r.score).toBe(20)
+    expect(r.band).toBe('cold')
   })
 
   it('sums signals into a warm band with the reasons attached', () => {

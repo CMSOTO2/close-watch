@@ -32,6 +32,24 @@ export type IntentResult = {
 
 const HOUR = 60 * 60 * 1000
 
+/**
+ * Attention saturates; it does not scale with page count.
+ *
+ * The argument in a proposal lives in its first dozen pages. Past that sit
+ * appendices, case studies and terms that nobody reads front to back. Dividing
+ * engaged time by the true page count asked for an hour of reading before an
+ * 80-page document could count as read closely, and 27 minutes before it
+ * counted as read at all. Nobody spends that, so the depth signal went dead on
+ * exactly the long documents where "did they actually engage" is hardest to
+ * eyeball, and the score fell to whatever the forward and offline signals said.
+ *
+ * Capping the divisor fixes the direction without inverting the original
+ * intent: a short proposal is still not punished against a long one, and a
+ * 43-second skim of 80 pages still earns nothing, because 43 seconds over
+ * twelve effective pages is under four seconds a page.
+ */
+const DEPTH_PAGE_CAP = 12
+
 export function scoreIntent(input: IntentInput): IntentResult {
   const signals: Array<IntentSignal> = []
   const add = (points: number, label: string) => {
@@ -54,10 +72,16 @@ export function scoreIntent(input: IntentInput): IntentResult {
   else if (input.distinctViewers === 2) add(18, 'Forwarded to someone else')
 
   // Depth of read, normalised by document length so a 3-page proposal is not
-  // punished against a 30-page one.
-  const secondsPerPage = input.totalEngagedMs / 1000 / Math.max(input.pageCount, 1)
-  if (secondsPerPage >= 45) add(20, `Read closely (${Math.round(secondsPerPage)}s per page)`)
-  else if (secondsPerPage >= 20) add(12, 'Read the whole thing')
+  // punished against a 30-page one, and capped so a 60-page one is still
+  // reachable. See DEPTH_PAGE_CAP.
+  const totalSec = Math.round(input.totalEngagedMs / 1000)
+  const effectivePages = Math.min(Math.max(input.pageCount, 1), DEPTH_PAGE_CAP)
+  const secondsPerPage = input.totalEngagedMs / 1000 / effectivePages
+  // Labelled with the total rather than a per-page rate: once the divisor is
+  // capped, "60s per page" would be a number the reader never actually spent,
+  // and "read the whole thing" would claim a completeness we cannot see.
+  if (secondsPerPage >= 45) add(20, `Read closely (${formatDuration(totalSec)})`)
+  else if (secondsPerPage >= 20) add(12, `Read it properly (${formatDuration(totalSec)})`)
   else if (secondsPerPage >= 8) add(5, 'Skimmed it')
 
   // Pricing dwell.
@@ -68,11 +92,17 @@ export function scoreIntent(input: IntentInput): IntentResult {
 
   if (input.reachedLastPage) add(8, 'Reached the last page')
 
-  // Took it offline. Downloading or printing is a deliberate step past reading —
+  // Took it offline. Downloading or printing is a deliberate step past reading:
   // saving a copy to keep, or printing to mark up or bring into a meeting. Both
   // are strong action signals; printing is the more committed of the two.
-  if (input.printed) add(18, 'Printed it')
-  if (input.downloaded) add(15, 'Downloaded a copy')
+  //
+  // They are capped together because they are two halves of one act. Scored
+  // separately they summed to 33, which cleared the warm floor on its own, so a
+  // reader who saved and printed a document they had barely opened came back
+  // warm on no reading at all.
+  if (input.printed && input.downloaded) add(20, 'Printed and downloaded it')
+  else if (input.printed) add(18, 'Printed it')
+  else if (input.downloaded) add(15, 'Downloaded a copy')
 
   // Return visit on a later day. Same-session re-reads are already covered by
   // visit count; a genuine return means they went away and came back.

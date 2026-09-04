@@ -142,6 +142,28 @@ const CURRENCY_POINTS = 8
 const CURRENCY_DENSE = 0.2
 const CURRENCY_DENSE_POINTS = 12
 
+/**
+ * A rate card is not a pricing page.
+ *
+ * The density rule above is right about a single page and wrong about a
+ * document made of them. An 80-page cabins proposal came back with 30 pages
+ * tagged pricing, because page after page of listings with amounts beside them
+ * looks exactly like a price table and clears PRICING_THRESHOLD on density
+ * alone. "7 seconds on pricing" then measured time on the numeric half of the
+ * deck rather than time on the number that matters, which is worse than
+ * measuring nothing.
+ *
+ * So density-only pages are demoted when they dominate: they are a price table
+ * when a few of them stand out, and an appendix when a quarter of the document
+ * is them. Pages that named a pricing word are never demoted, however many
+ * there are, because the owner's own headings are better evidence than this.
+ *
+ * The floor exists because share alone is meaningless on a short deck, where
+ * two pricing pages out of six is a normal proposal rather than a rate card.
+ */
+const PRICING_SPREAD_MIN_PAGES = 8
+const PRICING_SPREAD_SHARE = 0.25
+
 /** Order for ties. Roughly the order these appear in a real proposal. */
 const TIE_ORDER: Array<Guessable> = [
   'summary',
@@ -189,7 +211,13 @@ function isCover(text: string, pageNumber: number): boolean {
   return words <= 120 && /\bproposal\b|prepared (for|by)\b/.test(text)
 }
 
-function scorePage(text: string): Map<Guessable, number> {
+type PageScore = {
+  scores: Map<Guessable, number>
+  /** Pricing points from words alone, before any amounts were counted. */
+  keywordPricing: number
+}
+
+function scorePage(text: string): PageScore {
   const scores = new Map<Guessable, number>()
 
   for (const section of TIE_ORDER) {
@@ -200,14 +228,16 @@ function scorePage(text: string): Map<Guessable, number> {
     scores.set(section, score)
   }
 
+  const keywordPricing = scores.get('pricing') ?? 0
+
   const currency = (text.match(CURRENCY) ?? []).length
   if (currency >= CURRENCY_RUN) {
     const dense = currency / Math.max(wordCount(text), 1) >= CURRENCY_DENSE
     const points = dense ? CURRENCY_DENSE_POINTS : CURRENCY_POINTS
-    scores.set('pricing', (scores.get('pricing') ?? 0) + points)
+    scores.set('pricing', keywordPricing + points)
   }
 
-  return scores
+  return { scores, keywordPricing }
 }
 
 function bestSection(scores: Map<Guessable, number>): PageSection {
@@ -231,15 +261,29 @@ export function classifyPages(pages: Array<PageText>): Classification {
   const texts = ordered.map((p) => normalize(p.text))
   const textless = texts.every((t) => wordCount(t) < 5)
 
+  // Density-only pricing pages, by index, so the spread check below can tell a
+  // price table from a rate card without rescoring anything.
+  const densityOnlyPricing: Array<number> = []
+
   const sections: Array<PageSection> = ordered.map((page, i) => {
     const text = texts[i]
     if (text === '') return 'other'
     if (isCover(text, page.pageNumber)) return 'cover'
 
-    const scores = scorePage(text)
+    const { scores, keywordPricing } = scorePage(text)
     if (isContentsPage(text, scores)) return 'other'
-    return bestSection(scores)
+
+    const section = bestSection(scores)
+    if (section === 'pricing' && keywordPricing < PRICING_THRESHOLD) {
+      densityOnlyPricing.push(i)
+    }
+    return section
   })
+
+  const spread = densityOnlyPricing.length / Math.max(sections.length, 1)
+  if (sections.length >= PRICING_SPREAD_MIN_PAGES && spread > PRICING_SPREAD_SHARE) {
+    for (const i of densityOnlyPricing) sections[i] = 'other'
+  }
 
   return { sections, textless }
 }

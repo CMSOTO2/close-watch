@@ -77,6 +77,25 @@ describe('classifyPages', () => {
     expect(sections[0]).toBe('pricing')
   })
 
+  // A document made of price tables has no pricing page worth naming. Demoting
+  // them keeps "time on pricing" meaning time on the number that matters.
+  it('does not call a whole rate card pricing', () => {
+    const listing = (n: number) =>
+      page(n, `Ridge Cabin ${n} $340 per night Cleaning $85 Deposit $500 Weekly $2,100`)
+    const pages = Array.from({ length: 20 }, (_, i) => listing(i + 2))
+    const { sections } = classifyPages([page(1, SAMPLE.cover), ...pages])
+    expect(sections.filter((s) => s === 'pricing')).toHaveLength(0)
+  })
+
+  // The owner's own heading outranks the spread rule, however many pages carry it.
+  it('keeps pricing pages that say pricing, however many there are', () => {
+    const stated = (n: number) =>
+      page(n, `Pricing Identity system $18,000 Component library $6,500 Art direction $4,000`)
+    const pages = Array.from({ length: 20 }, (_, i) => stated(i + 2))
+    const { sections } = classifyPages([page(1, SAMPLE.cover), ...pages])
+    expect(sections.filter((s) => s === 'pricing')).toHaveLength(20)
+  })
+
   // The same three amounts, spread through a sentence, are a result not a price.
   it('does not call a case study pricing for quoting three figures', () => {
     const { sections } = classifyPages([
