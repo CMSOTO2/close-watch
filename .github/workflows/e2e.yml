@@ -10,9 +10,12 @@
 # So it runs on demand, and once a week as a backstop. `pnpm test:e2e` locally is
 # the copy that catches things while you are actually changing them.
 #
-# Skipped entirely until the three repository secrets exist, because these tests
+# Every step is skipped until the repository secrets exist, because these tests
 # make real accounts in a real Supabase project and there is nothing useful they
-# can do without one.
+# can do without one. The guard is repeated per step rather than written once on
+# the job, because `secrets` is not a context a job-level `if` can read: the file
+# is rejected as invalid before anything runs. `env` is readable from a step's
+# `if`, so the secret is lifted into `env` above and each step asks that.
 name: E2E
 
 on:
@@ -23,7 +26,6 @@ on:
 
 jobs:
   e2e:
-    if: ${{ secrets.SUPABASE_SECRET_KEY != '' }}
     runs-on: ubuntu-latest
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -32,25 +34,36 @@ jobs:
       IP_HASH_SALT: ci-only-salt-not-a-secret
       VITE_PUBLIC_URL: http://localhost:3000
     steps:
+      - name: Say why nothing ran
+        if: env.SUPABASE_SECRET_KEY == ''
+        run: |
+          echo "::notice::Skipped. Add VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY and SUPABASE_SECRET_KEY under Settings, Secrets and variables, Actions."
+
       - uses: actions/checkout@v4
+        if: env.SUPABASE_SECRET_KEY != ''
 
       - uses: pnpm/action-setup@v4
+        if: env.SUPABASE_SECRET_KEY != ''
         with:
           version: 10
 
       - uses: actions/setup-node@v4
+        if: env.SUPABASE_SECRET_KEY != ''
         with:
           node-version: 24
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+        if: env.SUPABASE_SECRET_KEY != ''
 
       - run: pnpm exec playwright install --with-deps chromium
+        if: env.SUPABASE_SECRET_KEY != ''
 
       - run: pnpm test:e2e
+        if: env.SUPABASE_SECRET_KEY != ''
 
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() && env.SUPABASE_SECRET_KEY != ''
         with:
           name: playwright-report
           path: |

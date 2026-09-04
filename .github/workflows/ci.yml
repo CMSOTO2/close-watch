@@ -32,6 +32,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # First, and before anything slow. A workflow file with a bad expression
+      # is rejected by GitHub at parse time with no run and no failed check, so
+      # the only signal is noticing the workflow quietly stopped existing. This
+      # catches it here instead: `secrets` is not readable from a job-level
+      # `if`, and that is exactly the mistake it caught the first time.
+      - name: Lint workflow files
+        run: |
+          curl -sSLo actionlint.tar.gz \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.7/actionlint_1.7.7_linux_amd64.tar.gz
+          tar xzf actionlint.tar.gz actionlint
+          ./actionlint -color
+          rm -f actionlint actionlint.tar.gz
+
       - uses: pnpm/action-setup@v4
         with:
           version: 10
