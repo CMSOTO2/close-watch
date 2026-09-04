@@ -1,0 +1,59 @@
+# The end-to-end tests, kept off the per-push path on purpose.
+#
+# They cost roughly four billed minutes a run: installing a browser dominates,
+# and the viewer test then waits out real seconds of reading because
+# qualification needs three seconds of visible attention by design. On a private
+# repo, running that on every push would cost more minutes per month than the
+# free allowance holds, and it would mostly be re-proving that an upload form
+# nobody touched still works.
+#
+# So it runs on demand, and once a week as a backstop. `pnpm test:e2e` locally is
+# the copy that catches things while you are actually changing them.
+#
+# Skipped entirely until the three repository secrets exist, because these tests
+# make real accounts in a real Supabase project and there is nothing useful they
+# can do without one.
+name: E2E
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Monday morning, so a week of small changes gets one honest check.
+    - cron: '0 9 * * 1'
+
+jobs:
+  e2e:
+    if: ${{ secrets.SUPABASE_SECRET_KEY != '' }}
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      IP_HASH_SALT: ci-only-salt-not-a-secret
+      VITE_PUBLIC_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - run: pnpm test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

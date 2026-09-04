@@ -52,7 +52,13 @@ pnpm test:e2e   # end-to-end, needs .env and starts its own dev server
 
 `pnpm test` and `pnpm lint` and `pnpm build` also run on every push through
 `.github/workflows/ci.yml`, which matters because `wrangler deploy` publishes the
-working tree rather than a branch.
+working tree rather than a branch. A push that touches only Markdown skips it:
+the repo is private, so minutes are metered, and about a quarter of the commits
+here are documentation alone.
+
+The end-to-end tests are a separate workflow that runs weekly and on demand
+rather than per push. Installing a browser and waiting out a real read costs
+about four billed minutes, which per push would not fit the free allowance.
 
 The end-to-end tests are the three paths where a break would be silent: a proposal
 that cannot be sent, a read that is never recorded, and a free plan that forgets to
