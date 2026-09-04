@@ -17,6 +17,9 @@ on:
     paths-ignore: ['**.md', 'docs/**']
   pull_request:
     paths-ignore: ['**.md', 'docs/**']
+  # Re-run the checks by hand from the Actions tab, without an empty commit to
+  # trigger them. Useful after changing a repository secret, which no push does.
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
