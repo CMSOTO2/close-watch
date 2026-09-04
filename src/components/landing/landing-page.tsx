@@ -1,11 +1,11 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
-import { Wordmark } from '#/components/brand-mark'
 import { PageContainer } from '#/components/page-container'
 import { Button } from '#/components/ui/button'
 import { Faq } from '#/components/landing/faq'
 import { Pricing } from '#/components/landing/pricing'
 import { SiteHeader } from '#/components/landing/site-header'
+import { SiteFooter } from '#/components/site-footer'
 import {
   AttentionShot,
   DashboardShot,
@@ -314,25 +314,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-line">
-        <PageContainer className="flex flex-wrap items-center justify-between gap-4 py-8">
-          <Wordmark />
-          <nav className="flex flex-wrap items-center gap-4 text-xs text-ink-2">
-            <Link to="/privacy" className="transition-colors hover:text-ink">
-              Privacy
-            </Link>
-            <Link to="/terms" className="transition-colors hover:text-ink">
-              Terms
-            </Link>
-            <Link to="/dpa" className="transition-colors hover:text-ink">
-              DPA
-            </Link>
-            <span className="text-ink-3">
-              © {new Date().getUTCFullYear()} Closewatch
-            </span>
-          </nav>
-        </PageContainer>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

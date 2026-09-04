@@ -15,6 +15,7 @@ import { Route as DemoRouteImport } from './routes/demo'
 import { Route as DpaRouteImport } from './routes/dpa'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProposalTrackingForAgenciesRouteImport } from './routes/proposal-tracking-for-agencies'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -23,6 +24,9 @@ import { Route as AuthedSettingsRouteImport } from './routes/_authed.settings'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as RSourceRouteImport } from './routes/r.$source'
+import { Route as VsDocsendRouteImport } from './routes/vs.docsend'
+import { Route as VsPandadocRouteImport } from './routes/vs.pandadoc'
+import { Route as VsProposifyRouteImport } from './routes/vs.proposify'
 import { Route as AuthedProposalsIdRouteImport } from './routes/_authed.proposals.$id'
 import { Route as AuthedProposalsNewRouteImport } from './routes/_authed.proposals.new'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
@@ -57,6 +61,12 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProposalTrackingForAgenciesRoute =
+  ProposalTrackingForAgenciesRouteImport.update({
+    id: '/proposal-tracking-for-agencies',
+    path: '/proposal-tracking-for-agencies',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   id: '/robots.txt',
   path: '/robots.txt',
@@ -97,6 +107,21 @@ const RSourceRoute = RSourceRouteImport.update({
   path: '/r/$source',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VsDocsendRoute = VsDocsendRouteImport.update({
+  id: '/vs/docsend',
+  path: '/vs/docsend',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VsPandadocRoute = VsPandadocRouteImport.update({
+  id: '/vs/pandadoc',
+  path: '/vs/pandadoc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VsProposifyRoute = VsProposifyRouteImport.update({
+  id: '/vs/proposify',
+  path: '/vs/proposify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedProposalsIdRoute = AuthedProposalsIdRouteImport.update({
   id: '/proposals/$id',
   path: '/proposals/$id',
@@ -124,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/dpa': typeof DpaRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -132,6 +158,9 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
   '/r/$source': typeof RSourceRoute
+  '/vs/docsend': typeof VsDocsendRoute
+  '/vs/pandadoc': typeof VsPandadocRoute
+  '/vs/proposify': typeof VsProposifyRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
   '/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -143,6 +172,7 @@ export interface FileRoutesByTo {
   '/dpa': typeof DpaRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -151,6 +181,9 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
   '/r/$source': typeof RSourceRoute
+  '/vs/docsend': typeof VsDocsendRoute
+  '/vs/pandadoc': typeof VsPandadocRoute
+  '/vs/proposify': typeof VsProposifyRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
   '/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -164,6 +197,7 @@ export interface FileRoutesById {
   '/dpa': typeof DpaRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -172,6 +206,9 @@ export interface FileRoutesById {
   '/auth/callback': typeof AuthCallbackRoute
   '/p/$token': typeof PTokenRoute
   '/r/$source': typeof RSourceRoute
+  '/vs/docsend': typeof VsDocsendRoute
+  '/vs/pandadoc': typeof VsPandadocRoute
+  '/vs/proposify': typeof VsProposifyRoute
   '/_authed/proposals/$id': typeof AuthedProposalsIdRoute
   '/_authed/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -185,6 +222,7 @@ export interface FileRouteTypes {
     | '/dpa'
     | '/login'
     | '/privacy'
+    | '/proposal-tracking-for-agencies'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
@@ -193,6 +231,9 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/p/$token'
     | '/r/$source'
+    | '/vs/docsend'
+    | '/vs/pandadoc'
+    | '/vs/proposify'
     | '/proposals/$id'
     | '/proposals/new'
     | '/api/stripe/webhook'
@@ -204,6 +245,7 @@ export interface FileRouteTypes {
     | '/dpa'
     | '/login'
     | '/privacy'
+    | '/proposal-tracking-for-agencies'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
@@ -212,6 +254,9 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/p/$token'
     | '/r/$source'
+    | '/vs/docsend'
+    | '/vs/pandadoc'
+    | '/vs/proposify'
     | '/proposals/$id'
     | '/proposals/new'
     | '/api/stripe/webhook'
@@ -224,6 +269,7 @@ export interface FileRouteTypes {
     | '/dpa'
     | '/login'
     | '/privacy'
+    | '/proposal-tracking-for-agencies'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
@@ -232,6 +278,9 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/p/$token'
     | '/r/$source'
+    | '/vs/docsend'
+    | '/vs/pandadoc'
+    | '/vs/proposify'
     | '/_authed/proposals/$id'
     | '/_authed/proposals/new'
     | '/api/stripe/webhook'
@@ -245,12 +294,16 @@ export interface RootRouteChildren {
   DpaRoute: typeof DpaRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProposalTrackingForAgenciesRoute: typeof ProposalTrackingForAgenciesRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   PTokenRoute: typeof PTokenRoute
   RSourceRoute: typeof RSourceRoute
+  VsDocsendRoute: typeof VsDocsendRoute
+  VsPandadocRoute: typeof VsPandadocRoute
+  VsProposifyRoute: typeof VsProposifyRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
   ApiTrackVisitIdRoute: typeof ApiTrackVisitIdRoute
 }
@@ -297,6 +350,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proposal-tracking-for-agencies': {
+      id: '/proposal-tracking-for-agencies'
+      path: '/proposal-tracking-for-agencies'
+      fullPath: '/proposal-tracking-for-agencies'
+      preLoaderRoute: typeof ProposalTrackingForAgenciesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -355,6 +415,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RSourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vs/docsend': {
+      id: '/vs/docsend'
+      path: '/vs/docsend'
+      fullPath: '/vs/docsend'
+      preLoaderRoute: typeof VsDocsendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vs/pandadoc': {
+      id: '/vs/pandadoc'
+      path: '/vs/pandadoc'
+      fullPath: '/vs/pandadoc'
+      preLoaderRoute: typeof VsPandadocRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vs/proposify': {
+      id: '/vs/proposify'
+      path: '/vs/proposify'
+      fullPath: '/vs/proposify'
+      preLoaderRoute: typeof VsProposifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authed/proposals/$id': {
       id: '/_authed/proposals/$id'
       path: '/proposals/$id'
@@ -410,12 +491,16 @@ const rootRouteChildren: RootRouteChildren = {
   DpaRoute: DpaRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  ProposalTrackingForAgenciesRoute: ProposalTrackingForAgenciesRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   PTokenRoute: PTokenRoute,
   RSourceRoute: RSourceRoute,
+  VsDocsendRoute: VsDocsendRoute,
+  VsPandadocRoute: VsPandadocRoute,
+  VsProposifyRoute: VsProposifyRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
   ApiTrackVisitIdRoute: ApiTrackVisitIdRoute,
 }

@@ -130,6 +130,27 @@ export function productJsonLd() {
   }
 }
 
+/**
+ * Breadcrumbs for a page inside a cluster.
+ *
+ * The one piece of structured data on these pages, and the only one here that
+ * still earns a visible result: Google renders the trail in place of the raw
+ * URL. Everything else a comparison page could claim in JSON-LD is either a
+ * rich result Google retired or a review nobody wrote.
+ */
+export function breadcrumbJsonLd(trail: Array<{ name: string; path: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: trail.map((step, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: step.name,
+      item: `${origin}${step.path}`,
+    })),
+  }
+}
+
 /** The JSON-LD block as a head script. */
 export function jsonLdScript(data: unknown) {
   return [

@@ -13,7 +13,17 @@ const origin = publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')
  * priority and changefreq are omitted on purpose: Google has said for years it
  * ignores both, and writing numbers nobody reads invites arguments about them.
  */
-const PATHS = ['/', '/demo', '/privacy', '/terms', '/dpa']
+const PATHS = [
+  '/',
+  '/demo',
+  '/proposal-tracking-for-agencies',
+  '/vs/proposify',
+  '/vs/pandadoc',
+  '/vs/docsend',
+  '/privacy',
+  '/terms',
+  '/dpa',
+]
 
 export const Route = createFileRoute('/sitemap.xml')({
   server: {
