@@ -76,6 +76,19 @@ delete them afterwards. Read the comments in `e2e/support/app.ts` before touchin
 them: these pages are server-rendered, and filling a form before React has adopted
 it fails in a way that looks like a broken form rather than a race.
 
+## Screenshots
+
+`node scripts/product-shots.mjs` regenerates the five launch screenshots in
+`public/shots/`, light and dark, at 3840x2160 — the 16:9 shape product
+directories crop everything else down to. It needs `pnpm dev` running in another
+terminal. Each screen is shot at the width the shell was designed for and then
+mounted on a 16:9 card, because a screenshot captured at 1920x1080 directly is
+mostly empty margin.
+
+The account it photographs is fabricated: a demo owner under
+`@demo.closewatch.test` is created, seeded with proposals and the reading
+activity behind their intent scores, shot, and deleted. Nothing survives the run.
+
 Once your project exists, replace the hand-written schema types:
 
 ```bash
