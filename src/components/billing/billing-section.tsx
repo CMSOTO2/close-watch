@@ -128,7 +128,7 @@ export function BillingSection({
         {comped ? null : paid ? (
           <Button
             type="button"
-            variant="outline"
+            variant="brand"
             disabled={busy}
             onClick={() => void go(() => openBillingPortal())}
           >

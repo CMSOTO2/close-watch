@@ -21,6 +21,17 @@ const buttonVariants = cva(
         ghost:
           'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
+        // Filled brass. For an action that has to be findable on a page of
+        // surfaces rather than one that outranks everything near it: the
+        // outline variant's fill sits 1.07:1 against --surface in dark, which
+        // is a button you can read the label of and cannot see the edges of.
+        // The token flips between a dark brass on light and a bright one on
+        // dark, so the foreground flips with it.
+        // Hover dims rather than switching to --brand-2. That token is lighter
+        // than --brand in both themes, which on the light palette drags the
+        // label down to 2.7:1 against the fill — a hover state that makes the
+        // button harder to read than not hovering it. Opacity keeps the ratio.
+        brand: 'bg-brand text-canvas shadow-xs hover:opacity-90',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

@@ -9,9 +9,10 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
+import { Download } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
-import { getProposalDetail } from '#/lib/proposals/detail'
+import { getProposalDetail, getProposalFileUrl } from '#/lib/proposals/detail'
 import {
   confirmPageSections,
   createShareLink,
@@ -143,11 +144,12 @@ function ProposalDetail() {
         onCancel={() => setConfirmOpen(false)}
       />
 
-      <div className="mt-4 max-w-3xl">
-        <h1 className="font-display text-2xl font-semibold tracking-tight">
-          {proposal.clientName}
-        </h1>
-        <p className="text-[13px] text-ink-2">{proposal.title}</p>
+      <div className="mt-4 flex max-w-3xl flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-semibold tracking-tight">
+            {proposal.clientName}
+          </h1>
+          <p className="text-[13px] text-ink-2">{proposal.title}</p>
         <p className="mt-2 text-[13px] text-ink-3">
           {proposal.pageCount} pages
           {proposal.dealValueCents != null && (
@@ -158,7 +160,10 @@ function ProposalDetail() {
           {(proposal.owner.name ?? proposal.owner.email) && (
             <> · Sent by {proposal.owner.name ?? proposal.owner.email}</>
           )}
-        </p>
+          </p>
+        </div>
+
+        <DownloadPdfButton id={id} />
       </div>
 
       <Outcome proposalId={id} />
@@ -178,6 +183,47 @@ function ProposalDetail() {
         <PageTags proposalId={id} />
       </div>
     </PageContainer>
+  )
+}
+
+/**
+ * Gets the owner their own PDF back.
+ *
+ * The file lives in a private bucket, so there is no href to put in the markup:
+ * a URL is signed on click and used immediately. Hence a button rather than a
+ * link, and hence the click handler doing the navigation itself.
+ *
+ * `window.location.assign` rather than a new tab: the signed URL carries
+ * Content-Disposition attachment, so the browser downloads it and stays where
+ * it is. A new tab would open and immediately blank.
+ */
+function DownloadPdfButton({ id }: { id: string }) {
+  const notify = useToast()
+  const [busy, setBusy] = useState(false)
+
+  async function download() {
+    setBusy(true)
+    try {
+      const { url } = await getProposalFileUrl({ data: { id } })
+      window.location.assign(url)
+    } catch {
+      notify('Could not open that PDF right now', 'danger')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      disabled={busy}
+      onClick={() => void download()}
+    >
+      <Download aria-hidden className="size-3.5" />
+      {busy ? 'Preparing…' : 'Download PDF'}
+    </Button>
   )
 }
 

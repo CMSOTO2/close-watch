@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
-import { shareUrl } from '#/constants'
+import { PROPOSALS_BUCKET, shareUrl } from '#/constants'
 import type { PageSection, ProposalStatus } from '#/lib/supabase/types'
 
 export type ProposalPage = {
@@ -112,3 +112,63 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
       })),
     }
   })
+
+/**
+ * A short-lived signed URL for the owner's own copy of the PDF.
+ *
+ * Signed on demand rather than handed out with the rest of the detail payload.
+ * A signed URL carries an expiry, so one minted at page load is stale by the
+ * time someone who left the tab open comes back to it, and most visits to this
+ * page never ask for the file at all. Sixty seconds is plenty for a browser to
+ * start a download and short enough that a URL copied out of the network tab
+ * is worthless almost immediately.
+ *
+ * `download` sets the Content-Disposition, which is the difference between
+ * saving `a1b2c3.pdf` out of a storage path and saving something the owner will
+ * recognise in their downloads folder a week later.
+ *
+ * No ownership check here beyond RLS, which is the point: the select below is
+ * scoped to the signed-in owner, so another account's id returns nothing and
+ * there is nothing to sign.
+ */
+export const getProposalFileUrl = createServerFn({ method: 'GET' })
+  .validator(z.object({ id: z.uuid() }))
+  .handler(async ({ data }): Promise<{ url: string; filename: string }> => {
+    const supabase = getSupabaseServerClient()
+
+    const { data: proposal } = await supabase
+      .from('proposals')
+      .select('title, client_name, storage_path')
+      .eq('id', data.id)
+      .maybeSingle()
+
+    if (!proposal) throw new Error('Proposal not found')
+
+    const filename = `${pdfFilename(proposal.client_name, proposal.title)}.pdf`
+
+    const { data: signed, error } = await supabase.storage
+      .from(PROPOSALS_BUCKET)
+      .createSignedUrl(proposal.storage_path, 60, { download: filename })
+
+    // Discriminated union: no error means `signed` is there, which is why the
+    // belt-and-braces null check the repo's lint rules would otherwise flag is
+    // not written here.
+    if (error) throw new Error('Could not open that PDF right now')
+
+    return { url: signed.signedUrl, filename }
+  })
+
+/**
+ * "Acme Studio - Brand identity.pdf" rather than a uuid.
+ *
+ * Anything a filesystem or a Content-Disposition header would argue about is
+ * replaced rather than stripped, so words do not run together, and the result
+ * is capped because some systems still baulk at very long names.
+ */
+function pdfFilename(clientName: string, title: string): string {
+  const cleaned = `${clientName} - ${title}`
+    .replace(/[^\w\s.-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return (cleaned || 'proposal').slice(0, 80)
+}
