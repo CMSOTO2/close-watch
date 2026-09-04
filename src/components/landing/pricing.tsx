@@ -20,10 +20,17 @@ import { cn } from '#/lib/utils'
  * shape it will have to be worth reading, and a small "soon" is the difference
  * between a roadmap and a page that sells three things you cannot deliver.
  *
- * Free carries the warm ground and the solid button for as long as checkout is
- * off. Weighting a card whose button cannot be pressed points the eye at the
- * one thing nobody can do, and leaves the only working button looking like the
- * cheap option nobody meant. Move it back to Solo the day Stripe is wired.
+ * Solo carries the warm ground and the solid button. Free held it while
+ * checkout was off, because weighting a card whose button cannot be pressed
+ * points the eye at the one thing nobody can do; Stripe is live now, so the
+ * emphasis is back where it belongs.
+ *
+ * Solo rather than Free even though the free plan is the front door, because
+ * of who this is for. POSITIONING.md's customer is running a pipeline, and a
+ * pipeline is by definition more than two live proposals — Free cannot serve
+ * them, so recommending it wastes their first week. Free keeps its place at
+ * the head of the row and a working button, which is the whole try-first path
+ * and is not up for negotiation.
  */
 
 type Feature = { text: string; soon?: boolean }
@@ -64,26 +71,32 @@ const PLANS: Array<Plan> = [
     ],
     cta: 'Start free',
     to: '/login',
-    featured: true,
-    badge: 'Works today',
   },
   {
     name: 'Solo',
     price: '$19',
     cadence: '/mo',
     who: 'For the person sending every proposal at a small agency.',
+    // Spelled out rather than left as "everything on the free plan". Two
+    // bullets against Free's five made the paid tier read as the thinner
+    // product, which is the opposite of what the list is for.
     features: [
-      { text: 'Unlimited live proposals' },
-      { text: 'Everything on the free plan' },
+      { text: 'Unlimited proposals live at once' },
+      { text: 'Tracked links, intent scoring, page attention' },
+      { text: 'Forwarding detection and email alerts' },
+      { text: 'Grouping by client, search and heat filtering' },
+      { text: 'Full history, nothing expires' },
     ],
     cta: 'Choose Solo',
     // Settings, not a checkout link: the upgrade needs a signed-in account to
     // attach the subscription to, and that page is where Stripe sends people
     // back to afterwards.
     to: '/settings',
-    // POSITIONING.md: do not price below $19, and do not hide it. No badge
-    // while checkout is off. The price is the anchor on its own, and a second
-    // caps line in a row of three cards is noise.
+    featured: true,
+    // POSITIONING.md: do not price below $19, and do not hide it. No badge:
+    // the price is the anchor on its own, and the only badges worth putting
+    // here — "most popular", "recommended by N agencies" — are claims about
+    // other customers that nobody can check and we cannot yet make.
   },
   {
     name: 'Studio',
@@ -188,13 +201,15 @@ export function Pricing() {
         ))}
       </div>
 
-      {/* True whether or not the keys are on the Worker yet: Settings is where
-          the upgrade lives either way, and it is the page that knows whether
-          Stripe is switched on. */}
+      {/* Both buttons land on sign-in for a signed-out reader, and saying so
+          is cheaper than letting them find out. Settings is where the upgrade
+          lives either way, and it is the page that knows whether Stripe is
+          switched on. */}
       <p className="mt-4 text-[13px] text-ink-3">
-        Start free and upgrade from Settings the day two proposals stop being
-        enough. Solo is billed by Stripe; cancelling is one click in their
-        portal and never touches what you have already sent.
+        Either button starts at sign-in, because a subscription has to attach to
+        an account. You can also start free and upgrade from Settings the day
+        two proposals stop being enough. Solo is billed by Stripe; cancelling is
+        one click in their portal and never touches what you have already sent.
       </p>
     </>
   )
