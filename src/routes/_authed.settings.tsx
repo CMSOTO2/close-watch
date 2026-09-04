@@ -9,6 +9,7 @@ import { useForm } from '@tanstack/react-form-start'
 import { z } from 'zod'
 import { getProfile, updateProfile } from '#/lib/profile'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
+import { discountQuery } from '#/lib/billing/discount'
 import { BillingSection } from '#/components/billing/billing-section'
 import { PageContainer } from '#/components/page-container'
 import { BackLink } from '#/components/back-link'
@@ -29,6 +30,7 @@ export const Route = createFileRoute('/_authed/settings')({
     Promise.all([
       context.queryClient.query(profileQuery),
       context.queryClient.query(entitlementsQuery),
+      context.queryClient.query(discountQuery),
     ]),
   component: SettingsPage,
 })

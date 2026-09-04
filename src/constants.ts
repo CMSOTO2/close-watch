@@ -82,6 +82,7 @@ export const queryKeys = {
   securedTotals: ['secured-totals'] as const,
   proposalSummaries: ['proposal-summaries'] as const,
   entitlements: ['entitlements'] as const,
+  activeDiscount: ['active-discount'] as const,
   proposal: (id: string) => ['proposal', id] as const,
   proposalAnalytics: (id: string) => ['proposal-analytics', id] as const,
 }

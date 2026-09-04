@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Button } from '#/components/ui/button'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
+import { discountQuery } from '#/lib/billing/discount'
 import { openBillingPortal, startSoloCheckout } from '#/lib/billing/checkout'
 import { FREE_LIVE_PROPOSALS } from '#/constants'
+import type { ActiveDiscount } from '#/lib/billing/discount'
 
 const PLAN_NAMES: Record<string, string> = {
   free: 'Free',
@@ -17,6 +19,65 @@ function formatDate(iso: string): string {
     month: 'long',
     year: 'numeric',
   })
+}
+
+/**
+ * What the discount is, in words, and when it stops.
+ *
+ * Written to hold for any coupon rather than only the launch one, because the
+ * next promo will not come back here to have its copy updated. The split that
+ * matters is 100% off against everything else: at 100% the useful sentence is
+ * when the first charge lands, and at anything less they are being charged
+ * already and the useful sentence is what comes off.
+ *
+ * A discount with no end is deliberately silent about dates rather than
+ * inventing one. Nothing today creates a forever coupon, but "expires never" is
+ * a worse thing to render than nothing at all if something ever does.
+ */
+function DiscountNote({
+  discount,
+  renewsOn,
+}: {
+  discount: ActiveDiscount
+  renewsOn: string | null
+}) {
+  const free = discount.percentOff === 100
+  const label = discount.name ?? discount.code ?? 'A discount'
+
+  const amount = free
+    ? 'free'
+    : discount.percentOff !== null
+      ? `${discount.percentOff}% off`
+      : discount.amountOffCents !== null
+        ? `$${(discount.amountOffCents / 100).toFixed(2)} off`
+        : 'discounted'
+
+  return (
+    <p className="mt-2 rounded-md border border-brand-soft bg-brand-soft/50 px-3 py-2 text-[13px] leading-relaxed text-ink">
+      <strong className="font-semibold">{label}</strong>
+      {discount.code && (
+        <>
+          {' '}
+          <span className="font-mono text-xs text-ink-2">{discount.code}</span>
+        </>
+      )}
+      {'. '}
+      {discount.endsAt === null ? (
+        <>Your plan is {amount}, with no end date.</>
+      ) : free ? (
+        <>
+          Solo is free until {formatDate(discount.endsAt)}. That is when your
+          first $19 is charged, on the card already on file.
+        </>
+      ) : (
+        <>
+          {amount[0].toUpperCase() + amount.slice(1)} until{' '}
+          {formatDate(discount.endsAt)}, then the full $19
+          {renewsOn ? '.' : ' each month.'}
+        </>
+      )}
+    </p>
+  )
 }
 
 /**
@@ -34,6 +95,7 @@ export function BillingSection({
   justManaged: boolean
 }) {
   const { data: entitlements } = useSuspenseQuery(entitlementsQuery)
+  const { data: discount } = useSuspenseQuery(discountQuery)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -115,14 +177,27 @@ export function BillingSection({
         </p>
       )}
 
+      {/* Suppressed while the plan is fully discounted. "Renews 4 October" is
+          true and useless next to "free until 4 December": both are dates about
+          money, and the one that matters is the one where money moves. */}
       {paid &&
         !comped &&
         !entitlements.cancelAtPeriodEnd &&
-        entitlements.currentPeriodEnd && (
+        entitlements.currentPeriodEnd &&
+        discount?.percentOff !== 100 && (
           <p className="mt-2 text-[13px] text-ink-2">
             Renews {formatDate(entitlements.currentPeriodEnd)}.
           </p>
         )}
+
+      {/* Not shown on a cancelled plan: the cancellation note above already
+          says when it ends, and a promo running past that date is noise. */}
+      {paid && !comped && !entitlements.cancelAtPeriodEnd && discount && (
+        <DiscountNote
+          discount={discount}
+          renewsOn={entitlements.currentPeriodEnd}
+        />
+      )}
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         {comped ? null : paid ? (
