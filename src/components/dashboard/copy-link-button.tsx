@@ -50,7 +50,7 @@ export function CopyLinkButton({
         '[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100',
         copied
           ? 'border-good-line bg-good-soft text-good [@media(hover:hover)]:opacity-100'
-          : 'border-line bg-surface text-ink-3 hover:border-ink-3 hover:text-ink',
+          : 'border-line-strong bg-surface text-ink-3 hover:border-ink-3 hover:text-ink',
       )}
     >
       {copied ? (

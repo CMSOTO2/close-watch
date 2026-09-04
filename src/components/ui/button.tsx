@@ -14,19 +14,26 @@ const buttonVariants = cva(
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         destructive:
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40',
+        // Fills with --surface, not --background. On the canvas — hero CTAs,
+        // the site header, anything on a page ground — `bg-background` made
+        // this button literally the page colour, so the only thing separating
+        // a primary-adjacent action from the paint behind it was a 1.45:1
+        // hairline. --surface lifts it 5.8 L* off the canvas, the same lift a
+        // card gets, and --line-strong bounds it at 2.10:1 for the case where
+        // it does sit on a card and the fill matches. Both themes take the
+        // same treatment now; dark no longer needs its own fill overrides.
         outline:
-          'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
+          'border border-line-strong bg-surface shadow-xs hover:bg-surface-2 hover:text-accent-foreground',
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost:
           'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
         // Filled brass. For an action that has to be findable on a page of
-        // surfaces rather than one that outranks everything near it: the
-        // outline variant's fill sits 1.07:1 against --surface in dark, which
-        // is a button you can read the label of and cannot see the edges of.
-        // The token flips between a dark brass on light and a bright one on
-        // dark, so the foreground flips with it.
+        // surfaces rather than one that outranks everything near it, without
+        // reaching for the near-black --primary. The token flips between a
+        // dark brass on light and a bright one on dark, so the foreground
+        // flips with it.
         // Hover dims rather than switching to --brand-2. That token is lighter
         // than --brand in both themes, which on the light palette drags the
         // label down to 2.7:1 against the fill — a hover state that makes the

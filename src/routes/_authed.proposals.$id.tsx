@@ -730,7 +730,7 @@ function PageTags({ proposalId }: { proposalId: string }) {
               Page {page.pageNumber}
               {page.sectionAuto && (
                 <span
-                  className="rounded-sm bg-surface-3 px-1.5 py-0.5 text-[11px] text-ink-3"
+                  className="rounded-sm bg-surface-3 px-1.5 py-0.5 text-[11px] text-ink-2"
                   // Said plainly rather than with a bare dot: the owner needs
                   // to know this tag is a guess before they trust a number
                   // built on it.

@@ -49,7 +49,7 @@ export function SearchField({
         }}
         placeholder="Search client or title"
         aria-label="Search proposals"
-        className="w-full rounded-md border border-line bg-surface py-1.5 pl-8 pr-8 text-[13px] text-ink shadow-sm transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring [&::-webkit-search-cancel-button]:hidden"
+        className="w-full rounded-md border border-line-strong bg-surface py-1.5 pl-8 pr-8 text-[13px] text-ink shadow-sm transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring [&::-webkit-search-cancel-button]:hidden"
       />
       {value && (
         <button

@@ -22,51 +22,82 @@
    primitive inherits the identity without being restyled.
    ============================================================ */
 :root {
-  /* Light is a warm ground with white cards lifted off it, not white on white.
-     The old canvas sat 1.7 L* under --surface, so nothing read as raised and
-     the accents had no field to sit against; this is 4.8, comfortably past
-     dark mode's own 3.3.
+  /* Light is built as one warm family with a ladder that has real rungs.
+     Two things were wrong before and both read as "sloppy" rather than as any
+     single broken colour.
 
-     The ladder runs surface > canvas > surface-2 > surface-3, so a hover or
-     muted surface always sits *below* the page rather than above it.
+     First, --surface was pure #ffffff: chroma 0, the only dead-neutral token
+     in a palette where everything else carries 4-9 b*. Cards are the largest
+     painted area in the app, so the biggest surface on screen was the one
+     thing that did not belong to the family, and it punched a cold hole in a
+     warm page. It is now a warm white — still unmistakably the lightest thing
+     here, but part of the set. Dark mode never had this problem because its
+     warmth climbs monotonically (b* 0.7 -> 1.6 -> 2.4 -> 3.1 -> 3.8); light
+     now does the same in the other direction.
 
-     The -soft tints are pill backgrounds, and a pill has to read as one on
-     BOTH grounds: they sit on white inside a card and on the canvas in the
-     activity list. --brand-soft used to be *lighter* than --canvas, so those
-     pills vanished. Each is now at least 4 L* under the canvas and 8 under
-     white, and each carries text that clears WCAG AA against it. */
-  --canvas: #f5f1e9;
-  --surface: #ffffff;
-  --surface-2: #ebe5d9;
-  --surface-3: #ddd5c5;
-  --ink: #1a1815;
-  --ink-2: #57524b;
-  --ink-3: #6c665a;
-  --line: #ddd6c8;
-  --line-soft: #eee9e0;
+     Second, the rungs were too close to stand on. surface->canvas was 4.8 L*
+     and canvas->surface-2 was 4.1, which put the page ground in the middle of
+     its own ladder with nothing but a rounding error on either side. Anything
+     muted, hovered or secondary sitting directly on the page landed at 1.11:1
+     and simply vanished — which is what a button that reads as "too close to
+     the background" actually is. The canvas has moved down to 93.2 L* so the
+     ladder now runs 99.0 / 93.2 / 88.0 / 83.4: 5.8 and 5.2 between rungs,
+     11.1 from a card to a muted surface.
+
+     The ladder still runs surface > canvas > surface-2 > surface-3, so a hover
+     or muted surface sits *below* the page rather than above it. On light that
+     is forced — nothing can go above white — and it is the reason the canvas
+     needs headroom on both sides rather than a nudge on one.
+
+     The -soft tints are pill backgrounds and have to read as pills on BOTH
+     grounds. They were all crowded into 89.3-90.7 L*, i.e. 4.6-5.9 under the
+     canvas, at chroma low enough that six semantic states differed by almost
+     nothing. They now sit at 83-85 L*: 8+ under the canvas, 14+ under a card,
+     and each carries its paired text at >= 4.8:1. --brand-soft and --warm-soft
+     are the pair most at risk (they co-occur in a proposal row and are both
+     brass) and are separated by chroma rather than hue: ΔE 16.4.
+
+     Accent foregrounds are all pinned to 37 L* so the six states weigh the
+     same and differ only in hue, and so every one of them clears AA on the
+     canvas, on a card, on --surface-2, and on its own pill. */
+  --canvas: #f0ebe1;
+  --surface: #fefcf8;
+  --surface-2: #e3dcce;
+  --surface-3: #d7cfbf;
+  --ink: #1b1813;
+  --ink-2: #595249;
+  --ink-3: #655d53;
+  /* Three border weights, because they do three jobs. --line-soft is a hairline
+     inside a card, --line is a real divider, and --line-strong is the edge of
+     a control: an outline button or an input has to be findable by its border
+     when its fill matches the card it sits on, and a 1.45:1 edge is not an
+     edge. 2.10:1 on a card, 1.81:1 on the canvas. */
+  --line: #d2caba;
+  --line-strong: #b9b09f;
+  --line-soft: #e4ded2;
 
   /* Brand brass — punctuation, not paint. */
-  --brand: #875809;
-  --brand-2: #c08a2e;
-  --brand-soft: #f4e3bc;
+  --brand: #794e0c;
+  --brand-2: #bc8a43;
+  --brand-soft: #ebd0ab;
 
   /* Money secured. */
-  --good: #146b3c;
+  --good: #176439;
   --good-fg: #ffffff;
-  --good-soft: #cfe7d8;
-  --good-line: #a9d2bb;
+  --good-soft: #b1dfbe;
+  --good-line: #8dc69e;
 
   /* Intent bands. */
-  --hot: #a63a12;
-  --hot-soft: #fbdccb;
-  --warm: #80570d;
-  --warm-soft: #f6e2b4;
-  --cold: #5f594f;
-  --cold-soft: #e6e0d4;
+  --hot: #943b20;
+  --hot-soft: #f4c5b0;
+  --warm: #745008;
+  --warm-soft: #efd18c;
+  --cold: #5c564e;
+  --cold-soft: #e0d4c5;
 
-  --danger: #a33418;
-  --danger-soft: #fbdecd;
-  --danger-line: #f0cfbf;
+  --danger: #9a3525;
+  --danger-soft: #fbc3bb;
+  --danger-line: #eca49a;
 
   /* The brand mark picks its own two colours rather than borrowing --ink and
      --brand-2, which flip for reasons that have nothing to do with the logo:
@@ -79,7 +110,7 @@
   /* A deal that closed the other way. Its own colour rather than --danger,
      which means "something went wrong": losing a deal is a fact to file, not
      an error. Far from --good (ΔE 63) so the closed list reads at a glance. */
-  --lost: #a8624a;
+  --lost: #8c5547;
 
   /* The attention chart's two fills, which are a pair and are picked as one.
      They are their own tokens rather than borrowing --brand because a fill and
@@ -89,8 +120,8 @@
      to sit behind. Checked together: ΔE 17.2 normal, 17.1 protan, 19.2 tritan,
      both inside the lightness band, both ≥ 3:1 on the surface. Re-run
      scripts/validate_palette.js if either moves. */
-  --bar: #6b6459;
-  --bar-lead: #b8822a;
+  --bar: #6c645a;
+  --bar-lead: #b08343;
 
   /* A warm ground can carry a real shadow; on the old near-white one these
      had to stay faint or they read as dirt. */
@@ -121,7 +152,7 @@
   --destructive: var(--danger);
   --destructive-foreground: #ffffff;
   --border: var(--line);
-  --input: var(--line);
+  --input: var(--line-strong);
   --ring: var(--brand-2);
   --chart-1: var(--brand);
   --chart-2: var(--good);
@@ -150,6 +181,10 @@
   --ink-2: #a39c90;
   --ink-3: #8c867d;
   --line: #2d2a25;
+  /* Same 2:1 control edge the light theme gets (2.03 on --surface here,
+     2.10 there), so an outline button or an input is bounded by
+     something you can see in either theme rather than only felt. */
+  --line-strong: #4f4b44;
   --line-soft: #232120;
 
   --brand: #dfa954;
@@ -209,6 +244,7 @@
   --color-ink-2: var(--ink-2);
   --color-ink-3: var(--ink-3);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-line-soft: var(--line-soft);
 
   --color-brand: var(--brand);

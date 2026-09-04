@@ -22,7 +22,7 @@ export function GoogleButton({ next, onError }: Props) {
     <button
       type="button"
       onClick={signInWithGoogle}
-      className="flex w-full items-center justify-center gap-2 rounded-md border border-line bg-surface px-3 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:border-ink-3 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="flex w-full items-center justify-center gap-2 rounded-md border border-line-strong bg-surface px-3 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:border-ink-3 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <GoogleMark />
       Continue with Google

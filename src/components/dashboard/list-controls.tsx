@@ -64,7 +64,7 @@ export function ListControls({
             'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
             grouped
               ? 'border-brand bg-brand-soft text-ink'
-              : 'border-line bg-surface text-ink-2 hover:border-ink-3 hover:text-ink',
+              : 'border-line-strong bg-surface text-ink-2 hover:border-ink-3 hover:text-ink',
           )}
         >
           <Rows3 aria-hidden className="size-3.5" />
@@ -119,7 +119,7 @@ function Select({
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
         isSet
           ? 'border-brand bg-brand-soft text-ink'
-          : 'border-line bg-surface text-ink-2 hover:border-ink-3 hover:text-ink',
+          : 'border-line-strong bg-surface text-ink-2 hover:border-ink-3 hover:text-ink',
       )}
     >
       {options.map((o) => (
