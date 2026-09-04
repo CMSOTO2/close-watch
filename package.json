@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "format": "prettier --write . && eslint --fix",
     "check": "prettier --check .",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "npm run build && wrangler deploy && node scripts/indexnow.mjs",
+    "indexnow": "node scripts/indexnow.mjs",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
