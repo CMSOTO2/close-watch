@@ -57,47 +57,66 @@
      are the pair most at risk (they co-occur in a proposal row and are both
      brass) and are separated by chroma rather than hue: ΔE 16.4.
 
-     Accent foregrounds are all pinned to 37 L* so the six states weigh the
-     same and differ only in hue, and so every one of them clears AA on the
-     canvas, on a card, on --surface-2, and on its own pill. */
-  --canvas: #f0ebe1;
-  --surface: #fefcf8;
-  --surface-2: #e3dcce;
-  --surface-3: #d7cfbf;
+     Accent foregrounds are pinned to a single lightness per band so the six
+     states weigh the same and differ only in hue, and so every one of them
+     clears AA on the canvas, on a card, on --surface-2, and on its own pill.
+
+     Chroma is then pushed as far as it will go, because it is free: WCAG
+     contrast is a function of relative luminance, and at a fixed L* the
+     luminance is fixed no matter how saturated the colour gets. Every hue
+     here therefore sits at an absolute chroma target — 34-52 for the tints,
+     ~56 for the foregrounds — clamped to 97% of the sRGB gamut edge at its
+     own lightness so nothing channel-clips and skews hue. It is an absolute
+     target rather than a fraction of each hue's headroom: greens and ambers
+     have far more room near white than orange-reds do, so "90% of max" gives
+     a neon mint sitting next to a dusty terracotta. --hot and --danger and
+     their tints are the exception and are carried 2-3 L* darker than the
+     rest, because sRGB simply runs out of orange-red that close to white —
+     the extra darkness is what buys them their saturation back.
+
+     --brand-soft and --warm-soft are both brass and co-occur in a proposal
+     row, so they are held apart by chroma (34 vs 52) rather than hue: ΔE
+     20.4. --lost keeps a lower chroma than --danger on purpose; a deal that
+     closed the other way is a fact to file, and a vivid red reads as an
+     error. */
+  --canvas: #f1ebdd;
+  --surface: #fffcf6;
+  --surface-2: #e4dccb;
+  --surface-3: #d9cfba;
   --ink: #1b1813;
-  --ink-2: #595249;
-  --ink-3: #655d53;
+  --ink-2: #5a5247;
+  --ink-3: #665d51;
   /* Three border weights, because they do three jobs. --line-soft is a hairline
      inside a card, --line is a real divider, and --line-strong is the edge of
      a control: an outline button or an input has to be findable by its border
      when its fill matches the card it sits on, and a 1.45:1 edge is not an
      edge. 2.10:1 on a card, 1.81:1 on the canvas. */
-  --line: #d2caba;
-  --line-strong: #b9b09f;
-  --line-soft: #e4ded2;
+  --line: #d4cab6;
+  --line-strong: #bbaf9b;
+  --line-soft: #e5dece;
 
   /* Brand brass — punctuation, not paint. */
-  --brand: #794e0c;
-  --brand-2: #bc8a43;
-  --brand-soft: #ebd0ab;
+  --brand: #7a4d04;
+  --brand-2: #c2882f;
+  --brand-soft: #f8cd96;
 
   /* Money secured. */
-  --good: #176439;
+  --good: #086536;
   --good-fg: #ffffff;
-  --good-soft: #b1dfbe;
-  --good-line: #8dc69e;
+  --good-soft: #8be7aa;
+  --good-line: #68cd8c;
 
   /* Intent bands. */
-  --hot: #943b20;
-  --hot-soft: #f4c5b0;
-  --warm: #745008;
-  --warm-soft: #efd18c;
-  --cold: #5c564e;
-  --cold-soft: #e0d4c5;
+  --hot: #962f11;
+  --hot-soft: #feb899;
+  --warm: #755004;
+  --warm-soft: #f3d170;
+  --cold: #5e564b;
+  --cold-soft: #dfd5bf;
 
-  --danger: #9a3525;
-  --danger-soft: #fbc3bb;
-  --danger-line: #eca49a;
+  --danger: #9a291b;
+  --danger-soft: #feb6ac;
+  --danger-line: #fd9487;
 
   /* The brand mark picks its own two colours rather than borrowing --ink and
      --brand-2, which flip for reasons that have nothing to do with the logo:
@@ -110,7 +129,7 @@
   /* A deal that closed the other way. Its own colour rather than --danger,
      which means "something went wrong": losing a deal is a fact to file, not
      an error. Far from --good (ΔE 63) so the closed list reads at a glance. */
-  --lost: #8c5547;
+  --lost: #915337;
 
   /* The attention chart's two fills, which are a pair and are picked as one.
      They are their own tokens rather than borrowing --brand because a fill and
@@ -120,8 +139,8 @@
      to sit behind. Checked together: ΔE 17.2 normal, 17.1 protan, 19.2 tritan,
      both inside the lightness band, both ≥ 3:1 on the surface. Re-run
      scripts/validate_palette.js if either moves. */
-  --bar: #6c645a;
-  --bar-lead: #b08343;
+  --bar: #6d6558;
+  --bar-lead: #b6812f;
 
   /* A warm ground can carry a real shadow; on the old near-white one these
      had to stay faint or they read as dirt. */
