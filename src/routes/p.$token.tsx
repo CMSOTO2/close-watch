@@ -64,8 +64,12 @@ function ViewerPage() {
       )
 
     publish()
+    // border-box, not the default content box. What gets measured above is
+    // getBoundingClientRect, which includes the padding and the border, so an
+    // observer watching the content box would sit silent through exactly the
+    // changes that move the number it is meant to keep honest.
     const observer = new ResizeObserver(publish)
-    observer.observe(header)
+    observer.observe(header, { box: 'border-box' })
     return () => observer.disconnect()
   }, [])
 
