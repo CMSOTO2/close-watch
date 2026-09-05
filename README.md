@@ -198,4 +198,5 @@ and they are easy to break by accident.
 - [Architecture](docs/ARCHITECTURE.md) — stack, tracking design, security model
 - [Production](docs/PRODUCTION.md) — the checklist before a real launch
 - [Launch](docs/LAUNCH.md) — validation, first hundred users, failure modes
+- [Launch replies](docs/LAUNCH-REPLIES.md) — prepared answers for the questions a tracking product always gets
 - [Naming](docs/NAMING.md) — candidates and how to rename
