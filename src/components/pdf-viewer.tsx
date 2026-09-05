@@ -257,8 +257,12 @@ export function PdfViewer({ pdfUrl, visitId, token, title }: Props) {
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8">
+      {/* The toolbar rests below the viewer header, whose measured height the
+          route publishes as --viewer-header. The fallback is the height that
+          header actually has, so the bar is placed correctly on the server
+          render too, before the effect has run. */}
       {status === 'ready' && (
-        <div className="sticky top-3 z-10 mb-4 flex justify-end gap-2">
+        <div className="sticky top-[calc(var(--viewer-header,3rem)+0.75rem)] z-10 mb-4 flex justify-end gap-2">
           <ToolbarButton
             onClick={onDownload}
             busy={busy === 'download'}

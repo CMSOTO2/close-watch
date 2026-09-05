@@ -1,4 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
+import { useEffect, useRef } from 'react'
 import { Eye } from 'lucide-react'
 import { PdfViewer } from '#/components/pdf-viewer'
 import { PageContainer } from '#/components/page-container'
@@ -37,10 +38,43 @@ export const Route = createFileRoute('/p/$token')({
 function ViewerPage() {
   const { pdfUrl, visitId, title, senderName } = Route.useLoaderData()
   const { token } = Route.useParams()
+  const pageRef = useRef<HTMLDivElement>(null)
+  const headerRef = useRef<HTMLElement>(null)
+
+  // The download/print toolbar inside PdfViewer is sticky too, and it has to
+  // come to rest *below* this header rather than behind it. It used to stick at
+  // 12px, inside this header's 45px band, so scrolling buried it: the header is
+  // opaque and outranks it, and elementFromPoint on the buttons returned the
+  // header. They were not just hidden, they were unclickable, which took
+  // download and print tracking with them.
+  //
+  // Measured rather than hard-coded because this height is padding plus a line
+  // box in a web font that loads after first paint, so a constant would be
+  // right locally and wrong for the first moments of every real read. The
+  // observer also covers a title long enough to wrap on a narrow phone.
+  useEffect(() => {
+    const header = headerRef.current
+    const page = pageRef.current
+    if (!header || !page) return
+
+    const publish = () =>
+      page.style.setProperty(
+        '--viewer-header',
+        `${Math.round(header.getBoundingClientRect().height)}px`,
+      )
+
+    publish()
+    const observer = new ResizeObserver(publish)
+    observer.observe(header)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <header className="sticky top-0 z-20 border-b border-line bg-surface">
+    <div ref={pageRef} className="min-h-screen bg-canvas">
+      <header
+        ref={headerRef}
+        className="sticky top-0 z-20 border-b border-line bg-surface"
+      >
         <PageContainer className="flex items-baseline justify-between gap-3 py-3">
           <span className="min-w-0 truncate font-display text-sm font-semibold tracking-tight">
             {title}
