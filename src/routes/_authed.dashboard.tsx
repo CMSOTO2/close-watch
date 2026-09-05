@@ -113,8 +113,11 @@ function Dashboard() {
   const active = activeMatched
     .filter((p) => heat === 'all' || p.intent.band === heat)
     .sort(comparatorFor(sortKey))
+  // Archived rows carry no outcome date, by design, so they fall back to when
+  // they were created. Sorting on outcomeAt alone would drop every one of them
+  // to the bottom of the list in a heap, ordered by nothing a reader can see.
   const closed = [...closedMatched].sort((a, b) =>
-    (b.outcomeAt ?? '').localeCompare(a.outcomeAt ?? ''),
+    (b.outcomeAt ?? b.createdAt).localeCompare(a.outcomeAt ?? a.createdAt),
   )
   const list = tab === 'active' ? active : closed
   const hotCount = activeAll.filter((p) => p.intent.band === 'hot').length

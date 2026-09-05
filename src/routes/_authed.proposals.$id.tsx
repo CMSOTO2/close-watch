@@ -15,6 +15,7 @@ import { useForm } from '@tanstack/react-form-start'
 import { z } from 'zod'
 import { getProposalDetail, getProposalFileUrl } from '#/lib/proposals/detail'
 import {
+  archiveProposal,
   confirmPageSections,
   createShareLink,
   deleteProposal,
@@ -327,9 +328,13 @@ function Outcome({ proposalId }: { proposalId: string }) {
   const [busy, setBusy] = useState(false)
   const [revokeLinks, setRevokeLinks] = useState(false)
   const [confirmLost, setConfirmLost] = useState(false)
+  const [confirmArchive, setConfirmArchive] = useState(false)
 
   if (!proposal) return null
-  const closed = proposal.status === 'won' || proposal.status === 'lost'
+  const closed =
+    proposal.status === 'won' ||
+    proposal.status === 'lost' ||
+    proposal.status === 'archived'
 
   /**
    * Paints the outcome immediately and rolls back if the server disagrees.
@@ -338,7 +343,7 @@ function Outcome({ proposalId }: { proposalId: string }) {
    */
   async function run(
     fn: () => Promise<unknown>,
-    next: { status: 'won' | 'lost' | 'sent'; message: string },
+    next: { status: 'won' | 'lost' | 'sent' | 'archived'; message: string },
   ) {
     const key = queryKeys.proposal(proposalId)
     await queryClient.cancelQueries({ queryKey: key })
@@ -350,8 +355,13 @@ function Outcome({ proposalId }: { proposalId: string }) {
         : {
             ...old,
             status: next.status,
-            // Reopening clears the outcome date; either close stamps it.
-            outcomeAt: next.status === 'sent' ? null : new Date().toISOString(),
+            // Reopening clears the outcome date, and archiving never sets one:
+            // it is the stamp for a deal that resolved, and neither of those
+            // did. Won and lost are the two that stamp it.
+            outcomeAt:
+              next.status === 'sent' || next.status === 'archived'
+                ? null
+                : new Date().toISOString(),
           },
     )
     setBusy(true)
@@ -378,6 +388,7 @@ function Outcome({ proposalId }: { proposalId: string }) {
 
   if (closed) {
     const won = proposal.status === 'won'
+    const archived = proposal.status === 'archived'
     const markedOn =
       proposal.outcomeAt === null
         ? null
@@ -401,22 +412,32 @@ function Outcome({ proposalId }: { proposalId: string }) {
               won ? 'text-good' : 'text-ink-2',
             )}
           >
-            {won ? 'Paid & finalized' : 'Didn’t close'}
+            {won ? 'Paid & finalized' : archived ? 'Archived' : 'Didn’t close'}
             {value !== null && (
               <>
                 {' · '}
                 {/* Struck through on a loss, matching how the closed list
-                    already prints a value that never landed. */}
-                <span className={won ? undefined : 'line-through'}>
+                    already prints a value that never landed. Archiving makes
+                    no claim either way, so its value is printed plainly. */}
+                <span className={won || archived ? undefined : 'line-through'}>
                   {value}
                 </span>
               </>
             )}
           </p>
-          {markedOn && (
-            <p className={cn('text-xs', won ? 'text-good/80' : 'text-ink-3')}>
-              Marked {markedOn}
+          {archived ? (
+            // There is no date to print because nothing was stamped, so this
+            // says what the status means instead: it is off the list, and it
+            // is not on the record as a win or a loss.
+            <p className="text-xs text-ink-3">
+              Out of the pipeline, with no outcome recorded
             </p>
+          ) : (
+            markedOn && (
+              <p className={cn('text-xs', won ? 'text-good/80' : 'text-ink-3')}>
+                Marked {markedOn}
+              </p>
+            )
           )}
         </div>
         <button
@@ -462,6 +483,35 @@ function Outcome({ proposalId }: { proposalId: string }) {
       >
         Mark as lost
       </button>
+      {/* The third exit, and the quietest, because it is the one that makes no
+          claim: the deal is off the list and nothing has been said about how it
+          went. It matters more than its weight suggests. Without it, a free
+          account that needs a slot back has to call a live deal won or lost,
+          and the outcome data is the one asset here a competitor cannot copy. */}
+      <button
+        onClick={() => setConfirmArchive(true)}
+        disabled={busy}
+        className="text-sm font-medium text-ink-2 hover:text-ink hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
+      >
+        Archive
+      </button>
+
+      <ConfirmDialog
+        open={confirmArchive}
+        title="Archive this proposal?"
+        message="It leaves the pipeline and moves to Closed without being recorded as won or lost. Every visit, reader and page it collected is kept, the slot comes back on the free plan, and you can reopen it at any time."
+        confirmLabel="Archive"
+        busyLabel="Saving…"
+        busy={busy}
+        onConfirm={async () => {
+          await run(
+            () => archiveProposal({ data: { id: proposalId, revokeLinks } }),
+            { status: 'archived', message: 'Archived — the stats stay' },
+          )
+          setConfirmArchive(false)
+        }}
+        onCancel={() => setConfirmArchive(false)}
+      />
 
       <ConfirmDialog
         open={confirmLost}

@@ -1,6 +1,10 @@
 import type { ProposalSummary } from '#/lib/analytics/summaries'
 
-export const isClosed = (p: ProposalSummary) => p.status === 'won' || p.status === 'lost'
+// Out of the pipeline, which is not the same as resolved. Won and lost are
+// outcomes; archived is a deal set aside without one being claimed. All three
+// leave the active list and free a slot on the free plan, so they share a tab.
+export const isClosed = (p: ProposalSummary) =>
+  p.status === 'won' || p.status === 'lost' || p.status === 'archived'
 
 // Sort options for the active list. Nulls (no price / never viewed) always sort
 // last, regardless of direction, so an empty field never jumps to the top.
@@ -18,9 +22,21 @@ export const SORTS: ReadonlyArray<{
   label: string
   cmp: (a: ProposalSummary, b: ProposalSummary) => number
 }> = [
-  { key: 'priority', label: 'Priority (hottest)', cmp: (a, b) => b.intent.score - a.intent.score },
-  { key: 'recent', label: 'Newest first', cmp: (a, b) => b.createdAt.localeCompare(a.createdAt) },
-  { key: 'oldest', label: 'Oldest first', cmp: (a, b) => a.createdAt.localeCompare(b.createdAt) },
+  {
+    key: 'priority',
+    label: 'Priority (hottest)',
+    cmp: (a, b) => b.intent.score - a.intent.score,
+  },
+  {
+    key: 'recent',
+    label: 'Newest first',
+    cmp: (a, b) => b.createdAt.localeCompare(a.createdAt),
+  },
+  {
+    key: 'oldest',
+    label: 'Oldest first',
+    cmp: (a, b) => a.createdAt.localeCompare(b.createdAt),
+  },
   {
     key: 'price-desc',
     label: 'Price: high to low',
@@ -29,14 +45,19 @@ export const SORTS: ReadonlyArray<{
   {
     key: 'price-asc',
     label: 'Price: low to high',
-    cmp: (a, b) => (a.dealValueCents ?? Infinity) - (b.dealValueCents ?? Infinity),
+    cmp: (a, b) =>
+      (a.dealValueCents ?? Infinity) - (b.dealValueCents ?? Infinity),
   },
   {
     key: 'viewed',
     label: 'Recently viewed',
     cmp: (a, b) => (b.lastViewedAt ?? '').localeCompare(a.lastViewedAt ?? ''),
   },
-  { key: 'engaged', label: 'Most engaged', cmp: (a, b) => b.totalEngagedMs - a.totalEngagedMs },
+  {
+    key: 'engaged',
+    label: 'Most engaged',
+    cmp: (a, b) => b.totalEngagedMs - a.totalEngagedMs,
+  },
 ]
 
 export type HeatFilter = 'all' | 'hot' | 'warm' | 'cold'

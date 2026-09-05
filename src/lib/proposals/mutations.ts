@@ -3,7 +3,12 @@ import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import { assertCanSendProposal } from '#/lib/billing/entitlements'
-import { PAGE_SECTIONS, PROPOSALS_BUCKET, SHARE_LINK_TTL_DAYS, shareUrl } from '#/constants'
+import {
+  PAGE_SECTIONS,
+  PROPOSALS_BUCKET,
+  SHARE_LINK_TTL_DAYS,
+  shareUrl,
+} from '#/constants'
 
 function newToken(): string {
   // URL-safe, unguessable. 18 bytes -> 24 chars, plenty of entropy for a link
@@ -20,54 +25,59 @@ export const createShareLink = createServerFn({ method: 'POST' })
       recipientEmail: z.email().trim().max(320).optional().or(z.literal('')),
     }),
   )
-  .handler(async ({ data }): Promise<{ id: string; token: string; url: string }> => {
-    const supabase = getSupabaseServerClient()
+  .handler(
+    async ({ data }): Promise<{ id: string; token: string; url: string }> => {
+      const supabase = getSupabaseServerClient()
 
-    const { data: auth } = await supabase.auth.getUser()
-    if (!auth.user) throw new Error('Not signed in')
+      const { data: auth } = await supabase.auth.getUser()
+      if (!auth.user) throw new Error('Not signed in')
 
-    // The first link is what puts a proposal in front of a client, so this is
-    // where the free plan's live cap pushes back. Checked here so the user gets
-    // a sentence rather than the RLS policy's "new row violates row-level
-    // security"; the `free plan send cap` policy is the one that is actually
-    // true.
-    await assertCanSendProposal(supabase, auth.user.id, data.proposalId)
+      // The first link is what puts a proposal in front of a client, so this is
+      // where the free plan's live cap pushes back. Checked here so the user gets
+      // a sentence rather than the RLS policy's "new row violates row-level
+      // security"; the `free plan send cap` policy is the one that is actually
+      // true.
+      await assertCanSendProposal(supabase, auth.user.id, data.proposalId)
 
-    const token = newToken()
+      const token = newToken()
 
-    const expiresAt = new Date(Date.now() + SHARE_LINK_TTL_DAYS * 24 * 60 * 60 * 1000)
+      const expiresAt = new Date(
+        Date.now() + SHARE_LINK_TTL_DAYS * 24 * 60 * 60 * 1000,
+      )
 
-    // RLS's insert check confirms the caller owns the proposal; a foreign id
-    // is rejected rather than silently linked.
-    const { data: link, error } = await supabase
-      .from('share_links')
-      .insert({
-        proposal_id: data.proposalId,
-        token,
-        recipient_name: data.recipientName || null,
-        recipient_email: data.recipientEmail || null,
-        expires_at: expiresAt.toISOString(),
-      })
-      .select('id, token')
-      .maybeSingle()
+      // RLS's insert check confirms the caller owns the proposal; a foreign id
+      // is rejected rather than silently linked.
+      const { data: link, error } = await supabase
+        .from('share_links')
+        .insert({
+          proposal_id: data.proposalId,
+          token,
+          recipient_name: data.recipientName || null,
+          recipient_email: data.recipientEmail || null,
+          expires_at: expiresAt.toISOString(),
+        })
+        .select('id, token')
+        .maybeSingle()
 
-    if (error || !link) throw new Error(error?.message ?? 'Could not create the link')
+      if (error || !link)
+        throw new Error(error?.message ?? 'Could not create the link')
 
-    // A proposal with a link has been sent, and that is what the free cap
-    // counts. Scoped to drafts so adding a link to a won deal does not quietly
-    // reopen it.
-    await supabase
-      .from('proposals')
-      .update({ status: 'sent' })
-      .eq('id', data.proposalId)
-      .eq('status', 'draft')
+      // A proposal with a link has been sent, and that is what the free cap
+      // counts. Scoped to drafts so adding a link to a won deal does not quietly
+      // reopen it.
+      await supabase
+        .from('proposals')
+        .update({ status: 'sent' })
+        .eq('id', data.proposalId)
+        .eq('status', 'draft')
 
-    return {
-      id: link.id,
-      token: link.token,
-      url: shareUrl(link.token),
-    }
-  })
+      return {
+        id: link.id,
+        token: link.token,
+        url: shareUrl(link.token),
+      }
+    },
+  )
 
 /** Revokes a share link. The viewer route refuses any revoked token. */
 export const revokeShareLink = createServerFn({ method: 'POST' })
@@ -93,20 +103,22 @@ export const setPageSection = createServerFn({ method: 'POST' })
       section: z.enum(PAGE_SECTIONS),
     }),
   )
-  .handler(async ({ data }): Promise<{ pageNumber: number; section: string }> => {
-    const supabase = getSupabaseServerClient()
+  .handler(
+    async ({ data }): Promise<{ pageNumber: number; section: string }> => {
+      const supabase = getSupabaseServerClient()
 
-    const { error } = await supabase
-      .from('proposal_pages')
-      // Choosing a tag by hand is what turns a guess into a fact, so this is
-      // the one place section_auto goes back to false.
-      .update({ section: data.section, section_auto: false })
-      .eq('proposal_id', data.proposalId)
-      .eq('page_number', data.pageNumber)
+      const { error } = await supabase
+        .from('proposal_pages')
+        // Choosing a tag by hand is what turns a guess into a fact, so this is
+        // the one place section_auto goes back to false.
+        .update({ section: data.section, section_auto: false })
+        .eq('proposal_id', data.proposalId)
+        .eq('page_number', data.pageNumber)
 
-    if (error) throw new Error(error.message)
-    return { pageNumber: data.pageNumber, section: data.section }
-  })
+      if (error) throw new Error(error.message)
+      return { pageNumber: data.pageNumber, section: data.section }
+    },
+  )
 
 /**
  * Accepts every guessed page tag at once.
@@ -137,7 +149,9 @@ export const confirmPageSections = createServerFn({ method: 'POST' })
  * dashboard's "secured" totals sum, and the last-30-days figure reads from.
  */
 export const markProposalWon = createServerFn({ method: 'POST' })
-  .validator(z.object({ id: z.uuid(), revokeLinks: z.boolean().default(false) }))
+  .validator(
+    z.object({ id: z.uuid(), revokeLinks: z.boolean().default(false) }),
+  )
   .handler(async ({ data }): Promise<{ id: string }> => {
     const supabase = getSupabaseServerClient()
     const { error } = await supabase
@@ -167,12 +181,53 @@ export const markProposalWon = createServerFn({ method: 'POST' })
  * status = 'won' only.
  */
 export const markProposalLost = createServerFn({ method: 'POST' })
-  .validator(z.object({ id: z.uuid(), revokeLinks: z.boolean().default(false) }))
+  .validator(
+    z.object({ id: z.uuid(), revokeLinks: z.boolean().default(false) }),
+  )
   .handler(async ({ data }): Promise<{ id: string }> => {
     const supabase = getSupabaseServerClient()
     const { error } = await supabase
       .from('proposals')
       .update({ status: 'lost', outcome_at: new Date().toISOString() })
+      .eq('id', data.id)
+    if (error) throw new Error(error.message)
+
+    if (data.revokeLinks) {
+      await supabase
+        .from('share_links')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('proposal_id', data.id)
+        .is('revoked_at', null)
+    }
+
+    return { id: data.id }
+  })
+
+/**
+ * Files a proposal away without claiming it ended one way or the other.
+ *
+ * This is the third exit the free cap has always been described as having, in
+ * the limit message, the upgrade card and the terms, and it is the only one
+ * that is honest about a deal still in the air. Won and lost are assertions
+ * about what happened; a free account that needs its third slot back and only
+ * has those two buttons has to pick one and be wrong. The reading-to-outcome
+ * correlation in POSITIONING.md is built from every account including free
+ * ones, so a cap that manufactures outcomes is corrupting the one dataset a
+ * competitor cannot copy.
+ *
+ * `outcome_at` stays null for exactly that reason: it is the stamp that says a
+ * deal resolved, and nothing resolved here. Won and lost keep their meaning
+ * because archiving no longer borrows it.
+ */
+export const archiveProposal = createServerFn({ method: 'POST' })
+  .validator(
+    z.object({ id: z.uuid(), revokeLinks: z.boolean().default(false) }),
+  )
+  .handler(async ({ data }): Promise<{ id: string }> => {
+    const supabase = getSupabaseServerClient()
+    const { error } = await supabase
+      .from('proposals')
+      .update({ status: 'archived', outcome_at: null })
       .eq('id', data.id)
     if (error) throw new Error(error.message)
 
@@ -220,9 +275,14 @@ export const deleteProposal = createServerFn({ method: 'POST' })
     // Delete the row first: it is the RLS-guarded source of truth. If the file
     // removal then fails we are left with an unreachable orphan, not a dangling
     // row pointing at a missing file.
-    const { error } = await supabase.from('proposals').delete().eq('id', data.id)
+    const { error } = await supabase
+      .from('proposals')
+      .delete()
+      .eq('id', data.id)
     if (error) throw new Error(error.message)
 
-    await supabase.storage.from(PROPOSALS_BUCKET).remove([proposal.storage_path])
+    await supabase.storage
+      .from(PROPOSALS_BUCKET)
+      .remove([proposal.storage_path])
     return { id: data.id }
   })

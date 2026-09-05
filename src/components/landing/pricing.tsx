@@ -20,10 +20,10 @@ import { cn } from '#/lib/utils'
  * shape it will have to be worth reading, and a small "soon" is the difference
  * between a roadmap and a page that sells three things you cannot deliver.
  *
- * Solo carries the warm ground and the solid button. Free held it while
- * checkout was off, because weighting a card whose button cannot be pressed
- * points the eye at the one thing nobody can do; Stripe is live now, so the
- * emphasis is back where it belongs.
+ * Solo carries the ring, the lift and the solid button. Free held the emphasis
+ * while checkout was off, because weighting a card whose button cannot be
+ * pressed points the eye at the one thing nobody can do; Stripe is live now, so
+ * it is back where it belongs.
  *
  * Solo rather than Free even though the free plan is the front door, because
  * of who this is for. POSITIONING.md's customer is running a pipeline, and a
@@ -62,11 +62,18 @@ const PLANS: Array<Plan> = [
     price: '$0',
     cadence: null,
     who: 'Two live deals at a time, with nothing switched off.',
+    // Deliberately the same list as Solo, minus the first line. Solo's bullets
+    // used to name grouping, search and heat filtering while Free's did not,
+    // which read as a feature gate. None of those are gated; the only
+    // entitlement check in the app is the slot counter. Implying otherwise
+    // teaches people the free plan is a worse product than it is, which is the
+    // one thing POSITIONING.md is most insistent about not doing.
     features: [
       { text: '2 proposals live with clients at a time' },
       { text: 'Drafts you are still preparing do not count' },
       { text: 'Tracked links, intent scoring, page attention' },
       { text: 'Forwarding detection and email alerts' },
+      { text: 'Grouping by client, search and heat filtering' },
       { text: 'Full history, nothing expires' },
     ],
     cta: 'Start free',
@@ -79,7 +86,9 @@ const PLANS: Array<Plan> = [
     who: 'For the person sending every proposal at a small agency.',
     // Spelled out rather than left as "everything on the free plan". Two
     // bullets against Free's five made the paid tier read as the thinner
-    // product, which is the opposite of what the list is for.
+    // product, which is the opposite of what the list is for. Free now carries
+    // the same lines, so the two columns differ by exactly what the plans
+    // differ by: the first bullet. That is the honest version of the same fix.
     features: [
       { text: 'Unlimited proposals live at once' },
       { text: 'Tracked links, intent scoring, page attention' },

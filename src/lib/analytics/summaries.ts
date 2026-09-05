@@ -80,12 +80,16 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
   async (): Promise<Array<ProposalSummary>> => {
     const supabase = getSupabaseServerClient()
 
+    // Archived rows are included rather than filtered out here. They used to be
+    // dropped, from back when nothing could set the status and the filter cost
+    // nothing; now that archiving is a button, dropping them would make a
+    // proposal vanish from the app entirely the moment someone filed it away.
+    // The dashboard sorts them into the closed tab, which is where they belong.
     const { data: proposals } = await supabase
       .from('proposals')
       .select(
         'id, title, client_name, status, page_count, created_at, deal_value_cents, currency, outcome_at',
       )
-      .neq('status', 'archived')
       .order('created_at', { ascending: false })
 
     if (!proposals?.length) return []

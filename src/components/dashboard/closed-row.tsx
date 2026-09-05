@@ -6,6 +6,10 @@ import type { ProposalSummary } from '#/lib/analytics/summaries'
 
 export function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
   const won = proposal.status === 'won'
+  // Filed away rather than resolved, so it carries no outcome and no date. The
+  // value is printed plainly: struck through would say the money was lost, and
+  // the whole point of this status is that nobody has claimed that.
+  const archived = proposal.status === 'archived'
   const timeZone = useTimeZone()
   const date =
     proposal.outcomeAt === null ? null : formatDay(proposal.outcomeAt, timeZone)
@@ -16,7 +20,9 @@ export function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
       <p
         className={cn(
           'shrink-0 text-right font-display text-base font-semibold tracking-tight tnum',
-          won ? 'text-good' : 'text-ink-3 line-through',
+          won && 'text-good',
+          archived && 'text-ink-3',
+          !won && !archived && 'text-ink-3 line-through',
         )}
       >
         {formatMoney(proposal.dealValueCents, proposal.currency)}
@@ -33,8 +39,12 @@ export function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
           'row-enter relative block overflow-hidden rounded-md border border-line bg-surface px-4 py-3.5 shadow-sm transition-[border-color,box-shadow]',
           'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:content-[""]',
           // A won deal and a lost one are both closed, but they are not the
-          // same news; the spine is what separates them down the list.
-          won ? 'before:bg-good' : 'before:bg-lost',
+          // same news; the spine is what separates them down the list. An
+          // archived one is neither piece of news, and takes the neutral spine
+          // so it reads as filed rather than as a third kind of result.
+          won && 'before:bg-good',
+          archived && 'before:bg-line-strong',
+          !won && !archived && 'before:bg-lost',
           'hover:border-ink-3 hover:shadow-md',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
           '[&[data-row-nav]]:outline-2 [&[data-row-nav]]:outline-offset-2 [&[data-row-nav]]:outline-ring',
@@ -54,7 +64,7 @@ export function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
           </div>
 
           <p className="font-mono text-[11px] uppercase tracking-wide text-ink-3">
-            {won ? 'Won' : 'Lost'}
+            {won ? 'Won' : archived ? 'Archived' : 'Lost'}
             {date && ` \u00b7 ${date}`}
           </p>
 

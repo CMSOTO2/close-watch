@@ -25,7 +25,7 @@ src/
     proposals/
       create.ts               server fn: upload PDF, create proposal
       detail.ts               server fn: single proposal for the owner (incl. owner name)
-      mutations.ts            server fns: share links, page sections, won/lost/reopen, delete
+      mutations.ts            server fns: share links, page sections, won/lost/archive/reopen, delete
       link-status.ts          live vs revoked vs expired, and how they are counted
     analytics/
       bots.ts                 email-scanner detection, UA parsing

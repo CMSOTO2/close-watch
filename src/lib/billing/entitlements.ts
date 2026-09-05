@@ -2,7 +2,11 @@ import { createServerFn } from '@tanstack/react-start'
 import { queryOptions } from '@tanstack/react-query'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import { serverEnv } from '#/env'
-import { FREE_DRAFT_PROPOSALS, FREE_LIVE_PROPOSALS, queryKeys } from '#/constants'
+import {
+  FREE_DRAFT_PROPOSALS,
+  FREE_LIVE_PROPOSALS,
+  queryKeys,
+} from '#/constants'
 import type { BillingPlan } from '#/lib/supabase/types'
 
 export type Entitlements = {
@@ -79,7 +83,9 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
     const [subscription, comp, live, drafts] = await Promise.all([
       supabase
         .from('subscriptions')
-        .select('plan, status, cancel_at_period_end, cancel_at, current_period_end')
+        .select(
+          'plan, status, cancel_at_period_end, cancel_at, current_period_end',
+        )
         .maybeSingle(),
       supabase.from('comps').select('plan, until').maybeSingle(),
       supabase
@@ -142,10 +148,15 @@ export const PROPOSAL_LIMIT_MESSAGE =
  * What the user is told when the live cap stops them. This is the one a free
  * account actually meets, and it is deliberately not phrased as a punishment:
  * closing a deal gives the slot back with its history intact.
+ *
+ * Archive is named alongside won and lost because it is the exit for a deal
+ * that has not resolved. Offering only the two outcomes would make the cap a
+ * machine for producing false ones.
  */
 export const SEND_LIMIT_MESSAGE =
   `The free plan keeps ${FREE_LIVE_PROPOSALS} proposals live at a time. ` +
-  'Mark one won, lost or archived to free a slot, or go Solo for unlimited.'
+  'Mark one won or lost, or archive one still in play, to free a slot. ' +
+  'Or go Solo for unlimited.'
 
 export function isProposalLimitError(error: unknown): boolean {
   return (
@@ -164,7 +175,11 @@ async function hasUnlimitedPlan(
       .select('plan, status')
       .eq('user_id', userId)
       .maybeSingle(),
-    supabase.from('comps').select('plan, until').eq('user_id', userId).maybeSingle(),
+    supabase
+      .from('comps')
+      .select('plan, until')
+      .eq('user_id', userId)
+      .maybeSingle(),
   ])
 
   const row = subscription.data

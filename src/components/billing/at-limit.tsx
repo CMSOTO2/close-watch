@@ -17,10 +17,12 @@ export function AtLimitPanel({ liveProposals }: { liveProposals: number }) {
         You have {liveProposals} proposals live with clients.
       </h2>
       <p className="mt-2 max-w-[52ch] text-[13px] leading-relaxed text-ink-2">
-        The free plan keeps {FREE_LIVE_PROPOSALS} live at a time. Mark one won or
-        lost, or archive it, and the slot comes straight back with its tracking
-        history intact. Nothing is deleted and nothing is hidden. Drafts do not
-        count, so you can keep preparing the next one either way.
+        The free plan keeps {FREE_LIVE_PROPOSALS} live at a time. Mark one won
+        or lost and the slot comes straight back with its tracking history
+        intact. If a deal is still in the air, archive it instead: it leaves the
+        list without going on the record either way. Nothing is deleted and
+        nothing is hidden. Drafts do not count, so you can keep preparing the
+        next one.
       </p>
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <Button asChild variant="outline">
@@ -42,7 +44,11 @@ export function AtLimitPanel({ liveProposals }: { liveProposals: number }) {
  * never see it. The copy says so rather than pretending it is a plan boundary
  * worth paying to cross.
  */
-export function DraftLimitPanel({ draftProposals }: { draftProposals: number }) {
+export function DraftLimitPanel({
+  draftProposals,
+}: {
+  draftProposals: number
+}) {
   return (
     <div className="mt-6 rounded-lg border border-line bg-surface p-6 shadow-sm">
       <p className="kicker text-brand">Free plan</p>
