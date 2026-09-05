@@ -15,6 +15,22 @@ const HUMANS = {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0',
   chromeAndroid:
     'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+  // In-app browsers. A proposal is read wherever the mail was read, and on a
+  // phone that is almost never a standalone browser: the reader taps the link
+  // inside Outlook, Gmail or LinkedIn and gets that app's own webview. These
+  // are people, and the app name in the string is the trap.
+  outlookIos:
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Outlook-iOS/745.0.prod.iphone (3.51.0)',
+  outlookAndroid:
+    'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36 Outlook-Android/2.0',
+  linkedinIos:
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [LinkedInApp]',
+  gmailIosWebview:
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+  firefoxIos:
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/125.0 Mobile/15E148 Safari/605.1.15',
+  safari18Mac:
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15',
 }
 
 describe('detectBot', () => {
@@ -31,15 +47,57 @@ describe('detectBot', () => {
   })
 
   it.each([
-    ['GoogleImageProxy fetching an inlined image', 'Mozilla/5.0 (via ggpht.com GoogleImageProxy)', 'google'],
-    ['an email security gateway', 'Mozilla/5.0 Mimecast Link Protection', 'email-gateway'],
-    ['Proofpoint URL defense', 'Mozilla/5.0 proofpoint-urldefense', 'email-gateway'],
-    ['Outlook Safe Links', 'Mozilla/5.0 (Windows NT) Microsoft Office Outlook', 'microsoft'],
-    ['a Slack unfurl', 'Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)', 'slack'],
-    ['a social preview crawler', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)', 'social-preview'],
-    ['a headless automation browser', 'Mozilla/5.0 (X11; Linux x86_64) HeadlessChrome/124.0.0.0', 'headless'],
+    [
+      'GoogleImageProxy fetching an inlined image',
+      'Mozilla/5.0 (via ggpht.com GoogleImageProxy)',
+      'google',
+    ],
+    [
+      'an email security gateway',
+      'Mozilla/5.0 Mimecast Link Protection',
+      'email-gateway',
+    ],
+    [
+      'Proofpoint URL defense',
+      'Mozilla/5.0 proofpoint-urldefense',
+      'email-gateway',
+    ],
+    [
+      'Outlook Safe Links',
+      'Mozilla/5.0 (Windows NT) Microsoft Office Outlook',
+      'microsoft',
+    ],
+    // The other half of the Outlook distinction: these name the Office product
+    // and are probes, where Outlook-iOS in HUMANS above is a person. Both
+    // directions are pinned because one regex decides them.
+    [
+      'the Office link probe',
+      'Microsoft Office Existence Discovery',
+      'microsoft',
+    ],
+    ['an Office protocol handler', 'MSOffice 16', 'microsoft'],
+    ['a Skype unfurl', 'SkypeUriPreview Preview/0.5', 'microsoft'],
+    [
+      'a Slack unfurl',
+      'Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)',
+      'slack',
+    ],
+    [
+      'a social preview crawler',
+      'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+      'social-preview',
+    ],
+    [
+      'a headless automation browser',
+      'Mozilla/5.0 (X11; Linux x86_64) HeadlessChrome/124.0.0.0',
+      'headless',
+    ],
     ['a scripted HTTP client', 'python-requests/2.31.0', 'http-client'],
-    ['a generic crawler', 'Mozilla/5.0 (compatible; SomeCrawler/2.0; +http://example.com/bot)', 'generic'],
+    [
+      'a generic crawler',
+      'Mozilla/5.0 (compatible; SomeCrawler/2.0; +http://example.com/bot)',
+      'generic',
+    ],
   ])('flags %s as %s', (_desc, ua, reason) => {
     expect(detectBot(ua)).toEqual({ isBot: true, reason })
   })
@@ -76,6 +134,10 @@ describe('parseUserAgent', () => {
   })
 
   it('never throws on a missing user agent', () => {
-    expect(parseUserAgent(undefined)).toEqual({ deviceType: 'desktop', os: 'Unknown', browser: 'Unknown' })
+    expect(parseUserAgent(undefined)).toEqual({
+      deviceType: 'desktop',
+      os: 'Unknown',
+      browser: 'Unknown',
+    })
   })
 })

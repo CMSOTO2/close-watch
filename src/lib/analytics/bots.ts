@@ -13,12 +13,33 @@ const BOT_PATTERNS: Array<[RegExp, string]> = [
   [/googleimageproxy|google-safebrowsing|googlebot/i, 'google'],
   [/bingbot|msnbot|BingPreview/i, 'bing'],
   [/slackbot|slack-imgproxy/i, 'slack'],
-  [/discordbot|telegrambot|whatsapp|twitterbot|facebookexternalhit|linkedinbot/i, 'social-preview'],
-  [/outlook|microsoftpreview|skypeuripreview|office/i, 'microsoft'],
-  [/mimecast|proofpoint|barracuda|symantec|forcepoint|cloudmark|ironport/i, 'email-gateway'],
+  [
+    /discordbot|telegrambot|whatsapp|twitterbot|facebookexternalhit|linkedinbot/i,
+    'social-preview',
+  ],
+  // "outlook" and "office" on their own cannot be the signal. Outlook's mobile
+  // apps put Outlook-iOS/745.0 or Outlook-Android/2.0 in the webview UA of a
+  // real person reading their own mail, and a B2B recipient reads mail on a
+  // phone more often than not. Flagging those tells the sender "your client
+  // never opened it" while the client is reading it, which is the worst thing
+  // this file can do.
+  //
+  // What Office actually sends names the product: "Microsoft Office Outlook",
+  // "Microsoft Office Existence Discovery", "MSOffice 16". Match those.
+  [
+    /microsoft office|msoffice|microsoftpreview|skypeuripreview|microsoft-webdav-miniredir/i,
+    'microsoft',
+  ],
+  [
+    /mimecast|proofpoint|barracuda|symantec|forcepoint|cloudmark|ironport/i,
+    'email-gateway',
+  ],
   [/bitlybot|redditbot|embedly|quora link preview/i, 'link-preview'],
   [/headlesschrome|phantomjs|puppeteer|playwright|selenium/i, 'headless'],
-  [/curl|wget|python-requests|axios|go-http-client|java\/|okhttp|libwww/i, 'http-client'],
+  [
+    /curl|wget|python-requests|axios|go-http-client|java\/|okhttp|libwww/i,
+    'http-client',
+  ],
   [/bot\b|crawler|spider|scraper|monitor|preview|fetcher/i, 'generic'],
 ]
 
@@ -41,11 +62,12 @@ export type DeviceInfo = {
 export function parseUserAgent(ua: string | undefined): DeviceInfo {
   const s = ua ?? ''
 
-  const deviceType: DeviceInfo['deviceType'] = /ipad|tablet|playbook|silk/i.test(s)
-    ? 'tablet'
-    : /mobi|android|iphone|ipod/i.test(s)
-      ? 'mobile'
-      : 'desktop'
+  const deviceType: DeviceInfo['deviceType'] =
+    /ipad|tablet|playbook|silk/i.test(s)
+      ? 'tablet'
+      : /mobi|android|iphone|ipod/i.test(s)
+        ? 'mobile'
+        : 'desktop'
 
   // Order matters twice over. iPhone and iPad UAs both contain "like Mac OS X",
   // so iOS must be tested before macOS or every mobile viewer reads as a Mac.

@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-start/server'
 import { createHash, randomUUID } from 'node:crypto'
 import { z } from 'zod'
+import { isShareToken } from '#/constants'
 import { serverEnv } from '#/env'
 import { getSupabaseAdminClient } from '#/lib/supabase/server'
 import { detectBot, parseUserAgent } from './bots'
@@ -32,8 +33,16 @@ export type VisitContext = {
  * never sees these tables.
  */
 export const beginVisit = createServerFn({ method: 'GET' })
-  .validator(z.object({ token: z.string().min(8).max(128) }))
+  // Deliberately unbounded here. Enforcing the token's shape in the validator
+  // throws inside the server function, and that surfaces to the reader as a
+  // 500 and the generic error page — which is what a truncated or mangled URL
+  // used to get. The shape is checked in the handler instead, where failing it
+  // returns null and the route renders the same "no longer available" page as
+  // a revoked link.
+  .validator(z.object({ token: z.string() }))
   .handler(async ({ data }): Promise<VisitContext | null> => {
+    if (!isShareToken(data.token)) return null
+
     const supabase = getSupabaseAdminClient()
 
     const { data: link } = await supabase
@@ -80,12 +89,18 @@ export const beginVisit = createServerFn({ method: 'GET' })
 
     let visitId: string
 
-    if (recent && Date.now() - new Date(recent.last_seen_at).getTime() < SESSION_GAP_MS) {
+    if (
+      recent &&
+      Date.now() - new Date(recent.last_seen_at).getTime() < SESSION_GAP_MS
+    ) {
       visitId = recent.id
     } else {
       const ip = getRequestIP({ xForwardedFor: true })
       const ipHash = ip
-        ? createHash('sha256').update(`${serverEnv().IP_HASH_SALT}:${ip}`).digest('hex').slice(0, 32)
+        ? createHash('sha256')
+            .update(`${serverEnv().IP_HASH_SALT}:${ip}`)
+            .digest('hex')
+            .slice(0, 32)
         : null
 
       // Only on a new visit: a resumed read is the same person in the same

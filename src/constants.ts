@@ -71,6 +71,24 @@ export const FREE_DRAFT_PROPOSALS = 10
  */
 export const SHARE_LINK_TTL_DAYS = 60
 
+/**
+ * Shape of a token `newToken()` issues: URL-safe base64, 24 characters today.
+ * The bound is loose rather than exactly 24 so a link issued before any change
+ * to the byte length still resolves.
+ */
+const SHARE_TOKEN = /^[A-Za-z0-9_-]{8,128}$/
+
+/**
+ * Whether a string could be a token we issued. A URL failing this is a dead
+ * link, not a bad request: mail clients truncate links, people paste half of
+ * one, and a link tweeted with the trailing character eaten is the same shape
+ * of accident. Every one of those readers should land on "no longer available"
+ * rather than an error page.
+ */
+export function isShareToken(token: string): boolean {
+  return SHARE_TOKEN.test(token)
+}
+
 /** Full public viewer URL for a share token. */
 export function shareUrl(token: string): string {
   return `${publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')}/p/${token}`
