@@ -22,133 +22,137 @@
    primitive inherits the identity without being restyled.
    ============================================================ */
 :root {
-  /* Light is built as one warm family with a ladder that has real rungs.
-     Two things were wrong before and both read as "sloppy" rather than as any
-     single broken colour.
+  /* Light shares dark's colours; only lightness moves between the themes.
 
-     First, --surface was pure #ffffff: chroma 0, the only dead-neutral token
-     in a palette where everything else carries 4-9 b*. Cards are the largest
-     painted area in the app, so the biggest surface on screen was the one
-     thing that did not belong to the family, and it punched a cold hole in a
-     warm page. It is now a warm white — still unmistakably the lightest thing
-     here, but part of the set. Dark mode never had this problem because its
-     warmth climbs monotonically (b* 0.7 -> 1.6 -> 2.4 -> 3.1 -> 3.8); light
-     now does the same in the other direction.
+     Two rebuilds went wrong here in opposite directions. The beige one read as
+     dusty. The fix for that was to strip the warmth out of the neutrals
+     entirely — and the accents have looked like mud ever since, which is the
+     part that finally made sense once the two themes were measured against
+     each other rather than judged one at a time.
 
-     Second, the rungs were too close to stand on. surface->canvas was 4.8 L*
-     and canvas->surface-2 was 4.1, which put the page ground in the middle of
-     its own ladder with nothing but a rounding error on either side. Anything
-     muted, hovered or secondary sitting directly on the page landed at 1.11:1
-     and simply vanished — which is what a button that reads as "too close to
-     the background" actually is. The canvas has moved down to 93.2 L* so the
-     ladder now runs 99.0 / 93.2 / 88.0 / 83.4: 5.8 and 5.2 between rungs,
-     11.1 from a card to a muted surface.
+     Dark's greys sit at hue 68-85deg. Its accents sit at 35-77deg. They are
+     one family, which is the whole reason that theme reads as considered.
+     Light's greys had been sitting at 286deg — blue-violet — under the same
+     amber and orange accents, roughly 200deg away from them. Warm ink on a
+     cool ground is what "muddy" actually is: the ground is pulling the colour
+     apart, not the colour failing.
 
-     The ladder still runs surface > canvas > surface-2 > surface-3, so a hover
-     or muted surface sits *below* the page rather than above it. On light that
-     is forced — nothing can go above white — and it is the reason the canvas
-     needs headroom on both sides rather than a nudge on one.
+     So the neutrals here are warm again, but a fraction of what beige was:
+     hue ~85deg at chroma 0.004, about three points of spread between the
+     channels. That is enough for the amber to belong and far too little to
+     read as a cream. The ladder still runs surface #ffffff > canvas >
+     surface-2 > surface-3, so a card is the lightest thing on screen and the
+     page sits under it — the same direction dark runs in, and the reason
+     nothing here needed restructuring. The page itself is never pure white. */
+  --canvas: #f7f6f3;
+  --surface: #ffffff;
+  --surface-2: #f1efea;
+  --surface-3: #e7e4dd;
+  --ink: #1a1815;
+  --ink-2: #57534c;
+  --ink-3: #726b62;
 
-     The -soft tints are pill backgrounds and have to read as pills on BOTH
-     grounds. They were all crowded into 89.3-90.7 L*, i.e. 4.6-5.9 under the
-     canvas, at chroma low enough that six semantic states differed by almost
-     nothing. They now sit at 83-85 L*: 8+ under the canvas, 14+ under a card,
-     and each carries its paired text at >= 4.8:1. --brand-soft and --warm-soft
-     are the pair most at risk (they co-occur in a proposal row and are both
-     brass) and are separated by chroma rather than hue: ΔE 16.4.
-
-     Accent foregrounds are pinned to a single lightness per band so the six
-     states weigh the same and differ only in hue, and so every one of them
-     clears AA on the canvas, on a card, on --surface-2, and on its own pill.
-
-     Chroma is then pushed as far as it will go, because it is free: WCAG
-     contrast is a function of relative luminance, and at a fixed L* the
-     luminance is fixed no matter how saturated the colour gets. Every hue
-     here therefore sits at an absolute chroma target — 34-52 for the tints,
-     ~56 for the foregrounds — clamped to 97% of the sRGB gamut edge at its
-     own lightness so nothing channel-clips and skews hue. It is an absolute
-     target rather than a fraction of each hue's headroom: greens and ambers
-     have far more room near white than orange-reds do, so "90% of max" gives
-     a neon mint sitting next to a dusty terracotta. --hot and --danger and
-     their tints are the exception and are carried 2-3 L* darker than the
-     rest, because sRGB simply runs out of orange-red that close to white —
-     the extra darkness is what buys them their saturation back.
-
-     --brand-soft and --warm-soft are both brass and co-occur in a proposal
-     row, so they are held apart by chroma (34 vs 52) rather than hue: ΔE
-     20.4. --lost keeps a lower chroma than --danger on purpose; a deal that
-     closed the other way is a fact to file, and a vivid red reads as an
-     error. */
-  --canvas: #f1ebdd;
-  --surface: #fffcf6;
-  --surface-2: #e4dccb;
-  --surface-3: #d9cfba;
-  --ink: #1b1813;
-  --ink-2: #5a5247;
-  --ink-3: #665d51;
   /* Three border weights, because they do three jobs. --line-soft is a hairline
-     inside a card, --line is a real divider, and --line-strong is the edge of
-     a control: an outline button or an input has to be findable by its border
-     when its fill matches the card it sits on, and a 1.45:1 edge is not an
-     edge. 2.10:1 on a card, 1.81:1 on the canvas. */
-  --line: #d4cab6;
-  --line-strong: #bbaf9b;
-  --line-soft: #e5dece;
+     inside a card, --line is a real divider, and --line-strong is the edge of a
+     control: an outline button or an input has to be findable by its border
+     when its fill matches the card it sits on. --line-strong is held at 2.18:1
+     on a card, within a hair of the 2.03 dark gives the same job. */
+  --line: #e9e6e0;
+  --line-strong: #b5afa5;
+  --line-soft: #f0ede8;
 
-  /* Brand brass — punctuation, not paint. */
-  --brand: #7a4d04;
-  --brand-2: #c2882f;
-  --brand-soft: #f8cd96;
+  /* Brand amber, at dark's own hue this time.
+
+     The old value was #984800, and the note here used to argue that amber has
+     to go brown to clear AA on white. Only half of that was true. Lightness
+     does have to drop — but the old token had also rotated 25deg toward red
+     while it fell, which no other token in the theme did (every one of the
+     others tracks its dark counterpart within 7deg). That rotation is what
+     made it brown rather than dark: it had stopped being the same colour as
+     the gold in the other theme.
+
+     Holding hue 77deg and taking the most chroma sRGB will give at a legible
+     lightness lands here — dark brass, and at C=0.110 against dark's 0.120,
+     essentially as saturated as the gold it matches. It clears 4.5:1 on all
+     three grounds it is ever set on, including its own chip.
+
+     The fill stays a separate token, because a fill and a text colour want
+     opposite things: a solid brand button is bright amber with near-black on
+     it, exactly as dark has always done it. */
+  --brand: #8f6203;
+  --brand-2: #bf8306;
+  --brand-soft: #f8f0de;
+  --brand-fill: #e39a12;
+  --brand-fill-ink: #1a1815;
 
   /* Money secured. */
-  --good: #086536;
+  --good: #007a48;
   --good-fg: #ffffff;
-  --good-soft: #8be7aa;
-  --good-line: #68cd8c;
+  --good-soft: #e6f2ea;
+  --good-line: #c2e3d0;
 
-  /* Intent bands. */
-  --hot: #962f11;
-  --hot-soft: #feb899;
-  --warm: #755004;
-  --warm-soft: #f3d170;
-  --cold: #5e564b;
-  --cold-soft: #dfd5bf;
+  /* Intent bands. Hot and warm are adjacent on the wheel and co-occur in a
+     proposal row, so they are separated by hue rather than by lightness: hot
+     is orange-red at 43deg, warm the same brass as the brand at 77deg. Dark
+     separates them by the identical 34deg and lets warm and brand be the one
+     colour, so this is that theme's structure rather than a second scheme. */
+  --hot: #b44500;
+  --hot-soft: #fceae0;
+  --warm: #8f6203;
+  --warm-soft: #f9efdc;
+  --cold: #6b655c;
+  --cold-soft: #f1efea;
 
-  --danger: #9a291b;
-  --danger-soft: #feb6ac;
-  --danger-line: #fd9487;
+  --danger: #c32d0d;
+  --danger-soft: #fce9e5;
+  --danger-line: #f2b9ac;
+
+  /* Every --*-soft above is a tint, not a pastel.
+
+     This is the other half of what was wrong, and the louder half. A soft
+     token is the ground under a chip or a stat tile — a surface, not a mark.
+     Dark had always understood that: its soft tokens sit 0.018-0.024 chroma
+     above the surface they cover, close enough to read as the card faintly
+     tinted. Light's had drifted to 0.041-0.076, two to three times as far, so
+     the secured tile came out a slab of mint and a heat chip came out a
+     highlighter stripe. The saturated colour belongs in the label on top, not
+     in the ground under it.
+
+     These are held to 0.017-0.027, inside dark's band. Each one is also the
+     tightest surface its own accent is ever read on, so the pairing is checked
+     against the chip rather than against white: all six clear 4.5:1 there. */
 
   /* The brand mark picks its own two colours rather than borrowing --ink and
-     --brand-2, which flip for reasons that have nothing to do with the logo:
-     in dark those two land at 1.56:1 against each other and the mark all but
-     disappears inside its own tile. The tile follows --ink so it always stands
-     against the page; the mark is chosen per theme to sit on that tile. */
+     --brand-2, which flip for reasons that have nothing to do with the logo.
+     The tile follows --ink so it always stands against the page; the mark is
+     the same bright amber in both themes, because in both it sits on that
+     near-black tile and nothing about it needs to change. */
   --mark-tile: var(--ink);
-  --mark-ink: #c08a2e;
+  --mark-ink: #dfa954;
 
   /* A deal that closed the other way. Its own colour rather than --danger,
      which means "something went wrong": losing a deal is a fact to file, not
-     an error. Far from --good (ΔE 63) so the closed list reads at a glance. */
-  --lost: #915337;
+     an error. Far from --good so the closed list reads at a glance. */
+  --lost: #7d5647;
 
   /* The attention chart's two fills, which are a pair and are picked as one.
      They are their own tokens rather than borrowing --brand because a fill and
      a text colour want opposite things: --brand has to be dark enough to pass
-     AA as text, and a bar that dark stops receding and starts shouting — which
-     is how the neutral bar ended up out-weighing the pricing bar it was meant
-     to sit behind. Checked together: ΔE 17.2 normal, 17.1 protan, 19.2 tritan,
-     both inside the lightness band, both ≥ 3:1 on the surface. Re-run
-     scripts/validate_palette.js if either moves. */
-  --bar: #6d6558;
-  --bar-lead: #b6812f;
+     AA as text, and a bar that dark stops receding and starts shouting. Both
+     clear 3:1 on --surface so neither is a ghost on white. */
+  --bar: #948d84;
+  --bar-lead: #c87d0e;
 
-  /* A warm ground can carry a real shadow; on the old near-white one these
-     had to stay faint or they read as dirt. */
-  --shadow-sm: 0 1px 2px rgba(46, 38, 24, 0.07);
+  /* Warm-neutral, to match the ground they fall on: a cool shadow on a warm
+     page is the same mismatch the accents had, and it greys the paper. Kept
+     shallow — on a light theme a shadow is there to lift a card off the page
+     by a millimetre, and anything heavier reads as a smudge rather than
+     as height. */
+  --shadow-sm: 0 1px 2px rgba(41, 33, 24, 0.05);
   --shadow-md:
-    0 1px 2px rgba(46, 38, 24, 0.06), 0 8px 20px -12px rgba(46, 38, 24, 0.28);
+    0 1px 2px rgba(41, 33, 24, 0.04), 0 8px 20px -12px rgba(41, 33, 24, 0.18);
   --shadow-lg:
-    0 1px 2px rgba(46, 38, 24, 0.06), 0 20px 48px -24px rgba(46, 38, 24, 0.38);
+    0 1px 2px rgba(41, 33, 24, 0.04), 0 20px 48px -24px rgba(41, 33, 24, 0.24);
 
   --radius: 0.625rem;
 
@@ -209,6 +213,8 @@
   --brand: #dfa954;
   --brand-2: #e8b86b;
   --brand-soft: #2a2318;
+  --brand-fill: var(--brand);
+  --brand-fill-ink: var(--canvas);
 
   /* Dark lifts --good to a light green, so its label has to go dark or the
      button is white-on-pastel. */
@@ -221,7 +227,7 @@
   --hot-soft: #2c1c15;
   --warm: #dfa954;
   --warm-soft: #292114;
-  --cold: #8b857b;
+  --cold: #958f85;
   --cold-soft: #23211e;
 
   --danger: #ef7a5c;
@@ -269,6 +275,8 @@
   --color-brand: var(--brand);
   --color-brand-2: var(--brand-2);
   --color-brand-soft: var(--brand-soft);
+  --color-brand-fill: var(--brand-fill);
+  --color-brand-fill-ink: var(--brand-fill-ink);
   --color-good: var(--good);
   --color-good-fg: var(--good-fg);
   --color-good-soft: var(--good-soft);

@@ -46,7 +46,7 @@ type Plan = {
   to?: '/login' | '/settings'
   /** Shown on hover when there is no `to`, and the reason there isn't one. */
   unavailable?: string
-  /** Warm ground and a solid button. One plan at a time. */
+  /** Ring, lift and a solid button. One plan at a time. */
   featured?: boolean
   /**
    * Small caps line above the price. Whatever it says has to be true today:
@@ -93,10 +93,15 @@ const PLANS: Array<Plan> = [
     // back to afterwards.
     to: '/settings',
     featured: true,
-    // POSITIONING.md: do not price below $19, and do not hide it. No badge:
-    // the price is the anchor on its own, and the only badges worth putting
-    // here — "most popular", "recommended by N agencies" — are claims about
-    // other customers that nobody can check and we cannot yet make.
+    // POSITIONING.md: do not price below $19, and do not hide it.
+    //
+    // "Recommended" rather than "Most popular". The rejected badges were all
+    // claims about other customers — most popular, chosen by N agencies —
+    // which nobody can check and we cannot yet make. This one is our own
+    // recommendation, which is a thing a seller is allowed to have, and it is
+    // the one the page already argues for: a real pipeline is more than two
+    // live proposals, so Free cannot serve it.
+    badge: 'Recommended',
   },
   {
     name: 'Studio',
@@ -117,16 +122,23 @@ const PLANS: Array<Plan> = [
 export function Pricing() {
   return (
     <>
-      <div className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
+      {/* Separate cards with gaps, not a seamed table. The featured plan is
+          marked by a ring and a lift rather than by a coloured ground: a
+          flooded card is the dated pattern, and on a white page an amber one
+          reads as a highlighter rather than as emphasis. Colour survives in
+          the badge, the checks and the button, which is where it does work.
+
+          The lift is md-only. Stacked on a phone every card is already the
+          widest thing on screen, so pulling one up just breaks the rhythm. */}
+      <div className="mt-10 grid items-start gap-4 md:grid-cols-3">
         {PLANS.map((plan) => (
           <div
             key={plan.name}
             className={cn(
-              'flex flex-col bg-surface px-5 py-6',
-              // The featured plan is marked by a warmer ground rather than by
-              // being lifted out of the row: a card that breaks the grid takes
-              // the border seams with it.
-              plan.featured && 'bg-brand-soft',
+              'flex flex-col rounded-xl border bg-surface px-5 py-6',
+              plan.featured
+                ? 'border-brand-fill shadow-lg ring-1 ring-brand-fill md:-mt-3 md:pb-8'
+                : 'border-line',
             )}
           >
             <div className="flex items-baseline justify-between gap-2">
@@ -136,8 +148,10 @@ export function Pricing() {
               {plan.badge && (
                 <span
                   className={cn(
-                    'shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-[10px] tracking-wider text-brand uppercase',
-                    plan.featured ? 'bg-surface/70' : 'bg-surface-2',
+                    'shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase',
+                    plan.featured
+                      ? 'bg-brand-fill text-brand-fill-ink'
+                      : 'bg-surface-2 text-ink-2',
                   )}
                 >
                   {plan.badge}
@@ -146,7 +160,7 @@ export function Pricing() {
             </div>
 
             <p className="mt-4 flex items-baseline gap-0.5">
-              <span className="font-display text-3xl font-semibold tracking-[-0.03em]">
+              <span className="font-display text-4xl font-semibold tracking-[-0.03em]">
                 {plan.price}
               </span>
               {plan.cadence && (
@@ -184,13 +198,13 @@ export function Pricing() {
             <div className="mt-6 grow" />
 
             {plan.to ? (
-              <Button asChild variant={plan.featured ? 'default' : 'outline'}>
+              <Button asChild variant={plan.featured ? 'brand' : 'outline'}>
                 <Link to={plan.to}>{plan.cta}</Link>
               </Button>
             ) : (
               <Button
                 type="button"
-                variant={plan.featured ? 'default' : 'outline'}
+                variant={plan.featured ? 'brand' : 'outline'}
                 disabled
                 title={plan.unavailable}
               >

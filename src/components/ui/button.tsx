@@ -38,7 +38,7 @@ const buttonVariants = cva(
         // than --brand in both themes, which on the light palette drags the
         // label down to 2.7:1 against the fill — a hover state that makes the
         // button harder to read than not hovering it. Opacity keeps the ratio.
-        brand: 'bg-brand text-canvas shadow-xs hover:opacity-90',
+        brand: 'bg-brand-fill text-brand-fill-ink shadow-xs hover:opacity-90',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
