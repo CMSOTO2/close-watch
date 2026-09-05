@@ -78,7 +78,7 @@ it fails in a way that looks like a broken form rather than a race.
 
 ## Screenshots
 
-`node scripts/product-shots.mjs` regenerates the five launch screenshots in
+`node scripts/product-shots.mjs` regenerates the six launch screenshots in
 `public/shots/`, light and dark, at 3840x2160 — the 16:9 shape product
 directories crop everything else down to. It needs `pnpm dev` running in another
 terminal. Each screen is shot at the width the shell was designed for and then

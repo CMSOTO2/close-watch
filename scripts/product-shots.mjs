@@ -894,7 +894,7 @@ const MAX_SHOT_H = 880
  * far inside that, and at 1440 it sits in a third of the frame with two thirds
  * of empty canvas beside it.
  */
-function shotList(flagship) {
+function shotList(flagship, unopened) {
   return [
     {
       file: '1-dashboard.png',
@@ -942,12 +942,25 @@ function shotList(flagship) {
       file: '5-upload.png',
       path: '/proposals/new',
       wait: 'h1',
-      viewport: { width: 1140, height: 690 },
+      viewport: { width: 1140, height: 760 },
       chrome: 'getclosewatch.com/proposals/new',
       kicker: 'Getting started',
       headline:
         'Upload the PDF, name the deal, send the link. That is the setup.',
       fillForm: true,
+    },
+    {
+      file: '6-handoff.png',
+      // Tidewater is the proposal with no reads: sent yesterday, never opened.
+      // The banner says "now send this", so putting it on a proposal with five
+      // visits and four minutes on pricing would contradict itself.
+      path: `/proposals/${unopened.id}?sent=true`,
+      wait: 'h1',
+      viewport: { width: 1440, height: 720 },
+      chrome: 'getclosewatch.com/proposals/tidewater-coffee',
+      kicker: 'One link per recipient',
+      headline:
+        'Name who it is going to, and the tracked link is waiting for you',
     },
   ]
 }
@@ -970,7 +983,10 @@ const flagship = seeded.find((p) => p.client === 'Northwind Studio')
 console.log(`seeded ${seeded.length} proposals for ${owner.email}`)
 
 const cookies = await sessionCookies(owner)
-const shots = shotList(flagship)
+// Tidewater Coffee is seeded with a share link and no visits at all, which is
+// the only honest state for a "now send this" banner.
+const unopened = seeded.find((p) => p.client === 'Tidewater Coffee')
+const shots = shotList(flagship, unopened)
 
 try {
   for (const theme of ['light', 'dark']) {
@@ -1049,6 +1065,9 @@ try {
           .getByPlaceholder('Brand identity — Q3')
           .fill('Website redesign — Q4')
         await page.getByPlaceholder('Acme Studio').fill('Northwind Studio')
+        // The optional recipient. Filled, because a named one is what makes the
+        // form hand back a link on submit, and the shot after this is that link.
+        await page.getByPlaceholder('Jordan at Acme').fill('Jordan Reyes')
         await page.getByPlaceholder('12000').fill('39000')
         await writeFile(pdfPath, pdf)
         await page.locator('input[type="file"]').setInputFiles(pdfPath)
