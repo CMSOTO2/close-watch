@@ -151,7 +151,11 @@ function Dashboard() {
             fires early enough to be useful. */}
         {limit !== null && entitlements.liveProposals >= limit - 1 && (
           <p className="mt-1.5 text-[13px] text-ink-2">
-            {entitlements.liveProposals} of {limit} free slots used.{' '}
+            {/* "Being read", not "live": a slot is spent when a client opens
+                the proposal, so someone can have more out than this number and
+                the plain word would look like a miscount. */}
+            {entitlements.liveProposals} of {limit} free slots used, counting
+            proposals a client has opened.{' '}
             <Link to="/settings" className="text-brand hover:underline">
               {entitlements.liveProposals >= limit
                 ? 'Close one out or go Solo'

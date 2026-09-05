@@ -91,7 +91,11 @@ export async function userClient(owner: TestOwner) {
  */
 export async function seedProposal(
   owner: TestOwner,
-  { pdf, share = true }: { pdf: Buffer; share?: boolean },
+  {
+    pdf,
+    share = true,
+    opened = false,
+  }: { pdf: Buffer; share?: boolean; opened?: boolean },
 ) {
   const db = admin()
   const id = randomUUID()
@@ -102,7 +106,9 @@ export async function seedProposal(
     .upload(storagePath, pdf, { contentType: 'application/pdf', upsert: true })
   if (up.error) throw new Error(`seed upload failed: ${up.error.message}`)
 
-  await db.from('profiles').upsert({ id: owner.id, email: owner.email }, { onConflict: 'id' })
+  await db
+    .from('profiles')
+    .upsert({ id: owner.id, email: owner.email }, { onConflict: 'id' })
 
   const proposal = await db
     .from('proposals')
@@ -120,7 +126,8 @@ export async function seedProposal(
     })
     .select('id')
     .single()
-  if (proposal.error) throw new Error(`seed proposal failed: ${proposal.error.message}`)
+  if (proposal.error)
+    throw new Error(`seed proposal failed: ${proposal.error.message}`)
 
   await db.from('proposal_pages').insert(
     [1, 2, 3, 4, 5].map((page_number) => ({
@@ -134,13 +141,35 @@ export async function seedProposal(
   let token: string | null = null
   if (share) {
     token = randomBytes(18).toString('base64url')
-    const link = await db.from('share_links').insert({
-      proposal_id: id,
-      token,
-      recipient_name: 'Jordan at Acme',
-      expires_at: new Date(Date.now() + 60 * 86_400_000).toISOString(),
-    })
-    if (link.error) throw new Error(`seed share link failed: ${link.error.message}`)
+    const link = await db
+      .from('share_links')
+      .insert({
+        proposal_id: id,
+        token,
+        recipient_name: 'Jordan at Acme',
+        expires_at: new Date(Date.now() + 60 * 86_400_000).toISOString(),
+      })
+      .select('id')
+      .single()
+    if (link.error)
+      throw new Error(`seed share link failed: ${link.error.message}`)
+
+    // A real person having read it, which is what the free cap counts. Not a
+    // bot and qualified: ingest sets that at three seconds of visible
+    // attention, and the engaged_ms here is over that line so the row means the
+    // same thing whether it is written directly or arrives through ingest.
+    if (opened) {
+      const visit = await db.from('visits').insert({
+        share_link_id: link.data.id,
+        proposal_id: id,
+        visitor_id: randomBytes(9).toString('base64url'),
+        engaged_ms: 12_000,
+        is_bot: false,
+        is_qualified: true,
+      })
+      if (visit.error)
+        throw new Error(`seed visit failed: ${visit.error.message}`)
+    }
   }
 
   return { id, token }
@@ -148,7 +177,10 @@ export async function seedProposal(
 
 /** Cookies a signed-in browser would be holding, for `context.addCookies`. */
 export async function sessionCookies(owner: TestOwner): Promise<Array<Cookie>> {
-  const { data, error } = await createClient(url, publishable).auth.signInWithPassword({
+  const { data, error } = await createClient(
+    url,
+    publishable,
+  ).auth.signInWithPassword({
     email: owner.email,
     password: PASSWORD,
   })

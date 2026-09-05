@@ -57,7 +57,10 @@ export function ComparisonPage({ c }: { c: Competitor }) {
             </h2>
             <div className="mt-6 flex max-w-[64ch] flex-col gap-4">
               {c.body.map((para) => (
-                <p key={para} className="text-[15px] leading-relaxed text-ink-2">
+                <p
+                  key={para}
+                  className="text-[15px] leading-relaxed text-ink-2"
+                >
                   {para}
                 </p>
               ))}
@@ -73,9 +76,9 @@ export function ComparisonPage({ c }: { c: Competitor }) {
               {c.name} is the better buy for plenty of people.
             </h2>
             <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
-              If one of the cases below is yours, buy that instead. A tool
-              that is wrong for you is worse than no tool, and you would work
-              that out in a fortnight anyway.
+              If one of the cases below is yours, buy that instead. A tool that
+              is wrong for you is worse than no tool, and you would work that
+              out in a fortnight anyway.
             </p>
 
             <div className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line lg:grid-cols-2">
@@ -116,7 +119,10 @@ export function ComparisonPage({ c }: { c: Competitor }) {
                 </thead>
                 <tbody>
                   {c.table.map((r) => (
-                    <tr key={r.row} className="border-b border-line last:border-0">
+                    <tr
+                      key={r.row}
+                      className="border-b border-line last:border-0"
+                    >
                       <th
                         scope="row"
                         className="px-4 py-3.5 align-top text-[13px] font-medium"
@@ -151,8 +157,8 @@ export function ComparisonPage({ c }: { c: Competitor }) {
 
             {/* Prices belong to somebody else and move without telling us. */}
             <p className="mt-4 text-[13px] text-ink-3">
-              {c.name} pricing checked {PRICES_CHECKED} and quoted as a
-              starting point rather than a quote.{' '}
+              {c.name} pricing checked {PRICES_CHECKED} and quoted as a starting
+              point rather than a quote.{' '}
               <a
                 href={c.pricingUrl}
                 rel="nofollow noopener"
@@ -161,8 +167,9 @@ export function ComparisonPage({ c }: { c: Competitor }) {
               >
                 See their pricing page
               </a>{' '}
-              for today&rsquo;s number. Closewatch is free for two live
-              proposals and $19 a month for unlimited, whoever sends them.
+              for today&rsquo;s number. Closewatch is free for two proposals
+              being read at a time, with unlimited sending, and $19 a month for
+              unlimited, whoever sends them.
             </p>
           </PageContainer>
         </section>
@@ -209,11 +216,20 @@ function Case({
       </h3>
       <ul className="mt-5 flex flex-col gap-3">
         {items.map((item) => (
-          <li key={item} className="flex items-start gap-2.5 text-[14px] leading-relaxed text-ink-2">
+          <li
+            key={item}
+            className="flex items-start gap-2.5 text-[14px] leading-relaxed text-ink-2"
+          >
             {tone === 'us' ? (
-              <Check aria-hidden className="mt-1 size-3.5 shrink-0 text-brand" />
+              <Check
+                aria-hidden
+                className="mt-1 size-3.5 shrink-0 text-brand"
+              />
             ) : (
-              <Minus aria-hidden className="mt-1 size-3.5 shrink-0 text-ink-3" />
+              <Minus
+                aria-hidden
+                className="mt-1 size-3.5 shrink-0 text-ink-3"
+              />
             )}
             <span>{item}</span>
           </li>

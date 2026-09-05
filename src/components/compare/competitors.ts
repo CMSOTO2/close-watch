@@ -98,7 +98,7 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
         us: 'Scores intent and sorts your pipeline by it',
       },
       { row: 'E-signature', them: 'Yes', us: 'No. Sign wherever you sign now' },
-      { row: 'Free plan', them: 'Trial', us: 'Yes, two live proposals' },
+      { row: 'Free plan', them: 'Trial', us: 'Yes, two proposals being read' },
     ],
   },
 
@@ -140,7 +140,7 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
       {
         row: 'Pricing shape',
         them: 'Per seat',
-        us: 'Flat, and free for two live proposals',
+        us: 'Flat, and free for two proposals being read',
       },
       {
         row: 'Time to first answer',
@@ -176,7 +176,7 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
     body: [
       'This is the honest one, because DocSend is in the same category rather than a different one. Upload a document, send a tracked link, see what the reader did. It is Dropbox-owned, it has been at this for years, and it does things Closewatch does not: data rooms, NDA gating before a reader gets in, file requests, and a whole practice around fundraising decks that has made it the default in venture.',
       'What that breadth costs is focus and money. DocSend is a general document tool used for proposals; Closewatch is a proposal tool. The difference shows up in what you get back. DocSend reports activity faithfully. Closewatch turns activity into a scored, sorted pipeline: which client to call today, and the specific reasons behind the number, so a score is an argument rather than a horoscope.',
-      'The other difference is the price and the front door. DocSend is priced per user with no free plan, so evaluating it is a purchase decision. Closewatch is free for two live proposals with nothing switched off, which means you can send one real proposal through it this week and find out whether the answer is worth anything to you before you pay.',
+      'The other difference is the price and the front door. DocSend is priced per user with no free plan, so evaluating it is a purchase decision. Closewatch is free with nothing switched off, and the free plan does not count a proposal until a client opens it, which means you can put a real proposal through it this week and find out whether the answer is worth anything to you before you pay.',
     ],
     betterWhen: [
       'You need a data room, or NDA acceptance before a reader can open the document.',
@@ -214,9 +214,9 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
       {
         row: 'Pricing shape',
         them: 'Per user',
-        us: 'Flat, and free for two live proposals',
+        us: 'Flat, and free for two proposals being read',
       },
-      { row: 'Free plan', them: 'No', us: 'Yes, two live proposals' },
+      { row: 'Free plan', them: 'No', us: 'Yes, two proposals being read' },
     ],
   },
 }

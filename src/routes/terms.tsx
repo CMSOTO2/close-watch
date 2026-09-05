@@ -19,7 +19,8 @@ export const Route = createFileRoute('/terms')({
       },
       ...socialMeta({
         title: 'Terms of service · Closewatch',
-        description: 'The terms you agree to when you use Closewatch to track a proposal.',
+        description:
+          'The terms you agree to when you use Closewatch to track a proposal.',
         path: '/terms',
       }),
     ],
@@ -97,21 +98,23 @@ function Terms() {
 
       <Clause heading="Limits">
         <p>
-          Proposals are PDFs of up to {PDF_MAX_MB} MB. The free plan keeps{' '}
-          {FREE_LIVE_PROPOSALS} proposals live at a time. A proposal is live once
-          you create its first share link; marking it won or lost, or archiving
-          it, frees the slot and keeps its history. Drafts you have not shared do
-          not count against that, up to {FREE_DRAFT_PROPOSALS} at a time. We may
-          add or adjust usage limits to keep the service running for everyone,
-          and will give notice before a change that would affect what you are
-          already doing.
+          Proposals are PDFs of up to {PDF_MAX_MB} MB. The free plan carries{' '}
+          {FREE_LIVE_PROPOSALS} proposals at a time, counted from when a
+          recipient opens one rather than when you send it: a proposal spends a
+          slot once someone has read it for at least a few seconds, and sending
+          costs nothing before that. Marking a proposal won or lost, or
+          archiving it, frees the slot and keeps its history. Drafts you have
+          not shared do not count against that, up to {FREE_DRAFT_PROPOSALS} at
+          a time. We may add or adjust usage limits to keep the service running
+          for everyone, and will give notice before a change that would affect
+          what you are already doing.
         </p>
       </Clause>
 
       <Clause heading="Paying">
         <p>
           Every feature is on the free plan. A paid plan lifts the limit on how
-          many proposals can be live at once, and nothing else changes.
+          many proposals can be read at once, and nothing else changes.
         </p>
         <p>
           Solo is $19 per month, charged in advance, and renews each month until
@@ -125,11 +128,10 @@ function Terms() {
           your card number.
         </p>
         <p>
-          If a subscription ends while more than{' '}
-          {FREE_LIVE_PROPOSALS} proposals are live, nothing is deleted or
-          hidden. Everything stays readable and every link you have sent keeps
-          tracking; you simply cannot send a new proposal until you are back
-          within the free limit.
+          If a subscription ends while more than {FREE_LIVE_PROPOSALS} proposals
+          are being read, nothing is deleted or hidden. Everything stays
+          readable and every link you have sent keeps tracking; you simply
+          cannot send a new proposal until you are back within the free limit.
         </p>
         <p>
           We will give at least 30 days&rsquo; notice by email before changing

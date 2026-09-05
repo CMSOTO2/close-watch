@@ -13,7 +13,13 @@ export type Entitlements = {
   plan: BillingPlan
   /** Stripe's status, or null on the free plan. */
   status: string | null
-  /** Sent and not yet closed: a client can open these right now. */
+  /**
+   * Sent, still open, and read by a real person: the ones spending a slot.
+   *
+   * Not the same as how many proposals are live. A sent proposal nobody has
+   * opened yet is out with a client and costs nothing, because the cap waits
+   * for the moment the product has told the sender something.
+   */
   liveProposals: number
   /** Null means unlimited. */
   liveProposalLimit: number | null
@@ -41,6 +47,42 @@ export type Entitlements = {
 
 /** Statuses Stripe reports while the money is still good. Mirrors has_active_plan. */
 const PAYING = new Set(['active', 'trialing', 'past_due'])
+
+/**
+ * How many proposals are spending a slot: sent, still open, and opened by a
+ * real person. Mirrors `opened_proposal_count` in the migration of the same
+ * name, which is the copy that is actually enforced.
+ *
+ * Two queries rather than a join because PostgREST counts joined rows, so an
+ * inner join to visits would count a proposal once per qualified visit and
+ * quietly overstate the number. The set does the deduplication instead.
+ *
+ * `ownerId` is optional: the entitlements read is already RLS-scoped to the
+ * caller, while the pre-send check runs with an explicit user id.
+ */
+async function openedProposalCount(
+  supabase: ReturnType<typeof getSupabaseServerClient>,
+  ownerId?: string,
+): Promise<number> {
+  const sentQuery = supabase.from('proposals').select('id').eq('status', 'sent')
+  const { data: sent } = ownerId
+    ? await sentQuery.eq('owner_id', ownerId)
+    : await sentQuery
+
+  const ids = (sent ?? []).map((p) => p.id)
+  if (ids.length === 0) return 0
+
+  // The same bar the rest of the app uses for a real read: not a scanner, and
+  // past the three seconds of visible attention that ingest qualifies on.
+  const { data: opened } = await supabase
+    .from('visits')
+    .select('proposal_id')
+    .in('proposal_id', ids)
+    .eq('is_bot', false)
+    .eq('is_qualified', true)
+
+  return new Set((opened ?? []).map((v) => v.proposal_id)).size
+}
 
 export const FREE_ENTITLEMENTS: Entitlements = {
   plan: 'free',
@@ -88,10 +130,7 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
         )
         .maybeSingle(),
       supabase.from('comps').select('plan, until').maybeSingle(),
-      supabase
-        .from('proposals')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', 'sent'),
+      openedProposalCount(supabase),
       supabase
         .from('proposals')
         .select('id', { count: 'exact', head: true })
@@ -108,7 +147,7 @@ export const getEntitlements = createServerFn({ method: 'GET' }).handler(
       granted.plan !== 'free' &&
       (granted.until === null || new Date(granted.until) > new Date())
 
-    const liveProposals = live.count ?? 0
+    const liveProposals = live
     const draftProposals = drafts.count ?? 0
     const unlimited = paying || comped
     const liveLimit = unlimited ? null : FREE_LIVE_PROPOSALS
@@ -154,7 +193,7 @@ export const PROPOSAL_LIMIT_MESSAGE =
  * machine for producing false ones.
  */
 export const SEND_LIMIT_MESSAGE =
-  `The free plan keeps ${FREE_LIVE_PROPOSALS} proposals live at a time. ` +
+  `The free plan carries ${FREE_LIVE_PROPOSALS} proposals being read at a time. ` +
   'Mark one won or lost, or archive one still in play, to free a slot. ' +
   'Or go Solo for unlimited.'
 
@@ -219,6 +258,10 @@ export async function assertCanCreateProposal(
  * Throws if putting this proposal in front of a client would exceed the live
  * cap. A proposal that is already live is free to share again: extra
  * recipients on the same deal are how the forwarding signal works at all.
+ *
+ * The cap counts proposals a real person has opened, so sending is never what
+ * blocks sending. What blocks it is already having two deals that someone is
+ * reading.
  */
 export async function assertCanSendProposal(
   supabase: ReturnType<typeof getSupabaseServerClient>,
@@ -238,13 +281,8 @@ export async function assertCanSendProposal(
 
   if (await hasUnlimitedPlan(supabase, userId)) return
 
-  const { count } = await supabase
-    .from('proposals')
-    .select('id', { count: 'exact', head: true })
-    .eq('owner_id', userId)
-    .eq('status', 'sent')
-
-  if ((count ?? 0) < FREE_LIVE_PROPOSALS) return
+  if ((await openedProposalCount(supabase, userId)) < FREE_LIVE_PROPOSALS)
+    return
   throw new Error(SEND_LIMIT_MESSAGE)
 }
 

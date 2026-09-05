@@ -72,7 +72,8 @@ src/
 public/                       favicon.svg (theme-aware) + PNG fallbacks
 scripts/generate-icons.py     redraws the PNG icons from the mark's geometry
 supabase/migrations/          schema, RLS, ingest fn, share-link lock, bucket limit,
-                              first-open flag, definer-function lockdown
+                              first-open flag, definer-function lockdown,
+                              open-counted free cap
 ```
 
 ## How tracking works

@@ -27,8 +27,8 @@ import { cn } from '#/lib/utils'
  *
  * Solo rather than Free even though the free plan is the front door, because
  * of who this is for. POSITIONING.md's customer is running a pipeline, and a
- * pipeline is by definition more than two live proposals — Free cannot serve
- * them, so recommending it wastes their first week. Free keeps its place at
+ * pipeline is by definition more than two deals being read at once. Free cannot
+ * serve them, so recommending it wastes their first week. Free keeps its place at
  * the head of the row and a working button, which is the whole try-first path
  * and is not up for negotiation.
  */
@@ -69,7 +69,7 @@ const PLANS: Array<Plan> = [
     // teaches people the free plan is a worse product than it is, which is the
     // one thing POSITIONING.md is most insistent about not doing.
     features: [
-      { text: '2 proposals live with clients at a time' },
+      { text: '2 proposals being read at a time, and unlimited sending' },
       { text: 'Drafts you are still preparing do not count' },
       { text: 'Tracked links, intent scoring, page attention' },
       { text: 'Forwarding detection and email alerts' },
@@ -109,7 +109,7 @@ const PLANS: Array<Plan> = [
     // which nobody can check and we cannot yet make. This one is our own
     // recommendation, which is a thing a seller is allowed to have, and it is
     // the one the page already argues for: a real pipeline is more than two
-    // live proposals, so Free cannot serve it.
+    // deals being read at once, so Free cannot serve it.
     badge: 'Recommended',
   },
   {

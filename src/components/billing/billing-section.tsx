@@ -149,9 +149,9 @@ export function BillingSection({
         </strong>
         {entitlements.liveProposalLimit === null
           ? ', with no limit on how many proposals are live at once. '
-          : `, which keeps ${entitlements.liveProposalLimit} proposals live at a time. `}
+          : `, which carries ${entitlements.liveProposalLimit} at a time, counted from when a client opens one. `}
         {entitlements.liveProposals}{' '}
-        {entitlements.liveProposals === 1 ? 'is' : 'are'} live right now
+        {entitlements.liveProposals === 1 ? 'is' : 'are'} being read right now
         {entitlements.draftProposals > 0
           ? `, and ${entitlements.draftProposals} unsent ${entitlements.draftProposals === 1 ? 'draft' : 'drafts'} that cost nothing`
           : ''}

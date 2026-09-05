@@ -12,7 +12,8 @@ import {
 import type { TestOwner } from './support/supabase'
 
 /**
- * The free plan stops at two live proposals, and it has to stop in the database.
+ * The free plan stops at two proposals being read, and it has to stop in the
+ * database.
  *
  * No browser here on purpose. The cap is a restrictive RLS policy rather than a
  * check in application code, which is the right design and also the reason a
@@ -20,11 +21,14 @@ import type { TestOwner } from './support/supabase'
  * green. Driving it through the UI would test the UI. This tests the policy,
  * under the user's own key, which is the only way to see it at all.
  *
- * The cap lives on `share_links`, not on `proposals`, because live means sent:
- * a proposal counts once a client can open it. Uploading is capped separately
- * and far more loosely, at ten drafts, and only to stop one account filling the
- * storage bucket. A test pointed at the proposals table passes while the thing
- * anyone would call the paywall is wide open, which is how this one started.
+ * The cap lives on `share_links`, not on `proposals`, because sending is the
+ * act it governs. What it counts, though, is proposals somebody has actually
+ * opened: `opened_proposal_count` requires a qualified non-bot visit, so a
+ * proposal sitting unread with a client costs nothing. Uploading is capped
+ * separately and far more loosely, at ten drafts, and only to stop one account
+ * filling the storage bucket. A test pointed at the proposals table passes
+ * while the thing anyone would call the paywall is wide open, which is how this
+ * one started.
  */
 
 const PDF = fileURLToPath(
@@ -41,12 +45,12 @@ test.afterAll(async () => {
   await deleteTestOwner(owner)
 })
 
-test('the free plan stops at two live proposals, and a closed deal frees a slot', async () => {
+test('the free plan stops at two proposals being read, and a closed deal frees a slot', async () => {
   const pdf = readFileSync(PDF)
 
-  // Two proposals already in front of clients, and a third sitting unsent.
-  const first = await seedProposal(owner, { pdf })
-  await seedProposal(owner, { pdf })
+  // Two proposals in front of clients and read by them, and a third unsent.
+  const first = await seedProposal(owner, { pdf, opened: true })
+  await seedProposal(owner, { pdf, opened: true })
   const third = await seedProposal(owner, { pdf, share: false })
 
   const client = await userClient(owner)
@@ -93,8 +97,8 @@ test('archiving frees a slot without recording an outcome', async () => {
   const solo = await createTestOwner()
 
   try {
-    const first = await seedProposal(solo, { pdf })
-    await seedProposal(solo, { pdf })
+    const first = await seedProposal(solo, { pdf, opened: true })
+    await seedProposal(solo, { pdf, opened: true })
     const third = await seedProposal(solo, { pdf, share: false })
 
     const client = await userClient(solo)
@@ -129,6 +133,75 @@ test('archiving frees a slot without recording an outcome', async () => {
 
     expect(archived?.status).toBe('archived')
     expect(archived?.outcome_at, 'archiving recorded an outcome').toBeNull()
+  } finally {
+    await deleteTestOwner(solo)
+  }
+})
+
+/**
+ * The other half of the same rule, and the reason it was worth changing.
+ *
+ * Sending is not what spends a slot. A free account can put proposals in front
+ * of as many clients as it likes; the cap only closes once two of them have
+ * actually been read. POSITIONING.md is specific that the free tier exists to
+ * deliver one moment, the first time somebody sees how a client read their
+ * proposal, and a wall that lands before that moment asks for money in exchange
+ * for nothing. This is the test that stops the cap drifting back onto 'sent'.
+ */
+test('sending costs nothing until a client opens it', async () => {
+  const pdf = readFileSync(PDF)
+  const solo = await createTestOwner()
+
+  try {
+    // Well past the cap in sent proposals, none of them read.
+    await seedProposal(solo, { pdf })
+    await seedProposal(solo, { pdf })
+    await seedProposal(solo, { pdf })
+    const next = await seedProposal(solo, { pdf, share: false })
+
+    const client = await userClient(solo)
+    const share = await client.from('share_links').insert({
+      proposal_id: next.id,
+      token: randomBytes(18).toString('base64url'),
+      recipient_name: 'Robin at Meridian',
+      expires_at: new Date(Date.now() + 60 * 86_400_000).toISOString(),
+    })
+
+    expect(
+      share.error,
+      'an unread proposal spent a slot on the free plan',
+    ).toBeNull()
+
+    // A scanner opening the link must not spend one either, which is the whole
+    // reason is_bot and is_qualified exist. Both flags are set the way ingest
+    // would set them for a fetch that never became a read.
+    const { data: link } = await admin()
+      .from('share_links')
+      .select('id')
+      .eq('proposal_id', next.id)
+      .limit(1)
+      .single()
+
+    await admin()
+      .from('visits')
+      .insert({
+        share_link_id: link!.id,
+        proposal_id: next.id,
+        visitor_id: randomBytes(9).toString('base64url'),
+        engaged_ms: 400,
+        is_bot: true,
+        is_qualified: false,
+      })
+
+    const another = await seedProposal(solo, { pdf, share: false })
+    const again = await client.from('share_links').insert({
+      proposal_id: another.id,
+      token: randomBytes(18).toString('base64url'),
+      recipient_name: 'Sam at Halcyon',
+      expires_at: new Date(Date.now() + 60 * 86_400_000).toISOString(),
+    })
+
+    expect(again.error, 'a bot fetch spent a slot').toBeNull()
   } finally {
     await deleteTestOwner(solo)
   }

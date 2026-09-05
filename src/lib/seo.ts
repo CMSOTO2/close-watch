@@ -117,7 +117,8 @@ export function productJsonLd() {
         name: 'Free',
         price: '0',
         priceCurrency: 'USD',
-        description: 'Every feature, two proposals live with clients at a time.',
+        description:
+          'Every feature. Send as many as you like; two being read at a time.',
       },
       {
         '@type': 'Offer',
