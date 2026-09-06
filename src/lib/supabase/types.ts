@@ -56,6 +56,15 @@ type CompRow = {
   granted_at: string
 }
 
+type StudioWaitlistRow = {
+  id: string
+  email: string
+  /** Set only when the person happened to be signed in. */
+  user_id: string | null
+  source: string
+  created_at: string
+}
+
 type ProposalRow = {
   id: string
   owner_id: string
@@ -195,6 +204,12 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      studio_waitlist: {
+        Row: StudioWaitlistRow
+        Insert: Partial<StudioWaitlistRow> & Pick<StudioWaitlistRow, 'email'>
+        Update: Partial<StudioWaitlistRow>
+        Relationships: []
       }
       comps: {
         Row: CompRow

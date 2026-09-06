@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Check } from 'lucide-react'
 import { Button } from '#/components/ui/button'
+import { joinStudioWaitlist } from '#/lib/waitlist/studio'
 import { cn } from '#/lib/utils'
 
 /**
@@ -8,46 +10,48 @@ import { cn } from '#/lib/utils'
  *
  * Free is not a crippled tier. Every feature is on it and history never
  * expires; the only thing $19 buys is the right to have more than two deals
- * live at once. A feature gate teaches people the product is worse than it is,
- * and the number that actually predicts whether someone will pay is how many
- * proposals they have in flight.
+ * being read at once. A feature gate teaches people the product is worse than
+ * it is, and the number that actually predicts whether someone will pay is how
+ * many proposals they have in flight.
+ *
+ * Which is why the shared feature list is stated once, under the cards, rather
+ * than repeated inside each of them. The columns used to carry the same six
+ * lines so that neither plan looked thinner than the other — a real problem,
+ * solved in a way that caused two more. Two columns identical but for one line
+ * read as a duplicate rather than a comparison, and the wrapped lists made the
+ * cards different heights at every width, worst at the breakpoint where three
+ * columns first appear. Saying "every plan includes" once says the same thing
+ * louder, in one place, and leaves each card carrying only what differs, which
+ * is the one dial this product is priced on.
  *
  * Solo points at Settings rather than straight at a checkout: the subscription
- * has to attach to an account, so signing in comes first either way. Studio has
- * no price behind it yet and says so in text under its own dead button, where
- * a phone can read it — it used to say so in a `title`, which is a tooltip for
- * a mouse and nothing at all for anyone else.
+ * has to attach to an account, so signing in comes first either way.
  *
- * Features that do not exist yet are marked, not omitted. The plan needs the
- * shape it will have to be worth reading, and a small "soon" is the difference
- * between a roadmap and a page that sells three things you cannot deliver.
+ * Studio has no price behind it and now says so with the only working button a
+ * plan that does not exist can have. Hiding the card would have cost the anchor
+ * that makes $19 read as cheap; leaving it dead cost a click from everyone who
+ * wanted it and told us nothing. See src/lib/waitlist/studio.ts.
  *
- * Solo carries the ring, the lift and the solid button. Free held the emphasis
- * while checkout was off, because weighting a card whose button cannot be
- * pressed points the eye at the one thing nobody can do; Stripe is live now, so
- * it is back where it belongs.
- *
- * Solo rather than Free even though the free plan is the front door, because
- * of who this is for. POSITIONING.md's customer is running a pipeline, and a
- * pipeline is by definition more than two deals being read at once. Free cannot
- * serve them, so recommending it wastes their first week. Free keeps its place at
- * the head of the row and a working button, which is the whole try-first path
- * and is not up for negotiation.
+ * Solo carries the ring, the lift and the solid button. POSITIONING.md's
+ * customer is running a pipeline, and a pipeline is by definition more than two
+ * deals being read at once, so Free cannot serve them and recommending it
+ * wastes their first week. Free keeps its place at the head of the row and a
+ * working button, which is the whole try-first path and is not up for
+ * negotiation.
  */
-
-type Feature = { text: string; soon?: boolean }
 
 type Plan = {
   name: string
   price: string
   cadence: string | null
   who: string
-  features: Array<Feature>
+  /** The one line that is true of this plan and not of the one beside it. */
+  limit: string
+  /** Only for a plan that adds something beyond the shared list. */
+  extras?: Array<string>
   cta: string
-  /** Where the button goes. Absent means it is not a button anyone can press. */
+  /** Where the button goes. Absent means the plan cannot be bought yet. */
   to?: '/login' | '/settings'
-  /** Shown under the button when there is no `to`, and the reason there isn't one. */
-  unavailable?: string
   /** Ring, lift and a solid button. One plan at a time. */
   featured?: boolean
   /**
@@ -58,31 +62,26 @@ type Plan = {
   badge?: string
 }
 
+/**
+ * True of every plan, so said once. The only entitlement check in the app is
+ * the slot counter; anything listed here is on the free plan too.
+ */
+const SHARED = [
+  'Tracked links and intent scoring',
+  'Attention page by page',
+  'Distinct readers and email alerts',
+  'Grouping by client, search and heat filtering',
+  'Full history — nothing expires',
+]
+
 const PLANS: Array<Plan> = [
   {
     name: 'Free',
     price: '$0',
     cadence: null,
-    // "Being read", not "live", because that is what the counter counts and
-    // what every other surface says — the at-limit panel, the comparison
-    // tables, the entitlement message. A visitor who reads two of them and
-    // gets three different phrasings has to work out whether they are three
-    // different rules.
-    who: 'Two proposals being read at a time, with nothing switched off.',
-    // Deliberately the same list as Solo, minus the first line. Solo's bullets
-    // used to name grouping, search and heat filtering while Free's did not,
-    // which read as a feature gate. None of those are gated; the only
-    // entitlement check in the app is the slot counter. Implying otherwise
-    // teaches people the free plan is a worse product than it is, which is the
-    // one thing POSITIONING.md is most insistent about not doing.
-    features: [
-      { text: '2 proposals being read at a time, and unlimited sending' },
-      { text: 'Drafts you are still preparing do not count' },
-      { text: 'Tracked links, intent scoring, page attention' },
-      { text: 'Forwarding detection and email alerts' },
-      { text: 'Grouping by client, search and heat filtering' },
-      { text: 'Full history, nothing expires' },
-    ],
+    who: 'For trying it on a real proposal this week.',
+    limit: '2 proposals being read at a time',
+    extras: ['Unlimited sending; drafts do not count'],
     cta: 'Start free',
     to: '/login',
   },
@@ -91,18 +90,11 @@ const PLANS: Array<Plan> = [
     price: '$19',
     cadence: '/mo',
     who: 'For the person sending every proposal at a small agency.',
-    // Spelled out rather than left as "everything on the free plan". Two
-    // bullets against Free's five made the paid tier read as the thinner
-    // product, which is the opposite of what the list is for. Free now carries
-    // the same lines, so the two columns differ by exactly what the plans
-    // differ by: the first bullet. That is the honest version of the same fix.
-    features: [
-      { text: 'Unlimited proposals live at once' },
-      { text: 'Tracked links, intent scoring, page attention' },
-      { text: 'Forwarding detection and email alerts' },
-      { text: 'Grouping by client, search and heat filtering' },
-      { text: 'Full history, nothing expires' },
-    ],
+    limit: 'Unlimited proposals being read at once',
+    // The whole pitch in one line, and the reason this card has an extra at
+    // all: with the shared list moved out, Solo had nothing under its limit
+    // and read as the emptiest of the three.
+    extras: ['Nothing else changes — the cap simply comes off'],
     cta: 'Choose Solo',
     // Settings, not a checkout link: the upgrade needs a signed-in account to
     // attach the subscription to, and that page is where Stripe sends people
@@ -114,9 +106,7 @@ const PLANS: Array<Plan> = [
     // "Recommended" rather than "Most popular". The rejected badges were all
     // claims about other customers — most popular, chosen by N agencies —
     // which nobody can check and we cannot yet make. This one is our own
-    // recommendation, which is a thing a seller is allowed to have, and it is
-    // the one the page already argues for: a real pipeline is more than two
-    // deals being read at once, so Free cannot serve it.
+    // recommendation, which is a thing a seller is allowed to have.
     badge: 'Recommended',
   },
   {
@@ -124,14 +114,10 @@ const PLANS: Array<Plan> = [
     price: '$49',
     cadence: '/mo',
     who: 'For an agency team working one pipeline together.',
-    features: [
-      { text: 'Everything in Solo' },
-      { text: '3 seats', soon: true },
-      { text: 'Slack alerts', soon: true },
-      { text: 'Your own domain on share links', soon: true },
-    ],
-    cta: 'Choose Studio',
-    unavailable: 'Not open yet — Solo covers everything that works today',
+    limit: 'Everything in Solo, for a team',
+    extras: ['3 seats', 'Slack alerts', 'Your own domain on share links'],
+    cta: 'Join the waitlist',
+    badge: 'Not open yet',
   },
 ]
 
@@ -144,16 +130,22 @@ export function Pricing() {
           reads as a highlighter rather than as emphasis. Colour survives in
           the badge, the checks and the button, which is where it does work.
 
-          The lift is md-only. Stacked on a phone every card is already the
-          widest thing on screen, so pulling one up just breaks the rhythm. */}
-      <div className="mt-10 grid items-start gap-4 md:grid-cols-3">
+          Three across only from lg. At md the three columns are 229px wide,
+          which is narrower than the text in them wants to be: everything wraps,
+          and the cards came out 583, 502 and 430 tall in the same row. Two
+          breakpoints later they fit.
+
+          Stretch, not `items-start`. Cards sized to their own content is why
+          the spacer below could never do its job — a spacer can only push a
+          button to the bottom of a card that is already the right height. */}
+      <div className="mt-10 grid gap-4 lg:grid-cols-3">
         {PLANS.map((plan) => (
           <div
             key={plan.name}
             className={cn(
               'flex flex-col rounded-xl border bg-surface px-5 py-6',
               plan.featured
-                ? 'border-brand-fill shadow-lg ring-1 ring-brand-fill md:-mt-3 md:pb-8'
+                ? 'border-brand-fill shadow-lg ring-1 ring-brand-fill lg:-mt-3 lg:pb-8'
                 : 'border-line',
             )}
           >
@@ -188,29 +180,31 @@ export function Pricing() {
               {plan.who}
             </p>
 
-            <ul className="mt-5 flex flex-col gap-2">
-              {plan.features.map((feature) => (
-                <li
-                  key={feature.text}
-                  className="flex items-start gap-2 text-[13px] text-ink-2"
-                >
-                  <Check
-                    aria-hidden
-                    className="mt-0.5 size-3.5 shrink-0 text-brand"
-                  />
-                  <span>
-                    {feature.text}
-                    {feature.soon && (
-                      <span className="ml-1.5 rounded-sm bg-surface-2 px-1 py-0.5 text-[10px] text-ink-3">
-                        soon
-                      </span>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {/* The difference, given the weight the difference deserves. It is
+                the only thing these three cards do not have in common. */}
+            <p className="mt-5 text-[14px] font-medium text-ink">
+              {plan.limit}
+            </p>
 
-            {/* Pushes every button to the same line however tall the list is. */}
+            {plan.extras && (
+              <ul className="mt-3 flex flex-col gap-2">
+                {plan.extras.map((text) => (
+                  <li
+                    key={text}
+                    className="flex items-start gap-2 text-[13px] text-ink-2"
+                  >
+                    <Check
+                      aria-hidden
+                      className="mt-0.5 size-3.5 shrink-0 text-brand"
+                    />
+                    <span>{text}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Now that the cards are equal height, this puts every button on
+                the same line. */}
             <div className="mt-6 grow" />
 
             {plan.to ? (
@@ -218,43 +212,34 @@ export function Pricing() {
                 <Link to={plan.to}>{plan.cta}</Link>
               </Button>
             ) : (
-              // A `title` is a desktop hover tooltip: invisible on a phone,
-              // invisible to a screen reader on most combinations, and
-              // invisible to anyone who does not think to hover a button that
-              // is plainly dead. The reason a button cannot be pressed has to
-              // be on the page.
-              <div>
-                <Button
-                  type="button"
-                  variant={plan.featured ? 'brand' : 'outline'}
-                  disabled
-                  className="w-full"
-                  aria-describedby={`${plan.name}-unavailable`}
-                >
-                  {plan.cta}
-                </Button>
-                <p
-                  id={`${plan.name}-unavailable`}
-                  className="mt-2 text-center text-[12px] text-ink-3"
-                >
-                  {plan.unavailable}
-                </p>
-              </div>
+              <StudioWaitlist cta={plan.cta} />
             )}
           </div>
         ))}
       </div>
 
-      {/* Choose Solo sends a signed-out reader through sign-in and then on to
-          Settings, rather than dropping them on the dashboard to find it
-          themselves — see src/lib/auth-redirect.ts. Settings is where the
-          upgrade lives either way, and it is the page that knows whether
-          Stripe is switched on. */}
+      {/* Said once, and above the plan-specific notes, because it is the more
+          important of the two: whatever is on this line is on the free plan. */}
+      <div className="mt-6 rounded-xl border border-line bg-surface-2/40 px-5 py-4">
+        <p className="text-[13px] font-medium">Every plan includes</p>
+        <ul className="mt-2.5 flex flex-wrap gap-x-5 gap-y-2">
+          {SHARED.map((text) => (
+            <li
+              key={text}
+              className="flex items-start gap-2 text-[13px] text-ink-2"
+            >
+              <Check
+                aria-hidden
+                className="mt-0.5 size-3.5 shrink-0 text-brand"
+              />
+              <span>{text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {/* The cap explained where a visitor meets it, rather than only in the
-          panel they hit after signing up. Under the cards and not inside the
-          Free one: the two lists are deliberately the same but for their first
-          line, so that neither plan reads as the thinner product, and three
-          extra bullets in one column undoes that. */}
+          panel they hit after signing up. */}
       <p className="mt-6 text-[13px] leading-relaxed text-ink-3">
         What counts toward the free two: a proposal from the moment a client
         opens it, not from when you send it, so sending costs nothing until
@@ -265,6 +250,11 @@ export function Pricing() {
         a link sitting in a client&rsquo;s inbox.
       </p>
 
+      {/* Choose Solo sends a signed-out reader through sign-in and then on to
+          Settings, rather than dropping them on the dashboard to find it
+          themselves — see src/lib/auth-redirect.ts. Settings is where the
+          upgrade lives either way, and it is the page that knows whether
+          Stripe is switched on. */}
       <p className="mt-4 text-[13px] leading-relaxed text-ink-3">
         Choosing Solo asks you to sign in first, because a subscription has to
         attach to an account, and then takes you straight to checkout. You can
@@ -273,5 +263,84 @@ export function Pricing() {
         portal and never touches what you have already sent.
       </p>
     </>
+  )
+}
+
+/**
+ * The Studio card's button, which is a form.
+ *
+ * Collapsed to a button until it is pressed, so the card keeps the shape of the
+ * two beside it and nobody is asked for an address before they have shown any
+ * interest in giving one. The failure state says the plain thing rather than a
+ * code: there is nothing the visitor can do about our database, and they were
+ * doing us the favour.
+ */
+function StudioWaitlist({ cta }: { cta: string }) {
+  const [state, setState] = useState<
+    'idle' | 'open' | 'sending' | 'done' | 'failed'
+  >('idle')
+  const [email, setEmail] = useState('')
+
+  if (state === 'done') {
+    return (
+      <p className="rounded-md border border-line bg-surface-2/60 px-3 py-2.5 text-center text-[13px] text-ink-2">
+        On the list. We will write when Studio opens.
+      </p>
+    )
+  }
+
+  if (state === 'idle') {
+    return (
+      <Button type="button" variant="outline" onClick={() => setState('open')}>
+        {cta}
+      </Button>
+    )
+  }
+
+  return (
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault()
+        setState('sending')
+        try {
+          const res = await joinStudioWaitlist({ data: { email } })
+          setState(res.ok ? 'done' : 'failed')
+        } catch {
+          setState('failed')
+        }
+      }}
+    >
+      <label
+        htmlFor="studio-waitlist-email"
+        className="mb-1.5 block text-[12px] font-medium text-ink-2"
+      >
+        Where should we write?
+      </label>
+      <input
+        id="studio-waitlist-email"
+        type="email"
+        name="email"
+        required
+        autoComplete="email"
+        autoFocus
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="you@studio.com"
+        className="w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+      />
+      <Button
+        type="submit"
+        variant="outline"
+        className="mt-2 w-full"
+        disabled={state === 'sending'}
+      >
+        {state === 'sending' ? 'Adding…' : cta}
+      </Button>
+      {state === 'failed' && (
+        <p className="mt-2 text-center text-[12px] text-danger">
+          That did not save. Try again in a moment.
+        </p>
+      )}
+    </form>
   )
 }

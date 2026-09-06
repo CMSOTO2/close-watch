@@ -120,7 +120,7 @@ and the brass lifts to a legible gold.
 Two rules that are easy to break:
 
 - **Everything is layered on purpose.** Unlayered CSS outranks Tailwind's `@layer
-  utilities`, so a bare `a { color: inherit }` silently beats `text-primary-foreground` on
+utilities`, so a bare `a { color: inherit }` silently beats `text-primary-foreground` on
   every link-styled button. New base and component rules go inside `@layer`.
 - **Pairs are chosen, not inherited.** `--bar`/`--bar-lead` and `--mark-tile`/`--mark-ink`
   exist because a fill and a text colour want different things from one value: text has to
@@ -169,6 +169,13 @@ its own because the failure is invisible: the redirect works, it just works for 
 else. The destination rides in a short-lived cookie rather than in the Supabase redirect
 URL — a query string there has to match the project's redirect allow list, and when it does
 not, Supabase falls back to the Site URL without the code and sign-in breaks outright.
+
+`public.studio_waitlist` has RLS on and **no policies at all**, which denies everyone. It is
+the one table written from a form a signed-out stranger can reach, so the write goes through
+`joinStudioWaitlist` on the server with the service-role client rather than from the browser.
+Wiring a public form straight to PostgREST would need an insert policy for `anon`, and an
+insert policy for `anon` on a table of email addresses is an open write endpoint: spam in,
+and any read policy loose enough to be useful leaks the list back out.
 
 `SECURITY DEFINER` Postgres functions have `EXECUTE` revoked from `anon` and `authenticated`
 so PostgREST does not expose them as RPCs (`handle_new_user`, and `rls_auto_enable`, the
