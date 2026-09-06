@@ -14,7 +14,9 @@ import { cn } from '#/lib/utils'
  *
  * Solo points at Settings rather than straight at a checkout: the subscription
  * has to attach to an account, so signing in comes first either way. Studio has
- * no price behind it yet and says so on hover rather than pretending.
+ * no price behind it yet and says so in text under its own dead button, where
+ * a phone can read it — it used to say so in a `title`, which is a tooltip for
+ * a mouse and nothing at all for anyone else.
  *
  * Features that do not exist yet are marked, not omitted. The plan needs the
  * shape it will have to be worth reading, and a small "soon" is the difference
@@ -44,7 +46,7 @@ type Plan = {
   cta: string
   /** Where the button goes. Absent means it is not a button anyone can press. */
   to?: '/login' | '/settings'
-  /** Shown on hover when there is no `to`, and the reason there isn't one. */
+  /** Shown under the button when there is no `to`, and the reason there isn't one. */
   unavailable?: string
   /** Ring, lift and a solid button. One plan at a time. */
   featured?: boolean
@@ -61,7 +63,12 @@ const PLANS: Array<Plan> = [
     name: 'Free',
     price: '$0',
     cadence: null,
-    who: 'Two live deals at a time, with nothing switched off.',
+    // "Being read", not "live", because that is what the counter counts and
+    // what every other surface says — the at-limit panel, the comparison
+    // tables, the entitlement message. A visitor who reads two of them and
+    // gets three different phrasings has to work out whether they are three
+    // different rules.
+    who: 'Two proposals being read at a time, with nothing switched off.',
     // Deliberately the same list as Solo, minus the first line. Solo's bullets
     // used to name grouping, search and heat filtering while Free's did not,
     // which read as a feature gate. None of those are gated; the only
@@ -124,7 +131,7 @@ const PLANS: Array<Plan> = [
       { text: 'Your own domain on share links', soon: true },
     ],
     cta: 'Choose Studio',
-    unavailable: 'Studio is not open yet',
+    unavailable: 'Not open yet — Solo covers everything that works today',
   },
 ]
 
@@ -211,14 +218,28 @@ export function Pricing() {
                 <Link to={plan.to}>{plan.cta}</Link>
               </Button>
             ) : (
-              <Button
-                type="button"
-                variant={plan.featured ? 'brand' : 'outline'}
-                disabled
-                title={plan.unavailable}
-              >
-                {plan.cta}
-              </Button>
+              // A `title` is a desktop hover tooltip: invisible on a phone,
+              // invisible to a screen reader on most combinations, and
+              // invisible to anyone who does not think to hover a button that
+              // is plainly dead. The reason a button cannot be pressed has to
+              // be on the page.
+              <div>
+                <Button
+                  type="button"
+                  variant={plan.featured ? 'brand' : 'outline'}
+                  disabled
+                  className="w-full"
+                  aria-describedby={`${plan.name}-unavailable`}
+                >
+                  {plan.cta}
+                </Button>
+                <p
+                  id={`${plan.name}-unavailable`}
+                  className="mt-2 text-center text-[12px] text-ink-3"
+                >
+                  {plan.unavailable}
+                </p>
+              </div>
             )}
           </div>
         ))}
@@ -229,7 +250,22 @@ export function Pricing() {
           themselves — see src/lib/auth-redirect.ts. Settings is where the
           upgrade lives either way, and it is the page that knows whether
           Stripe is switched on. */}
-      <p className="mt-4 text-[13px] text-ink-3">
+      {/* The cap explained where a visitor meets it, rather than only in the
+          panel they hit after signing up. Under the cards and not inside the
+          Free one: the two lists are deliberately the same but for their first
+          line, so that neither plan reads as the thinner product, and three
+          extra bullets in one column undoes that. */}
+      <p className="mt-6 text-[13px] leading-relaxed text-ink-3">
+        What counts toward the free two: a proposal from the moment a client
+        opens it, not from when you send it, so sending costs nothing until
+        somebody reads. Mark a deal won or lost, or archive one still in play,
+        and the slot comes back with its history intact. Nothing is deleted,
+        nothing is hidden, and links you have already sent keep tracking either
+        way &mdash; a proposal going quiet on your side is not a reason to break
+        a link sitting in a client&rsquo;s inbox.
+      </p>
+
+      <p className="mt-4 text-[13px] leading-relaxed text-ink-3">
         Choosing Solo asks you to sign in first, because a subscription has to
         attach to an account, and then takes you straight to checkout. You can
         also start free and upgrade later the day two proposals stop being

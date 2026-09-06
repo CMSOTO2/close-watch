@@ -128,6 +128,7 @@ export function LoginForm({ next }: { next?: string }) {
                   type="email"
                   name="email"
                   autoComplete="email"
+                  label="Email"
                   placeholder="you@studio.com"
                 />
               )}
@@ -150,7 +151,7 @@ export function LoginForm({ next }: { next?: string }) {
                   autoComplete={
                     mode === 'signup' ? 'new-password' : 'current-password'
                   }
-                  placeholder="Password"
+                  label="Password"
                 />
               )}
             </form.Field>
@@ -173,7 +174,7 @@ export function LoginForm({ next }: { next?: string }) {
                     type="password"
                     name="confirm-password"
                     autoComplete="new-password"
-                    placeholder="Confirm password"
+                    label="Confirm password"
                   />
                 )}
               </form.Field>

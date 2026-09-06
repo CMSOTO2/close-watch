@@ -31,9 +31,9 @@ describe('scoreIntent', () => {
     expect(r.signals).toEqual([])
   })
 
-  it('adds a signal when the link is forwarded to a colleague', () => {
+  it('reports a second reader as an observation, not as a forward', () => {
     const r = scoreIntent({ ...base, distinctViewers: 2 })
-    expect(r.signals).toContainEqual({ label: 'Forwarded to someone else', points: 18 })
+    expect(r.signals).toContainEqual({ label: 'Opened by a second reader', points: 18 })
   })
 
   it('normalises read depth by document length', () => {

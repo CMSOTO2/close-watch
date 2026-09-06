@@ -100,13 +100,18 @@ export function ComparisonPage({ c }: { c: Competitor }) {
               The differences that do not change next quarter.
             </h2>
 
-            {/* Its own scroller: a three-column table at 360px wide either
-                scrolls inside this box or takes the whole page sideways. */}
+            {/* Its own scroller: three readable columns will not fit on a
+                390px phone, so the table either scrolls inside this box or
+                takes the whole page sideways. The row labels are stuck to the
+                left edge, which is what makes the scroller usable — panning
+                across to reach the Closewatch values used to take the labels
+                with it and leave two columns of answers to questions you could
+                no longer see. */}
             <div className="mt-9 overflow-x-auto rounded-lg border border-line">
-              <table className="w-full min-w-[36rem] border-collapse bg-canvas text-left">
+              <table className="w-full min-w-[34rem] border-collapse bg-canvas text-left">
                 <thead>
                   <tr className="border-b border-line">
-                    <th className="w-[26%] px-4 py-3 text-[11px] font-medium tracking-wider text-ink-3 uppercase">
+                    <th className="sticky left-0 z-10 w-[26%] bg-canvas px-4 py-3 text-[11px] font-medium tracking-wider text-ink-3 uppercase after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line sm:after:hidden">
                       <span className="sr-only">Compared on</span>
                     </th>
                     <th className="px-4 py-3 text-[13px] font-semibold">
@@ -125,7 +130,7 @@ export function ComparisonPage({ c }: { c: Competitor }) {
                     >
                       <th
                         scope="row"
-                        className="px-4 py-3.5 align-top text-[13px] font-medium"
+                        className="sticky left-0 z-10 bg-canvas px-4 py-3.5 align-top text-[13px] font-medium after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line sm:after:hidden"
                       >
                         {r.row}
                       </th>

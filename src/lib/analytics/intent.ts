@@ -65,11 +65,24 @@ export function scoreIntent(input: IntentInput): IntentResult {
   else if (input.qualifiedVisits === 3) add(15, 'Opened 3 times')
   else if (input.qualifiedVisits === 2) add(10, 'Opened twice')
 
-  // Forwarded internally. A second person on a link sent to one recipient means
-  // it reached someone who was not the original contact, which usually means a
-  // budget holder. Strongest single signal we can observe.
-  if (input.distinctViewers >= 3) add(25, `Shared with ${input.distinctViewers - 1} other people`)
-  else if (input.distinctViewers === 2) add(18, 'Forwarded to someone else')
+  // Circulation. What is actually observed is a second browser opening a link
+  // that was sent to one person — nothing more. Usually that is a forward, and
+  // it is the strongest signal here for that reason, but it is also what the
+  // same recipient reading on their phone looks like, or on a second browser,
+  // or after clearing their cookies.
+  //
+  // So the label states the observation and leaves the inference to the reader,
+  // who knows who they sent it to and we do not. It used to say "Forwarded to
+  // someone else" as a flat fact, which is a claim this cannot support and the
+  // wrong one to overstate: it is worth 18 points, it is the thing the product
+  // is bought for, and a consultant who chases a forward that was their own
+  // contact on a train stops trusting the number entirely.
+  //
+  // "Reader" is the word the rest of the product already uses for a distinct
+  // visitor, and the FAQ now says what makes one: a browser that has not opened
+  // this link before. Device would be a second guess dressed as a fact.
+  if (input.distinctViewers >= 3) add(25, `Opened by ${input.distinctViewers} readers`)
+  else if (input.distinctViewers === 2) add(18, 'Opened by a second reader')
 
   // Depth of read, normalised by document length so a 3-page proposal is not
   // punished against a 30-page one, and capped so a 60-page one is still

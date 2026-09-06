@@ -55,11 +55,24 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     q: 'How can you tell it was forwarded?',
     a: (
       <>
-        You create one link per recipient. If a link you sent to one person is
-        opened by a second and third distinct reader, it travelled, which
-        usually means it reached someone with budget authority. That is the
-        strongest single signal Closewatch scores, and the one worth acting on
-        fastest.
+        Strictly speaking, it cannot &mdash; and the difference matters enough
+        to spell out, because this is the signal worth the most points.
+        <br />
+        <br />
+        You create one link per recipient. What Closewatch counts is{' '}
+        <strong className="font-semibold text-ink">distinct readers</strong> on
+        that link: a browser that has not opened it before, marked with a
+        first-party cookie set when it does. So the dashboard says{' '}
+        <em>opened by a second reader</em>, which is what was observed, rather
+        than <em>forwarded</em>, which is what it usually means.
+        <br />
+        <br />
+        Usually is not always. The same person on their phone as well as their
+        laptop is a second reader. So is the same person in a private window, or
+        after clearing their cookies, or on a work machine and a home one. You
+        know who you sent the link to and we do not, so the inference is left
+        with you &mdash; but when a link to one client turns into three readers
+        in an afternoon, it went round the room, and that is worth a call.
       </>
     ),
   },

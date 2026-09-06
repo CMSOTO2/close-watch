@@ -35,7 +35,10 @@ function Frame({
             <span className="size-2 rounded-full bg-ink-3/40" />
             <span className="size-2 rounded-full bg-ink-3/40" />
           </span>
-          <span className="kicker truncate">{label}</span>
+          {/* min-w-0 so `truncate` can actually bite: a nowrap span in a flex
+              row keeps its full text as a minimum width otherwise, and the
+              label is the longest single string in the shot. */}
+          <span className="kicker min-w-0 truncate">{label}</span>
         </div>
         <div className="p-3 sm:p-4">{children}</div>
       </div>
@@ -62,7 +65,7 @@ const ROWS: Array<Row> = [
     band: 'hot',
     score: 86,
     metrics: 'Viewed 4 times · 3m 20s engaged · 3 readers',
-    flag: 'Shared with 2 other people',
+    flag: 'Opened by 3 readers',
     flagTone: 'hot',
   },
   {
@@ -249,13 +252,13 @@ export function ForwardShot() {
             style={{ transitionDelay: `${i * 220}ms` }}
           >
             <div className="min-w-0">
-              <p className="flex items-center gap-1.5 truncate text-xs">
+              <p className="flex min-w-0 items-center gap-1.5 text-xs">
                 {visit.forward && (
                   <span aria-hidden className="text-brand">
                     ↳
                   </span>
                 )}
-                <span className="font-medium">{visit.name}</span>
+                <span className="truncate font-medium">{visit.name}</span>
                 {visit.forward && (
                   <span className="truncate text-ink-3">
                     forwarded from Dana
@@ -279,15 +282,15 @@ export function ForwardShot() {
         ))}
       </ul>
       <p className="mt-3 border-t border-line-soft pt-2.5 text-xs text-ink-2">
-        One link went to Dana. Three people read it, so it reached the people
-        who sign.
+        One link went to Dana. Three distinct readers opened it, which is the
+        observation; that it went round the room is the reading you make of it.
       </p>
     </Frame>
   )
 }
 
 const SIGNALS = [
-  { label: 'Shared with 2 other people', points: 25 },
+  { label: 'Opened by 3 readers', points: 25 },
   { label: '2m 14s on pricing', points: 25 },
   { label: 'Opened 4 times', points: 20 },
   { label: 'Printed it', points: 18 },

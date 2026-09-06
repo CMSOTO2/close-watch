@@ -1,4 +1,5 @@
 import { PRICING_PAGES, SAMPLE_PAGE_COUNT } from './sample'
+import { PAGE_READ_MS } from '#/constants'
 import type { Flush } from '#/lib/analytics/tracker'
 import type { IntentInput } from '#/lib/analytics/intent'
 
@@ -46,13 +47,21 @@ export function pricingMs(read: DemoRead): number {
   return PRICING_PAGES.reduce((sum, page) => sum + (read.pageMs[page] ?? 0), 0)
 }
 
-/** Pages that got any attention at all, which is what "read" means here. */
-export function pagesSeen(read: DemoRead): number {
-  return Object.values(read.pageMs).filter((ms) => ms > 0).length
+/**
+ * Pages the reader actually stayed on, not pages that crossed the screen.
+ *
+ * Any nonzero time used to count, and that is how this reported five pages of
+ * six to someone who read two: revealing the report scrolls the phone layout
+ * past the rest of the document to reach it, and every page swept on the way
+ * collected a tick. The threshold is the same one the server uses to decide a
+ * visit was a person at all.
+ */
+export function pagesRead(read: DemoRead): number {
+  return Object.values(read.pageMs).filter((ms) => ms >= PAGE_READ_MS).length
 }
 
 export function reachedLastPage(read: DemoRead): boolean {
-  return (read.pageMs[SAMPLE_PAGE_COUNT] ?? 0) > 0
+  return (read.pageMs[SAMPLE_PAGE_COUNT] ?? 0) >= PAGE_READ_MS
 }
 
 /**

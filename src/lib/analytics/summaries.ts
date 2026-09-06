@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import { scoreIntent } from './intent'
-import { shareUrl } from '#/constants'
+import { PAGE_READ_MS, shareUrl } from '#/constants'
 import type { IntentResult } from './intent'
 import type { ProposalStatus } from '#/lib/supabase/types'
 
@@ -201,9 +201,15 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
           distinctViewers,
           totalEngagedMs,
           pricingEngagedMs,
-          reachedLastPage: ownPages.some(
-            (pv) => pv.page_number === p.page_count,
-          ),
+          // Summed across visits and held to PAGE_READ_MS, not merely
+          // "a row exists for the last page". A row is written for any page
+          // that held a tenth of the window for a single tick, so scrolling
+          // to the bottom of a document wrote one for every page on the way
+          // and handed this signal its 8 points for a scroll.
+          reachedLastPage:
+            ownPages
+              .filter((pv) => pv.page_number === p.page_count)
+              .reduce((sum, pv) => sum + pv.engaged_ms, 0) >= PAGE_READ_MS,
           firstVisitAt: startTimes.length
             ? new Date(Math.min(...startTimes))
             : null,

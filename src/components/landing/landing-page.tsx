@@ -16,6 +16,7 @@ import {
 import { COMPETITORS } from '#/components/compare/competitors'
 import { PDF_MAX_MB } from '#/constants'
 import { socialMeta } from '#/lib/seo'
+import { cn } from '#/lib/utils'
 
 // Two titles, on purpose. The tab and the search result answer what someone
 // types into Google when they have this problem — "proposal tracking software
@@ -213,7 +214,7 @@ export function LandingPage() {
               reverse
               kicker="Forwarding"
               title="Know when it reached the person who signs."
-              body="One link per recipient is the whole trick. When a link you sent to one person is opened by a second and a third, the proposal is being circulated internally. That is the clearest sign a deal is moving that you can observe from outside the room."
+              body="One link per recipient is the whole trick. Closewatch counts distinct readers on each link — a browser that has not opened it before — so when a link you sent to one person turns into three readers, you know it moved. Whether that was a forward to the person who signs or your contact on their phone is a call only you can make, and the dashboard says what it saw rather than guessing for you."
               shot={<ForwardShot />}
             />
             <Feature
@@ -398,9 +399,14 @@ function Feature({
   shot: React.ReactNode
   reverse?: boolean
 }) {
+  // `min-w-0` on both cells is load-bearing, not tidiness. A grid track is
+  // floored at the min-content width of what is in it, and the shots are rows
+  // of nowrap labels and fixed-width numbers whose min-content runs to about
+  // 414px. Without this the track took that width on a 320px phone, the text
+  // cell stretched to match it, and the whole landing page scrolled sideways.
   return (
     <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
-      <div className={reverse ? 'lg:order-2' : undefined}>
+      <div className={cn('min-w-0', reverse && 'lg:order-2')}>
         <p className="kicker text-brand">{kicker}</p>
         <h3 className="mt-3 max-w-[20ch] font-display text-xl font-semibold tracking-[-0.02em] sm:text-2xl">
           {title}
@@ -409,7 +415,7 @@ function Feature({
           {body}
         </p>
       </div>
-      <div className={reverse ? 'lg:order-1' : undefined}>{shot}</div>
+      <div className={cn('min-w-0', reverse && 'lg:order-1')}>{shot}</div>
     </div>
   )
 }

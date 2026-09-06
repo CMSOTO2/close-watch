@@ -88,6 +88,69 @@ describe('startTracker', () => {
     expect(engaged).toBeLessThanOrEqual(61_000)
   })
 
+  it('banks nothing for a tab switch the interval slept through', () => {
+    // The reported failure: switch to another tab for a few seconds, come
+    // back, and the counter had moved. Browsers throttle background tabs and
+    // suspend them outright on a phone, so no tick fires while you are away
+    // and the first one back carries the whole gap as its delta.
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'] })
+    const base = 1_000_000
+    const now = vi.spyOn(Date, 'now').mockReturnValue(base)
+
+    const t = start()
+
+    // A second of honest reading.
+    now.mockReturnValue(base + 1_000)
+    vi.advanceTimersByTime(1_000)
+
+    // Away for four seconds, with the interval suspended for all of it.
+    setVisibility('hidden')
+    document.dispatchEvent(new Event('visibilitychange'))
+    now.mockReturnValue(base + 5_000)
+    setVisibility('visible')
+    document.dispatchEvent(new Event('visibilitychange'))
+
+    // The first tick back.
+    now.mockReturnValue(base + 5_500)
+    vi.advanceTimersByTime(500)
+
+    t.recordDownload()
+    const engaged = JSON.parse(fetchMock.mock.calls.at(-1)![1].body as string).engagedMs
+
+    // The second of reading plus the half-second since returning. The four
+    // seconds on the other tab are not the reader's attention.
+    expect(engaged).toBeLessThanOrEqual(1_600)
+    t.stop()
+  })
+
+  it('banks nothing for the window losing focus to another app', () => {
+    // Same gap, different cause: the tab stayed visible and the window went
+    // behind something else, so only `hasFocus` moved.
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'] })
+    const base = 2_000_000
+    const now = vi.spyOn(Date, 'now').mockReturnValue(base)
+    const hasFocus = vi.spyOn(document, 'hasFocus').mockReturnValue(true)
+
+    const t = start()
+
+    now.mockReturnValue(base + 1_000)
+    vi.advanceTimersByTime(1_000)
+
+    hasFocus.mockReturnValue(false)
+    now.mockReturnValue(base + 6_000)
+    hasFocus.mockReturnValue(true)
+    window.dispatchEvent(new Event('focus'))
+
+    now.mockReturnValue(base + 6_500)
+    vi.advanceTimersByTime(500)
+
+    t.recordDownload()
+    const engaged = JSON.parse(fetchMock.mock.calls.at(-1)![1].body as string).engagedMs
+
+    expect(engaged).toBeLessThanOrEqual(1_600)
+    t.stop()
+  })
+
   it('caps a single tick so waking from sleep cannot dump hours of time', () => {
     // Decouple Date from the timer clock so we can simulate a real-time gap the
     // interval slept through, then fired once for.

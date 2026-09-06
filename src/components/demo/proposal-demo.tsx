@@ -12,10 +12,11 @@ import {
   SAMPLE_PAGE_COUNT,
   SAMPLE_TITLE,
 } from './sample'
+import { SAMPLE_FILE_NAME, sampleProposalBlob } from './sample-file'
 import {
   EMPTY_READ,
   applyFlush,
-  pagesSeen,
+  pagesRead,
   pricingMs,
   toIntentInput,
 } from './readout'
@@ -61,6 +62,50 @@ export function ProposalDemo() {
 
   const seconds = read.engagedMs / 1000
 
+  /**
+   * Save the sample proposal. A real file, because the report is about to
+   * award points for having downloaded it.
+   */
+  function downloadSample() {
+    const url = URL.createObjectURL(sampleProposalBlob())
+    const a = document.createElement('a')
+    a.href = url
+    a.download = SAMPLE_FILE_NAME
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 10_000)
+    trackerRef.current?.recordDownload()
+  }
+
+  /**
+   * Print it, through an off-screen same-origin frame — the same route the real
+   * viewer takes, and the reason the event is recorded only once the dialog has
+   * actually been asked for.
+   */
+  function printSample() {
+    const url = URL.createObjectURL(sampleProposalBlob())
+    const frame = document.createElement('iframe')
+    frame.setAttribute('aria-hidden', 'true')
+    frame.style.cssText =
+      'position:fixed;right:0;bottom:0;width:0;height:0;border:0'
+    frame.src = url
+    frame.onload = () => {
+      try {
+        frame.contentWindow?.focus()
+        frame.contentWindow?.print()
+        trackerRef.current?.recordPrint()
+      } catch {
+        // A blocked print is not a print, and must not score like one.
+      }
+      setTimeout(() => {
+        frame.remove()
+        URL.revokeObjectURL(url)
+      }, 60_000)
+    }
+    document.body.appendChild(frame)
+  }
+
   function reveal() {
     setRevealed(true)
     // On a phone the panel is below six full pages of proposal, so revealing
@@ -72,7 +117,20 @@ export function ProposalDemo() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-      <div ref={pagesRef} className="flex flex-col gap-4">
+      {/* The bottom padding is the sticky reveal bar's seat. That bar floats
+          over the document on a phone, and without room reserved for it the
+          last thing you read on every page was underneath it. Only while the
+          bar is there, and only on the layout that has one. */}
+      <div
+        ref={pagesRef}
+        // min-w-0 for the same reason as the landing page's feature rows: the
+        // priced table on page five has a min-content width of its own, and a
+        // grid track floored at that took the demo sideways on a 320px phone.
+        className={cn(
+          'flex min-w-0 flex-col gap-4',
+          !revealed && 'pb-16 lg:pb-0',
+        )}
+      >
         {SAMPLE_PAGES.map((page) => (
           <article
             key={page.page}
@@ -111,19 +169,11 @@ export function ProposalDemo() {
                 <p className="mr-1 text-[13px] text-ink-3">
                   What a client does next:
                 </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => trackerRef.current?.recordDownload()}
-                >
+                <Button size="sm" variant="outline" onClick={downloadSample}>
                   <Download aria-hidden />
                   Download
                 </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => trackerRef.current?.recordPrint()}
-                >
+                <Button size="sm" variant="outline" onClick={printSample}>
                   <Printer aria-hidden />
                   Print
                 </Button>
@@ -131,7 +181,7 @@ export function ProposalDemo() {
             )}
 
             {page.lines && (
-              <table className="mt-6 w-full max-w-md text-[13px]">
+              <table className="mt-6 w-full max-w-md table-fixed text-[13px]">
                 <tbody>
                   {page.lines.map((line, i) => {
                     const isTotal = i === page.lines!.length - 1
@@ -157,7 +207,10 @@ export function ProposalDemo() {
         ))}
       </div>
 
-      <aside ref={panelRef} className="scroll-mt-20 lg:sticky lg:top-20">
+      <aside
+        ref={panelRef}
+        className="min-w-0 scroll-mt-20 lg:sticky lg:top-20"
+      >
         <SenderPanel
           read={read}
           seconds={seconds}
@@ -251,8 +304,11 @@ function SenderPanel({
               value: seconds < 1 ? '0s' : formatDuration(seconds),
             },
             {
-              label: 'Pages',
-              value: `${pagesSeen(read)}/${SAMPLE_PAGE_COUNT}`,
+              // "Read", not "seen", and it means it: a page counts once it has
+              // held your attention for three seconds, so scrolling past one
+              // does not earn it.
+              label: 'Pages read',
+              value: `${pagesRead(read)}/${SAMPLE_PAGE_COUNT}`,
             },
             {
               label: 'On pricing',
@@ -348,9 +404,11 @@ function SenderPanel({
           </span>
         </div>
         <p className="mt-2 text-[11px] leading-relaxed text-ink-3">
-          One link per recipient is how that is known: when a link sent to one
-          person is opened by a second, it has been passed on — usually to
-          whoever signs. This number is a projection, not something you did.
+          One link per recipient is how that is seen: a link sent to one person,
+          opened by a second reader. Usually that is a forward to whoever signs,
+          and sometimes it is your contact on their phone — the dashboard
+          reports the reader and leaves the rest to you. Either way this number
+          is a projection, not something you did.
         </p>
       </div>
 

@@ -161,7 +161,25 @@ export function startTracker({
     document.hasFocus() &&
     Date.now() - lastActivityAt < IDLE_MS
 
+  /**
+   * Restart the tick clock without crediting anything.
+   *
+   * A tick measures the interval that just ended and only then asks whether
+   * the reader was there for it, so any gap the timer did not run through gets
+   * banked at the moment it resumes. Browsers throttle background tabs and
+   * suspend them outright on a phone, so the gap is exactly the time the
+   * reader was somewhere else: switch tabs for four seconds and the first tick
+   * back credited MAX_TICK_MS of it. Every path back to active resets the
+   * clock here, so the first tick after a return measures the return.
+   */
+  const resumeClock = () => {
+    lastTickAt = Date.now()
+  }
+
   const markActivity = () => {
+    // Coming back from idle is a resume too, or the tick after the first
+    // keypress banks the silence before it.
+    if (Date.now() - lastActivityAt >= IDLE_MS) resumeClock()
     lastActivityAt = Date.now()
   }
 
@@ -284,10 +302,14 @@ export function startTracker({
 
   const flushTimer = window.setInterval(() => flush(false), flushMs)
 
-  const onHide = () => {
+  const onVisibility = () => {
     if (document.visibilityState === 'hidden') flush(true)
+    else resumeClock()
   }
-  document.addEventListener('visibilitychange', onHide)
+  document.addEventListener('visibilitychange', onVisibility)
+  // A window that never lost visibility can still have lost focus — another
+  // window in front of this one, or another app. Same gap, same reset.
+  window.addEventListener('focus', resumeClock)
   window.addEventListener('pagehide', () => flush(true))
 
   const onPrint = () => queuedEvents.push({ type: 'print' })
@@ -315,7 +337,8 @@ export function startTracker({
       window.clearInterval(tickTimer)
       window.clearInterval(flushTimer)
       observer.disconnect()
-      document.removeEventListener('visibilitychange', onHide)
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('focus', resumeClock)
       window.removeEventListener('beforeprint', onPrint)
       for (const name of activityEvents) window.removeEventListener(name, markActivity)
     },

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   EMPTY_READ,
   applyFlush,
-  pagesSeen,
+  pagesRead,
   pricingMs,
   reachedLastPage,
   toIntentInput,
@@ -43,8 +43,20 @@ describe('derived facts', () => {
     expect(pricingMs(read)).toBe(20_000)
   })
 
-  it('counts only pages that got attention', () => {
-    expect(pagesSeen(read)).toBe(3)
+  it('counts only pages that were stayed on', () => {
+    expect(pagesRead(read)).toBe(3)
+  })
+
+  it('does not count a page that was only scrolled past', () => {
+    // Revealing the report on a phone scrolls the whole document past the
+    // reader to get there. Each page swept on the way collects a tick or two,
+    // and every one of those used to count as a page read.
+    const swept = applyFlush(
+      EMPTY_READ,
+      flush(24_000, [[1, 12_000], [2, 11_000], [3, 400], [4, 500], [5, 500], [6, 400]]),
+    )
+    expect(pagesRead(swept)).toBe(2)
+    expect(reachedLastPage(swept)).toBe(false)
   })
 
   it('knows whether the last page was reached', () => {

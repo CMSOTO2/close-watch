@@ -63,6 +63,24 @@ export const FREE_LIVE_PROPOSALS = 2
  */
 export const FREE_DRAFT_PROPOSALS = 10
 
+// --- Reading ----------------------------------------------------------------
+/**
+ * How long a page must hold a reader's attention before we will say they read
+ * it, in milliseconds.
+ *
+ * Deliberately the same three seconds `record_engagement` uses to decide a
+ * visit was a person rather than a scanner: the argument is identical one page
+ * down. Below this a page was on screen, which is not the same thing and must
+ * not be reported as if it were — scrolling from page 2 to the end of a
+ * document sweeps every page in between across the viewport, and crediting
+ * those as read inflates the one number this product is bought for.
+ *
+ * Time is credited to a page in proportion to how much of the window it holds
+ * (see `pageWeights`), so this is three seconds of a full screen, or six of
+ * half of one. It reads conservative on purpose.
+ */
+export const PAGE_READ_MS = 3_000
+
 // --- Share links ------------------------------------------------------------
 /**
  * How long a new share link stays valid before it auto-expires. A link is a
