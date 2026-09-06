@@ -8,6 +8,12 @@
   // `wrangler deploy`; requires the getclosewatch.com zone in this Cloudflare
   // account (it is, via Cloudflare Registrar).
   "routes": [{ "pattern": "getclosewatch.com", "custom_domain": true }],
+  // Off, so the worker answers on getclosewatch.com and nowhere else. Left on,
+  // <name>.workers.dev serves a byte-identical copy of the whole site whose
+  // canonical tags all point at getclosewatch.com — a second origin nobody
+  // links to, nobody monitors, and Google is free to crawl the moment it finds
+  // one reference to it anywhere.
+  "workers_dev": false,
   // Without this the console.error calls in the ingest endpoint go nowhere the
   // moment `wrangler tail` is closed, which is every moment that matters. On,
   // they are queryable in the dashboard under Workers & Pages -> Logs, and a

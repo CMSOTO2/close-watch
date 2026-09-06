@@ -12,26 +12,39 @@ const origin = publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')
  *
  * priority and changefreq are omitted on purpose: Google has said for years it
  * ignores both, and writing numbers nobody reads invites arguments about them.
+ *
+ * lastmod is the exception. Google does read it, and on a site this young it is
+ * the only crawl-scheduling hint we get to send: a page whose lastmod moved is
+ * a page worth re-fetching, and one whose lastmod has not is one to skip. That
+ * only holds while the dates are true. Google demotes the whole file to noise
+ * the moment it notices every URL claiming to have changed on every deploy,
+ * which is exactly what a build timestamp here would do. So these are written
+ * by hand, and changing a page's copy means changing its date in the same
+ * commit.
  */
-const PATHS = [
-  '/',
-  '/demo',
-  '/proposal-tracking-for-agencies',
-  '/proposal-tracking-for-fractional-executives',
-  '/vs/proposify',
-  '/vs/pandadoc',
-  '/vs/docsend',
-  '/privacy',
-  '/terms',
-  '/dpa',
+const PAGES: Array<{ path: string; lastmod: string }> = [
+  { path: '/', lastmod: '2026-09-04' },
+  { path: '/demo', lastmod: '2026-09-03' },
+  { path: '/proposal-tracking-for-agencies', lastmod: '2026-09-03' },
+  {
+    path: '/proposal-tracking-for-fractional-executives',
+    lastmod: '2026-09-03',
+  },
+  { path: '/vs/proposify', lastmod: '2026-09-05' },
+  { path: '/vs/pandadoc', lastmod: '2026-09-05' },
+  { path: '/vs/docsend', lastmod: '2026-09-05' },
+  { path: '/privacy', lastmod: '2026-09-03' },
+  { path: '/terms', lastmod: '2026-09-05' },
+  { path: '/dpa', lastmod: '2026-09-03' },
 ]
 
 export const Route = createFileRoute('/sitemap.xml')({
   server: {
     handlers: {
       GET: () => {
-        const urls = PATHS.map(
-          (path) => `  <url><loc>${origin}${path}</loc></url>`,
+        const urls = PAGES.map(
+          ({ path, lastmod }) =>
+            `  <url><loc>${origin}${path}</loc><lastmod>${lastmod}</lastmod></url>`,
         ).join('\n')
 
         const body = `<?xml version="1.0" encoding="UTF-8"?>
