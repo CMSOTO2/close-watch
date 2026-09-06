@@ -3,11 +3,25 @@
   "name": "tanstack-start-app",
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
+  // src/server.ts is the Start package's default entry plus the www redirect
+  // below. It has to be named here to run: the Cloudflare plugin takes `main`
+  // as the worker build's input, which overrides the entry Start resolves for
+  // itself, so a `main` left at the package default drops the redirect without
+  // failing the build.
+  "main": "./src/server.ts",
   // Serve the app and /p/:token from the production domain. Provisioned on
   // `wrangler deploy`; requires the getclosewatch.com zone in this Cloudflare
   // account (it is, via Cloudflare Registrar).
-  "routes": [{ "pattern": "getclosewatch.com", "custom_domain": true }],
+  // www is here to be redirected, not served: src/server.ts 301s it to the
+  // apex before the router sees it. Cloudflare provisions the DNS record and
+  // the certificate for both on deploy, which is the whole reason the hostname
+  // is listed rather than pointed at the apex with a CNAME — a hostname that
+  // resolves nowhere gives a visitor who types the www a DNS error, and kills
+  // any inbound link somebody writes with one.
+  "routes": [
+    { "pattern": "getclosewatch.com", "custom_domain": true },
+    { "pattern": "www.getclosewatch.com", "custom_domain": true }
+  ],
   // Off, so the worker answers on getclosewatch.com and nowhere else. Left on,
   // <name>.workers.dev serves a byte-identical copy of the whole site whose
   // canonical tags all point at getclosewatch.com — a second origin nobody
