@@ -19,8 +19,20 @@ const flush = (engagedMs: number, pages: Array<[number, number]>): Flush => ({
 describe('applyFlush', () => {
   it('adds up across flushes, which arrive every ten seconds', () => {
     let read = EMPTY_READ
-    read = applyFlush(read, flush(10_000, [[1, 6_000], [2, 4_000]]))
-    read = applyFlush(read, flush(8_000, [[2, 3_000], [5, 5_000]]))
+    read = applyFlush(
+      read,
+      flush(10_000, [
+        [1, 6_000],
+        [2, 4_000],
+      ]),
+    )
+    read = applyFlush(
+      read,
+      flush(8_000, [
+        [2, 3_000],
+        [5, 5_000],
+      ]),
+    )
 
     expect(read.engagedMs).toBe(18_000)
     expect(read.pageMs).toEqual({ 1: 6_000, 2: 7_000, 5: 5_000 })
@@ -36,7 +48,11 @@ describe('applyFlush', () => {
 describe('derived facts', () => {
   const read = applyFlush(
     EMPTY_READ,
-    flush(30_000, [[1, 4_000], [5, 20_000], [6, 6_000]]),
+    flush(30_000, [
+      [1, 4_000],
+      [5, 20_000],
+      [6, 6_000],
+    ]),
   )
 
   it('reads pricing dwell off the pricing page', () => {
@@ -53,7 +69,14 @@ describe('derived facts', () => {
     // and every one of those used to count as a page read.
     const swept = applyFlush(
       EMPTY_READ,
-      flush(24_000, [[1, 12_000], [2, 11_000], [3, 400], [4, 500], [5, 500], [6, 400]]),
+      flush(24_000, [
+        [1, 12_000],
+        [2, 11_000],
+        [3, 400],
+        [4, 500],
+        [5, 500],
+        [6, 400],
+      ]),
     )
     expect(pagesRead(swept)).toBe(2)
     expect(reachedLastPage(swept)).toBe(false)
@@ -61,7 +84,9 @@ describe('derived facts', () => {
 
   it('knows whether the last page was reached', () => {
     expect(reachedLastPage(read)).toBe(true)
-    expect(reachedLastPage(applyFlush(EMPTY_READ, flush(1_000, [[1, 1_000]])))).toBe(false)
+    expect(
+      reachedLastPage(applyFlush(EMPTY_READ, flush(1_000, [[1, 1_000]]))),
+    ).toBe(false)
   })
 })
 

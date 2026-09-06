@@ -36,7 +36,16 @@ function page(n: number, top: number, bottom: number): HTMLElement {
   const el = document.createElement('div')
   el.dataset.page = String(n)
   el.getBoundingClientRect = () =>
-    ({ top, bottom, height: bottom - top, left: 0, right: 800, width: 800, x: 0, y: top }) as DOMRect
+    ({
+      top,
+      bottom,
+      height: bottom - top,
+      left: 0,
+      right: 800,
+      width: 800,
+      x: 0,
+      y: top,
+    }) as DOMRect
   return el
 }
 
@@ -50,8 +59,17 @@ function flushedMs(pageNumber: number): number {
   return total
 }
 
-function setScroll({ scrollY, scrollHeight }: { scrollY: number; scrollHeight: number }) {
-  Object.defineProperty(window, 'scrollY', { configurable: true, value: scrollY })
+function setScroll({
+  scrollY,
+  scrollHeight,
+}: {
+  scrollY: number
+  scrollHeight: number
+}) {
+  Object.defineProperty(window, 'scrollY', {
+    configurable: true,
+    value: scrollY,
+  })
   Object.defineProperty(document.documentElement, 'scrollHeight', {
     configurable: true,
     value: scrollHeight,
@@ -59,11 +77,20 @@ function setScroll({ scrollY, scrollHeight }: { scrollY: number; scrollHeight: n
 }
 
 beforeEach(() => {
-  Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' })
-  Object.defineProperty(window, 'innerHeight', { configurable: true, value: 1000 })
+  Object.defineProperty(document, 'visibilityState', {
+    configurable: true,
+    get: () => 'visible',
+  })
+  Object.defineProperty(window, 'innerHeight', {
+    configurable: true,
+    value: 1000,
+  })
   vi.spyOn(document, 'hasFocus').mockReturnValue(true)
   vi.stubGlobal('IntersectionObserver', FakeObserver)
-  Object.defineProperty(navigator, 'sendBeacon', { configurable: true, value: vi.fn(() => true) })
+  Object.defineProperty(navigator, 'sendBeacon', {
+    configurable: true,
+    value: vi.fn(() => true),
+  })
   fetchMock = vi.fn(() => Promise.resolve({ ok: true }))
   vi.stubGlobal('fetch', fetchMock)
 })
@@ -102,14 +129,20 @@ describe('page attribution', () => {
     setScroll({ scrollY: 500, scrollHeight: 5000 })
     // Three-way split: 1/3 each, which does not divide evenly into a tick.
     const pages = [page(1, 0, 333), page(2, 333, 666), page(3, 666, 999)]
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
 
     vi.advanceTimersByTime(10_000)
     tracker.stop()
 
     for (const call of fetchMock.mock.calls) {
       for (const p of JSON.parse(call[1].body as string).pages) {
-        expect(Number.isInteger(p.ms), `ms ${p.ms} must be an integer`).toBe(true)
+        expect(Number.isInteger(p.ms), `ms ${p.ms} must be an integer`).toBe(
+          true,
+        )
       }
     }
   })
@@ -120,7 +153,11 @@ describe('page attribution', () => {
     vi.useFakeTimers()
     setScroll({ scrollY: 4000, scrollHeight: 5000 })
     const pages = [page(5, 101, 508), page(6, 508, 793)]
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
 
     vi.advanceTimersByTime(10_000)
     tracker.stop()
@@ -132,7 +169,11 @@ describe('page attribution', () => {
     vi.useFakeTimers()
     setScroll({ scrollY: 500, scrollHeight: 5000 })
     const pages = [page(1, 0, 970), page(2, 970, 1600)]
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
 
     vi.advanceTimersByTime(10_000)
     tracker.stop()
@@ -171,7 +212,11 @@ describe('page attribution in the PDF viewer', () => {
     setScroll({ scrollY: 2000, scrollHeight: 12_000 })
     // Page 3 covers the window; its neighbours are off screen.
     const pages = [pdfPage(2, -1300), pdfPage(3, -160), pdfPage(4, 982)]
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
 
     vi.advanceTimersByTime(10_000)
     tracker.stop()
@@ -185,7 +230,11 @@ describe('page attribution in the PDF viewer', () => {
     setScroll({ scrollY: 2000, scrollHeight: 12_000 })
     // Page 4 holds the top 300px, page 5 the remaining 576 after the gap.
     const pages = [pdfPage(4, -818), pdfPage(5, 324)]
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
 
     vi.advanceTimersByTime(10_000)
     tracker.stop()
@@ -207,7 +256,11 @@ describe('page attribution in the PDF viewer', () => {
     setScroll({ scrollY: scrollHeight - VIEWER_VIEWPORT, scrollHeight })
     // Last page bottom-aligned with the window, previous one above it.
     const pages = [pdfPage(8, -1142), pdfPage(9, -218 + GAP)]
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
 
     vi.advanceTimersByTime(10_000)
     tracker.stop()
@@ -220,7 +273,10 @@ describe('page attribution in the PDF viewer', () => {
   // used to be worth nothing.
   it('splits a landscape deck the way it splits the demo', () => {
     vi.useFakeTimers()
-    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 873 })
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 873,
+    })
     setScroll({ scrollY: 1200, scrollHeight: 4749 })
     const DECK_H = 486
     const pages = [
@@ -228,7 +284,11 @@ describe('page attribution in the PDF viewer', () => {
       page(3, 410, 410 + DECK_H),
       page(4, 920, 920 + DECK_H),
     ]
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
 
     vi.advanceTimersByTime(10_000)
     tracker.stop()
@@ -247,7 +307,11 @@ describe('page attribution in the PDF viewer', () => {
 
     let rectReads = 0
     const pages = Array.from({ length: 500 }, (_, i) => {
-      const el = page(i + 1, -160 + i * (PAGE_H + GAP), -160 + i * (PAGE_H + GAP) + PAGE_H)
+      const el = page(
+        i + 1,
+        -160 + i * (PAGE_H + GAP),
+        -160 + i * (PAGE_H + GAP) + PAGE_H,
+      )
       const real = el.getBoundingClientRect.bind(el)
       el.getBoundingClientRect = () => {
         rectReads++
@@ -256,7 +320,11 @@ describe('page attribution in the PDF viewer', () => {
       return el
     })
 
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
     // Setup necessarily touches all of them once; the cost that matters is
     // what every tick does from here on.
     rectReads = 0
@@ -273,16 +341,25 @@ describe('when the reader is not looking at any page', () => {
   // down to read the report leaves every page above the window.
   it('credits no page while the whole document is off screen', () => {
     vi.useFakeTimers()
-    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 873 })
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 873,
+    })
     setScroll({ scrollY: 3000, scrollHeight: 6000 })
     const pages = [page(5, -900, -414), page(6, -390, 96)]
 
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
     vi.advanceTimersByTime(4_000)
 
     // Now scroll so even the last page has left the window entirely.
-    pages[0].getBoundingClientRect = () => ({ top: -1800, bottom: -1314 }) as DOMRect
-    pages[1].getBoundingClientRect = () => ({ top: -1290, bottom: -804 }) as DOMRect
+    pages[0].getBoundingClientRect = () =>
+      ({ top: -1800, bottom: -1314 }) as DOMRect
+    pages[1].getBoundingClientRect = () =>
+      ({ top: -1290, bottom: -804 }) as DOMRect
     vi.advanceTimersByTime(10_000)
     tracker.stop()
 
@@ -293,11 +370,18 @@ describe('when the reader is not looking at any page', () => {
 
   it('still counts the time as engaged, which is what it is', () => {
     vi.useFakeTimers()
-    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 873 })
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 873,
+    })
     setScroll({ scrollY: 3000, scrollHeight: 6000 })
     const pages = [page(1, -2000, -1500)]
 
-    const tracker = startTracker({ visitId: 'v1', token: 't', getPageElements: () => pages })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
     vi.advanceTimersByTime(10_000)
     tracker.stop()
 

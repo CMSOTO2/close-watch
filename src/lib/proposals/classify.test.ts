@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { classifyPages } from './classify'
 import type { PageText } from './classify'
 
-const page = (pageNumber: number, text: string): PageText => ({ pageNumber, text })
+const page = (pageNumber: number, text: string): PageText => ({
+  pageNumber,
+  text,
+})
 
 /** Text of the shape pdfjs hands back: no line structure, just words. */
 const SAMPLE = {
@@ -64,7 +67,10 @@ describe('classifyPages', () => {
   // A summary that mentions the number once is not the pricing page.
   it('does not call a page pricing for one mention of money', () => {
     const { sections } = classifyPages([
-      page(2, 'Executive Summary We propose a $28,500 engagement to rebuild the identity.'),
+      page(
+        2,
+        'Executive Summary We propose a $28,500 engagement to rebuild the identity.',
+      ),
     ])
     expect(sections[0]).toBe('summary')
   })
@@ -72,7 +78,10 @@ describe('classifyPages', () => {
   // A price table is amounts with short labels between them.
   it('treats a dense table of money as pricing even with no heading', () => {
     const { sections } = classifyPages([
-      page(4, 'Identity system $18,000 Component library $6,500 Art direction $4,000'),
+      page(
+        4,
+        'Identity system $18,000 Component library $6,500 Art direction $4,000',
+      ),
     ])
     expect(sections[0]).toBe('pricing')
   })
@@ -81,7 +90,10 @@ describe('classifyPages', () => {
   // them keeps "time on pricing" meaning time on the number that matters.
   it('does not call a whole rate card pricing', () => {
     const listing = (n: number) =>
-      page(n, `Ridge Cabin ${n} $340 per night Cleaning $85 Deposit $500 Weekly $2,100`)
+      page(
+        n,
+        `Ridge Cabin ${n} $340 per night Cleaning $85 Deposit $500 Weekly $2,100`,
+      )
     const pages = Array.from({ length: 20 }, (_, i) => listing(i + 2))
     const { sections } = classifyPages([page(1, SAMPLE.cover), ...pages])
     expect(sections.filter((s) => s === 'pricing')).toHaveLength(0)
@@ -90,7 +102,10 @@ describe('classifyPages', () => {
   // The owner's own heading outranks the spread rule, however many pages carry it.
   it('keeps pricing pages that say pricing, however many there are', () => {
     const stated = (n: number) =>
-      page(n, `Pricing Identity system $18,000 Component library $6,500 Art direction $4,000`)
+      page(
+        n,
+        `Pricing Identity system $18,000 Component library $6,500 Art direction $4,000`,
+      )
     const pages = Array.from({ length: 20 }, (_, i) => stated(i + 2))
     const { sections } = classifyPages([page(1, SAMPLE.cover), ...pages])
     expect(sections.filter((s) => s === 'pricing')).toHaveLength(20)
@@ -114,7 +129,10 @@ describe('classifyPages', () => {
 
   it('falls back to other rather than guessing', () => {
     const { sections } = classifyPages([
-      page(3, 'A page of prose about nothing in particular that names no section at all.'),
+      page(
+        3,
+        'A page of prose about nothing in particular that names no section at all.',
+      ),
     ])
     expect(sections[0]).toBe('other')
   })

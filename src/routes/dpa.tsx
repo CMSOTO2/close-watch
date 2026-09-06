@@ -13,7 +13,8 @@ export const Route = createFileRoute('/dpa')({
       },
       ...socialMeta({
         title: 'Data processing agreement · Closewatch',
-        description: 'The terms on which Closewatch processes the client data an account holder collects.',
+        description:
+          'The terms on which Closewatch processes the client data an account holder collects.',
         path: '/dpa',
       }),
     ],

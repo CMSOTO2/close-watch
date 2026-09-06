@@ -10,7 +10,9 @@ import type Stripe from 'stripe'
 
 const AUGUST = 1791000000 // 2026-10-02T…Z, a fixed instant
 
-function subscription(fields: Partial<Stripe.Subscription>): Stripe.Subscription {
+function subscription(
+  fields: Partial<Stripe.Subscription>,
+): Stripe.Subscription {
   return {
     cancel_at_period_end: false,
     cancel_at: null,
@@ -48,7 +50,9 @@ describe('cancellation', () => {
 
 describe('periodEnd', () => {
   it('reads the item, where Stripe moved it', () => {
-    expect(periodEnd(subscription({}))).toBe(new Date(AUGUST * 1000).toISOString())
+    expect(periodEnd(subscription({}))).toBe(
+      new Date(AUGUST * 1000).toISOString(),
+    )
   })
 
   it('falls back to the subscription for older API versions', () => {
@@ -60,6 +64,8 @@ describe('periodEnd', () => {
   })
 
   it('is null when there is nothing to read', () => {
-    expect(periodEnd({ items: { data: [] } } as unknown as Stripe.Subscription)).toBeNull()
+    expect(
+      periodEnd({ items: { data: [] } } as unknown as Stripe.Subscription),
+    ).toBeNull()
   })
 })

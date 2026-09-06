@@ -55,7 +55,11 @@ describe('partitionLinks', () => {
     )
 
     expect(result.live.map((e) => e.link.id)).toEqual(['live'])
-    expect(result.dead.map((e) => e.link.id)).toEqual(['revoked', 'expired', 'both'])
+    expect(result.dead.map((e) => e.link.id)).toEqual([
+      'revoked',
+      'expired',
+      'both',
+    ])
     // 'both' counts as revoked only — the totals have to add up to dead.length
     // or the toggle's label would over-report.
     expect(result.revoked).toBe(2)

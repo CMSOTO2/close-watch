@@ -69,24 +69,25 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
       .maybeSingle()
     if (!proposal) return null
 
-    const [{ data: links }, { data: pages }, { data: allVisits }] = await Promise.all([
-      supabase
-        .from('share_links')
-        .select('id, recipient_name, recipient_email, revoked_at')
-        .eq('proposal_id', data.id),
-      supabase
-        .from('proposal_pages')
-        .select('page_number, section')
-        .eq('proposal_id', data.id)
-        .order('page_number'),
-      supabase
-        .from('visits')
-        .select(
-          'id, share_link_id, visitor_id, visit_seq, started_at, last_seen_at, engaged_ms, browser, os, country, city, is_bot, is_qualified',
-        )
-        .eq('proposal_id', data.id)
-        .order('started_at', { ascending: false }),
-    ])
+    const [{ data: links }, { data: pages }, { data: allVisits }] =
+      await Promise.all([
+        supabase
+          .from('share_links')
+          .select('id, recipient_name, recipient_email, revoked_at')
+          .eq('proposal_id', data.id),
+        supabase
+          .from('proposal_pages')
+          .select('page_number, section')
+          .eq('proposal_id', data.id)
+          .order('page_number'),
+        supabase
+          .from('visits')
+          .select(
+            'id, share_link_id, visitor_id, visit_seq, started_at, last_seen_at, engaged_ms, browser, os, country, city, is_bot, is_qualified',
+          )
+          .eq('proposal_id', data.id)
+          .order('started_at', { ascending: false }),
+      ])
 
     const visits = allVisits ?? []
     const humanQualified = visits.filter((v) => !v.is_bot && v.is_qualified)
@@ -102,7 +103,9 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
             .from('events')
             .select('visit_id, type')
             .in('visit_id', [...qualifiedIds])
-        : Promise.resolve({ data: [] as Array<{ visit_id: string; type: string }> }),
+        : Promise.resolve({
+            data: [] as Array<{ visit_id: string; type: string }>,
+          }),
     ])
 
     const linkById = new Map((links ?? []).map((l) => [l.id, l]))
@@ -123,9 +126,14 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
     for (const link of links ?? []) {
       const ids = [
         ...new Set(
-          humanQualified.filter((v) => v.share_link_id === link.id).map((v) => v.visitor_id),
+          humanQualified
+            .filter((v) => v.share_link_id === link.id)
+            .map((v) => v.visitor_id),
         ),
-      ].sort((a, b) => firstSeen.get(`${link.id}:${a}`)! - firstSeen.get(`${link.id}:${b}`)!)
+      ].sort(
+        (a, b) =>
+          firstSeen.get(`${link.id}:${a}`)! - firstSeen.get(`${link.id}:${b}`)!,
+      )
       viewerIndexByLink.set(link.id, new Map(ids.map((id, i) => [id, i + 1])))
     }
     const viewerIndexOf = (linkId: string, visitorId: string) =>
@@ -136,7 +144,8 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
     for (const e of events ?? []) {
       const label = EVENT_LABELS[e.type]
       if (!label) continue
-      if (!eventsByVisit.has(e.visit_id)) eventsByVisit.set(e.visit_id, new Set())
+      if (!eventsByVisit.has(e.visit_id))
+        eventsByVisit.set(e.visit_id, new Set())
       eventsByVisit.get(e.visit_id)!.add(label)
     }
 
@@ -145,8 +154,14 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
     const viewsByPage = new Map<number, number>()
     for (const pv of pageViews ?? []) {
       if (!qualifiedIds.has(pv.visit_id)) continue
-      engagedByPage.set(pv.page_number, (engagedByPage.get(pv.page_number) ?? 0) + pv.engaged_ms)
-      viewsByPage.set(pv.page_number, (viewsByPage.get(pv.page_number) ?? 0) + pv.view_count)
+      engagedByPage.set(
+        pv.page_number,
+        (engagedByPage.get(pv.page_number) ?? 0) + pv.engaged_ms,
+      )
+      viewsByPage.set(
+        pv.page_number,
+        (viewsByPage.get(pv.page_number) ?? 0) + pv.view_count,
+      )
     }
     const pageAttention: Array<PageAttention> = (pages ?? []).map((p) => ({
       pageNumber: p.page_number,
@@ -169,7 +184,9 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
     }))
 
     const starts = humanQualified.map((v) => new Date(v.started_at).getTime())
-    const seenAll = humanQualified.map((v) => new Date(v.last_seen_at).getTime())
+    const seenAll = humanQualified.map((v) =>
+      new Date(v.last_seen_at).getTime(),
+    )
 
     // Total download / print actions across qualified human reads.
     let downloads = 0
@@ -183,9 +200,16 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
       totals: {
         qualifiedVisits: humanQualified.length,
         distinctViewers: new Set(humanQualified.map((v) => v.visitor_id)).size,
-        totalEngagedMs: humanQualified.reduce((sum, v) => sum + v.engaged_ms, 0),
-        firstOpenedAt: starts.length ? new Date(Math.min(...starts)).toISOString() : null,
-        lastOpenedAt: seenAll.length ? new Date(Math.max(...seenAll)).toISOString() : null,
+        totalEngagedMs: humanQualified.reduce(
+          (sum, v) => sum + v.engaged_ms,
+          0,
+        ),
+        firstOpenedAt: starts.length
+          ? new Date(Math.min(...starts)).toISOString()
+          : null,
+        lastOpenedAt: seenAll.length
+          ? new Date(Math.max(...seenAll)).toISOString()
+          : null,
         botVisits: visits.filter((v) => v.is_bot).length,
         downloads,
         prints,

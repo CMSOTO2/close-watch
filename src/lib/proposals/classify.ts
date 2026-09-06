@@ -281,7 +281,10 @@ export function classifyPages(pages: Array<PageText>): Classification {
   })
 
   const spread = densityOnlyPricing.length / Math.max(sections.length, 1)
-  if (sections.length >= PRICING_SPREAD_MIN_PAGES && spread > PRICING_SPREAD_SHARE) {
+  if (
+    sections.length >= PRICING_SPREAD_MIN_PAGES &&
+    spread > PRICING_SPREAD_SHARE
+  ) {
     for (const i of densityOnlyPricing) sections[i] = 'other'
   }
 

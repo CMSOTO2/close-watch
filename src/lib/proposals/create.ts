@@ -36,9 +36,11 @@ export const createProposal = createServerFn({ method: 'POST' })
     if (!(data instanceof FormData)) throw new Error('Expected form data')
 
     const file = data.get('file')
-    if (!(file instanceof File) || file.size === 0) throw new Error('A PDF file is required')
+    if (!(file instanceof File) || file.size === 0)
+      throw new Error('A PDF file is required')
     if (file.type !== PDF_MIME) throw new Error('File must be a PDF')
-    if (file.size > PDF_MAX_BYTES) throw new Error(`PDF must be ${PDF_MAX_MB} MB or smaller`)
+    if (file.size > PDF_MAX_BYTES)
+      throw new Error(`PDF must be ${PDF_MAX_MB} MB or smaller`)
 
     const title = String(data.get('title') ?? '').trim()
     const clientName = String(data.get('clientName') ?? '').trim()
@@ -46,7 +48,11 @@ export const createProposal = createServerFn({ method: 'POST' })
     if (!clientName) throw new Error('Client name is required')
 
     const pageCount = Number(data.get('pageCount'))
-    if (!Number.isInteger(pageCount) || pageCount < 1 || pageCount > PDF_MAX_PAGES) {
+    if (
+      !Number.isInteger(pageCount) ||
+      pageCount < 1 ||
+      pageCount > PDF_MAX_PAGES
+    ) {
       throw new Error('Could not read the PDF page count')
     }
 
@@ -55,7 +61,8 @@ export const createProposal = createServerFn({ method: 'POST' })
     let dealValueCents: number | null = null
     if (rawValue) {
       const dollars = Number(rawValue)
-      if (!Number.isFinite(dollars) || dollars < 0) throw new Error('Deal value must be a positive number')
+      if (!Number.isFinite(dollars) || dollars < 0)
+        throw new Error('Deal value must be a positive number')
       dealValueCents = Math.round(dollars * 100)
     }
 
@@ -97,11 +104,13 @@ export const createProposal = createServerFn({ method: 'POST' })
       {
         id: auth.user.id,
         email: auth.user.email ?? null,
-        full_name: (auth.user.user_metadata.full_name as string | undefined) ?? null,
+        full_name:
+          (auth.user.user_metadata.full_name as string | undefined) ?? null,
       },
       { onConflict: 'id', ignoreDuplicates: true },
     )
-    if (profileError) throw new Error(`Could not prepare your profile: ${profileError.message}`)
+    if (profileError)
+      throw new Error(`Could not prepare your profile: ${profileError.message}`)
 
     // Before the upload, not after: the `free plan proposal cap` policy would
     // reject the insert anyway, but only once the PDF was already in storage
@@ -111,7 +120,8 @@ export const createProposal = createServerFn({ method: 'POST' })
     const proposalId = randomUUID()
     const storagePath = `${auth.user.id}/${proposalId}.pdf`
 
-    const { error: uploadError } = await supabase.storage.from(PROPOSALS_BUCKET)
+    const { error: uploadError } = await supabase.storage
+      .from(PROPOSALS_BUCKET)
       .upload(storagePath, data.bytes, { contentType: PDF_MIME, upsert: false })
     if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`)
 
@@ -147,7 +157,9 @@ export const createProposal = createServerFn({ method: 'POST' })
         section_auto: section !== 'other',
       }
     })
-    const { error: pagesError } = await supabase.from('proposal_pages').insert(pages)
+    const { error: pagesError } = await supabase
+      .from('proposal_pages')
+      .insert(pages)
     if (pagesError) {
       await supabase.from('proposals').delete().eq('id', proposalId)
       await cleanup()

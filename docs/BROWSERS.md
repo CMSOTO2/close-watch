@@ -91,7 +91,7 @@ one.
 
 Playwright's WebKit reads all eighty pages of the reference document in under a second and
 matches Chromium character for character, so the engine is not the problem and there was
-nothing to optimise *for*. That left the theory that a phone's memory ceiling and main
+nothing to optimise _for_. That left the theory that a phone's memory ceiling and main
 thread watchdog are what differ, which is plausible, untested, and not something any
 emulator here can exercise. Tuning against a cause nobody has confirmed buys slower
 uploads everywhere and a pile of code that cannot be justified when someone asks why it is

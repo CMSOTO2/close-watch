@@ -4,7 +4,12 @@ import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { SiteFooter } from '#/components/site-footer'
 import { Button } from '#/components/ui/button'
-import { breadcrumbJsonLd, canonical, jsonLdScript, socialMeta } from '#/lib/seo'
+import {
+  breadcrumbJsonLd,
+  canonical,
+  jsonLdScript,
+  socialMeta,
+} from '#/lib/seo'
 
 const PATH = '/proposal-tracking-for-agencies'
 
@@ -158,13 +163,13 @@ function AgenciesPage() {
                 quietly stops being used.
               </p>
               <p className="text-[15px] leading-relaxed text-ink-2">
-                Closewatch is built around the pipeline instead. Everything rolls
-                up under the client, the list orders itself by intent rather than
-                by date, and a &ldquo;since you last looked&rdquo; diff tells you
-                what moved while you were doing the actual work. The question it
-                answers is not &ldquo;how is this proposal doing&rdquo; but
-                &ldquo;who should I call today&rdquo;, which is the only version
-                of the question anyone has time for.
+                Closewatch is built around the pipeline instead. Everything
+                rolls up under the client, the list orders itself by intent
+                rather than by date, and a &ldquo;since you last looked&rdquo;
+                diff tells you what moved while you were doing the actual work.
+                The question it answers is not &ldquo;how is this proposal
+                doing&rdquo; but &ldquo;who should I call today&rdquo;, which is
+                the only version of the question anyone has time for.
               </p>
             </div>
 

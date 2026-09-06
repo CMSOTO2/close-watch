@@ -48,8 +48,11 @@ export function periodEnd(subscription: Stripe.Subscription): string | null {
   // exist, and indexing types it as though that were guaranteed.
   const seconds =
     subscription.items.data.at(0)?.current_period_end ??
-    (subscription as unknown as { current_period_end?: number }).current_period_end
-  return typeof seconds === 'number' ? new Date(seconds * 1000).toISOString() : null
+    (subscription as unknown as { current_period_end?: number })
+      .current_period_end
+  return typeof seconds === 'number'
+    ? new Date(seconds * 1000).toISOString()
+    : null
 }
 
 /**

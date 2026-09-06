@@ -12,7 +12,10 @@ type AdminClient = ReturnType<typeof getSupabaseAdminClient>
  * and the claim is rolled back on a send failure so the user's next sign-in
  * retries. Silent until both RESEND_API_KEY and SIGNUP_NOTIFY_TO are set.
  */
-export async function notifySignup(supabase: AdminClient, userId: string): Promise<void> {
+export async function notifySignup(
+  supabase: AdminClient,
+  userId: string,
+): Promise<void> {
   const { RESEND_API_KEY, EMAIL_FROM, SIGNUP_NOTIFY_TO } = serverEnv()
   if (!RESEND_API_KEY || !SIGNUP_NOTIFY_TO) return
 
@@ -73,7 +76,9 @@ async function sendEmail(input: EmailInput): Promise<void> {
     input.total === null ? null : `That makes ${input.total} accounts.`,
   ].filter((line): line is string => line !== null)
 
-  const text = [`${who} just signed up for Closewatch.`, '', ...details].join('\n')
+  const text = [`${who} just signed up for Closewatch.`, '', ...details].join(
+    '\n',
+  )
 
   const html = `
     <div style="font-family:system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;color:#171717">

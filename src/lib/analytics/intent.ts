@@ -57,11 +57,16 @@ export function scoreIntent(input: IntentInput): IntentResult {
   }
 
   if (input.qualifiedVisits === 0) {
-    return { score: 0, band: 'cold', signals: [{ label: 'Not opened yet', points: 0 }] }
+    return {
+      score: 0,
+      band: 'cold',
+      signals: [{ label: 'Not opened yet', points: 0 }],
+    }
   }
 
   // Repeat opens. One read is politeness, three is a decision in progress.
-  if (input.qualifiedVisits >= 4) add(20, `Opened ${input.qualifiedVisits} times`)
+  if (input.qualifiedVisits >= 4)
+    add(20, `Opened ${input.qualifiedVisits} times`)
   else if (input.qualifiedVisits === 3) add(15, 'Opened 3 times')
   else if (input.qualifiedVisits === 2) add(10, 'Opened twice')
 
@@ -81,7 +86,8 @@ export function scoreIntent(input: IntentInput): IntentResult {
   // "Reader" is the word the rest of the product already uses for a distinct
   // visitor, and the FAQ now says what makes one: a browser that has not opened
   // this link before. Device would be a second guess dressed as a fact.
-  if (input.distinctViewers >= 3) add(25, `Opened by ${input.distinctViewers} readers`)
+  if (input.distinctViewers >= 3)
+    add(25, `Opened by ${input.distinctViewers} readers`)
   else if (input.distinctViewers === 2) add(18, 'Opened by a second reader')
 
   // Depth of read, normalised by document length so a 3-page proposal is not
@@ -93,8 +99,10 @@ export function scoreIntent(input: IntentInput): IntentResult {
   // Labelled with the total rather than a per-page rate: once the divisor is
   // capped, "60s per page" would be a number the reader never actually spent,
   // and "read the whole thing" would claim a completeness we cannot see.
-  if (secondsPerPage >= 45) add(20, `Read closely (${formatDuration(totalSec)})`)
-  else if (secondsPerPage >= 20) add(12, `Read it properly (${formatDuration(totalSec)})`)
+  if (secondsPerPage >= 45)
+    add(20, `Read closely (${formatDuration(totalSec)})`)
+  else if (secondsPerPage >= 20)
+    add(12, `Read it properly (${formatDuration(totalSec)})`)
   else if (secondsPerPage >= 8) add(5, 'Skimmed it')
 
   // Pricing dwell.

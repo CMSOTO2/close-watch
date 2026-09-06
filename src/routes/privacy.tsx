@@ -14,7 +14,8 @@ export const Route = createFileRoute('/privacy')({
       },
       ...socialMeta({
         title: 'Privacy policy · Closewatch',
-        description: 'What Closewatch records, who it is shared with, and how long it is kept.',
+        description:
+          'What Closewatch records, who it is shared with, and how long it is kept.',
         path: '/privacy',
       }),
     ],
@@ -100,10 +101,10 @@ function Privacy() {
         <p>
           There are no advertising cookies and nothing that follows anyone
           around the rest of the web. Our own pages &mdash; the home page,
-          sign-in and the dashboard &mdash; count visits with
-          Cloudflare Web Analytics, which sets no cookies and does not
-          fingerprint anyone. It never loads on a share link: the page a reader
-          is sent runs no analytics script at all.
+          sign-in and the dashboard &mdash; count visits with Cloudflare Web
+          Analytics, which sets no cookies and does not fingerprint anyone. It
+          never loads on a share link: the page a reader is sent runs no
+          analytics script at all.
         </p>
       </Clause>
 

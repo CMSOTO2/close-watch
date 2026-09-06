@@ -20,7 +20,7 @@
   // any inbound link somebody writes with one.
   "routes": [
     { "pattern": "getclosewatch.com", "custom_domain": true },
-    { "pattern": "www.getclosewatch.com", "custom_domain": true }
+    { "pattern": "www.getclosewatch.com", "custom_domain": true },
   ],
   // Off, so the worker answers on getclosewatch.com and nowhere else. Left on,
   // <name>.workers.dev serves a byte-identical copy of the whole site whose
@@ -32,5 +32,5 @@
   // moment `wrangler tail` is closed, which is every moment that matters. On,
   // they are queryable in the dashboard under Workers & Pages -> Logs, and a
   // tracking failure leaves a trace somebody can find days later.
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
 }

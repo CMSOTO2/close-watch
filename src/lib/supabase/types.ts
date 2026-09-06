@@ -6,7 +6,8 @@
  *     > src/lib/supabase/types.ts
  */
 
-export type Json = string | number | boolean | null | { [key: string]: Json } | Array<Json>
+export type Json =
+  string | number | boolean | null | { [key: string]: Json } | Array<Json>
 
 export type ProposalStatus = 'draft' | 'sent' | 'won' | 'lost' | 'archived'
 
@@ -165,7 +166,11 @@ export type Database = {
       }
       proposals: {
         Row: ProposalRow
-        Insert: Partial<ProposalRow> & Pick<ProposalRow, 'owner_id' | 'title' | 'client_name' | 'storage_path'>
+        Insert: Partial<ProposalRow> &
+          Pick<
+            ProposalRow,
+            'owner_id' | 'title' | 'client_name' | 'storage_path'
+          >
         Update: Partial<ProposalRow>
         Relationships: [
           {
@@ -179,7 +184,8 @@ export type Database = {
       }
       proposal_pages: {
         Row: ProposalPageRow
-        Insert: Partial<ProposalPageRow> & Pick<ProposalPageRow, 'proposal_id' | 'page_number'>
+        Insert: Partial<ProposalPageRow> &
+          Pick<ProposalPageRow, 'proposal_id' | 'page_number'>
         Update: Partial<ProposalPageRow>
         Relationships: [
           {
@@ -227,7 +233,8 @@ export type Database = {
       }
       share_links: {
         Row: ShareLinkRow
-        Insert: Partial<ShareLinkRow> & Pick<ShareLinkRow, 'proposal_id' | 'token'>
+        Insert: Partial<ShareLinkRow> &
+          Pick<ShareLinkRow, 'proposal_id' | 'token'>
         Update: Partial<ShareLinkRow>
         Relationships: [
           {
@@ -241,7 +248,8 @@ export type Database = {
       }
       visits: {
         Row: VisitRow
-        Insert: Partial<VisitRow> & Pick<VisitRow, 'share_link_id' | 'proposal_id' | 'visitor_id'>
+        Insert: Partial<VisitRow> &
+          Pick<VisitRow, 'share_link_id' | 'proposal_id' | 'visitor_id'>
         Update: Partial<VisitRow>
         Relationships: [
           {
@@ -262,7 +270,8 @@ export type Database = {
       }
       page_views: {
         Row: PageViewRow
-        Insert: Partial<PageViewRow> & Pick<PageViewRow, 'visit_id' | 'proposal_id' | 'page_number'>
+        Insert: Partial<PageViewRow> &
+          Pick<PageViewRow, 'visit_id' | 'proposal_id' | 'page_number'>
         Update: Partial<PageViewRow>
         Relationships: [
           {

@@ -12,7 +12,10 @@ type AdminClient = ReturnType<typeof getSupabaseAdminClient>
  * the claim is rolled back on a send failure so a later open can retry. Does
  * nothing until RESEND_API_KEY is set, so local and CI runs stay silent.
  */
-export async function notifyFirstOpen(supabase: AdminClient, visitId: string): Promise<void> {
+export async function notifyFirstOpen(
+  supabase: AdminClient,
+  visitId: string,
+): Promise<void> {
   const { RESEND_API_KEY, EMAIL_FROM } = serverEnv()
   if (!RESEND_API_KEY) return
 
@@ -36,7 +39,11 @@ export async function notifyFirstOpen(supabase: AdminClient, visitId: string): P
   if (!claimed) return
 
   const [{ data: owner }, { data: link }] = await Promise.all([
-    supabase.from('profiles').select('email').eq('id', claimed.owner_id).maybeSingle(),
+    supabase
+      .from('profiles')
+      .select('email')
+      .eq('id', claimed.owner_id)
+      .maybeSingle(),
     supabase
       .from('share_links')
       .select('recipient_name, recipient_email')

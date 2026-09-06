@@ -1,7 +1,12 @@
 import { fileURLToPath } from 'node:url'
 import { expect, test } from '@playwright/test'
 import { awaitReact, gotoHydrated } from './support/app'
-import { admin, createTestOwner, deleteTestOwner, sessionCookies } from './support/supabase'
+import {
+  admin,
+  createTestOwner,
+  deleteTestOwner,
+  sessionCookies,
+} from './support/supabase'
 import type { TestOwner } from './support/supabase'
 
 /**
@@ -15,7 +20,9 @@ import type { TestOwner } from './support/supabase'
  * issued.
  */
 
-const PDF = fileURLToPath(new URL('./fixtures/sample-proposal.pdf', import.meta.url))
+const PDF = fileURLToPath(
+  new URL('./fixtures/sample-proposal.pdf', import.meta.url),
+)
 
 let owner: TestOwner
 
@@ -27,7 +34,10 @@ test.afterAll(async () => {
   await deleteTestOwner(owner)
 })
 
-test('an uploaded proposal is stored, tagged and shareable', async ({ context, page }) => {
+test('an uploaded proposal is stored, tagged and shareable', async ({
+  context,
+  page,
+}) => {
   await context.addCookies(await sessionCookies(owner))
 
   await gotoHydrated(page, '/proposals/new', 'input[type="file"]')

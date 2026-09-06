@@ -1,7 +1,12 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from '@playwright/test'
-import { admin, createTestOwner, deleteTestOwner, seedProposal } from './support/supabase'
+import {
+  admin,
+  createTestOwner,
+  deleteTestOwner,
+  seedProposal,
+} from './support/supabase'
 import type { TestOwner } from './support/supabase'
 
 /**
@@ -23,7 +28,9 @@ import type { TestOwner } from './support/supabase'
  * endpoint said while recording it.
  */
 
-const PDF = fileURLToPath(new URL('./fixtures/sample-proposal.pdf', import.meta.url))
+const PDF = fileURLToPath(
+  new URL('./fixtures/sample-proposal.pdf', import.meta.url),
+)
 
 let owner: TestOwner
 let token: string
@@ -72,7 +79,10 @@ test('a real read is recorded as a qualified visit', async ({ page }) => {
           .gt('engaged_ms', 0)
         return data?.length ?? 0
       },
-      { timeout: 20_000, message: 'no qualified visit was recorded for the read' },
+      {
+        timeout: 20_000,
+        message: 'no qualified visit was recorded for the read',
+      },
     )
     .toBeGreaterThan(0)
 })

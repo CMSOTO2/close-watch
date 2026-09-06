@@ -4,7 +4,12 @@ import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { SiteFooter } from '#/components/site-footer'
 import { Button } from '#/components/ui/button'
-import { breadcrumbJsonLd, canonical, jsonLdScript, socialMeta } from '#/lib/seo'
+import {
+  breadcrumbJsonLd,
+  canonical,
+  jsonLdScript,
+  socialMeta,
+} from '#/lib/seo'
 
 const PATH = '/proposal-tracking-for-fractional-executives'
 
@@ -128,9 +133,9 @@ function FractionalPage() {
                 </p>
                 <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
                   It is also the one thing you would never learn otherwise. A
-                  founder rarely writes back to say &ldquo;I have sent this to my
-                  co-founder.&rdquo; They go quiet while it happens, and quiet
-                  is exactly what a lost deal feels like too.
+                  founder rarely writes back to say &ldquo;I have sent this to
+                  my co-founder.&rdquo; They go quiet while it happens, and
+                  quiet is exactly what a lost deal feels like too.
                 </p>
               </div>
 

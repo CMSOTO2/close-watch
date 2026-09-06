@@ -57,13 +57,18 @@ if (product) {
 } else {
   product = await stripe.products.create({
     name: 'Closewatch Solo',
-    description: 'Unlimited active proposals. Everything on the free plan, without the ceiling.',
+    description:
+      'Unlimited active proposals. Everything on the free plan, without the ceiling.',
     metadata: TAG,
   })
   console.log(`${mode}: created product ${product.id}`)
 }
 
-const prices = await stripe.prices.list({ product: product.id, active: true, limit: 100 })
+const prices = await stripe.prices.list({
+  product: product.id,
+  active: true,
+  limit: 100,
+})
 let price = prices.data.find(
   (p) =>
     p.unit_amount === AMOUNT_CENTS &&

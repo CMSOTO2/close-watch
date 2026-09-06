@@ -7,7 +7,8 @@ export const emailSchema = z
   .min(1, 'Email is required')
   .pipe(z.email('Enter a valid email'))
 
-const hasUpper = (s: string) => [...s].some((c) => c !== c.toLowerCase() && c === c.toUpperCase())
+const hasUpper = (s: string) =>
+  [...s].some((c) => c !== c.toLowerCase() && c === c.toUpperCase())
 const hasDigit = (s: string) => [...s].some((c) => c >= '0' && c <= '9')
 
 export const signinPasswordSchema = z.string().min(1, 'Password is required')
@@ -30,6 +31,8 @@ export const signupPasswordSchema = z.string().superRefine((value, ctx) => {
 // issue objects. Normalise both to a readable message.
 export const fieldError = (errors: ReadonlyArray<unknown>) =>
   errors
-    .map((e) => (typeof e === 'string' ? e : ((e as { message?: string }).message ?? '')))
+    .map((e) =>
+      typeof e === 'string' ? e : ((e as { message?: string }).message ?? ''),
+    )
     .filter(Boolean)
     .join(', ')

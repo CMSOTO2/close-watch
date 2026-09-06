@@ -59,7 +59,9 @@ describe('pickPage', () => {
   })
 
   it('handles a page taller than the viewport', () => {
-    expect(pickPage([{ page: 7, top: -400, bottom: 1400 }], VH, false, 6)).toBe(7)
+    expect(pickPage([{ page: 7, top: -400, bottom: 1400 }], VH, false, 6)).toBe(
+      7,
+    )
   })
 })
 
@@ -67,9 +69,9 @@ describe('pageWeights', () => {
   const VIEWPORT = 1000
 
   it('gives the whole tick to a page that fills the screen', () => {
-    expect(pageWeights([{ page: 3, top: -100, bottom: 1100 }], VIEWPORT)).toEqual([
-      { page: 3, weight: 1 },
-    ])
+    expect(
+      pageWeights([{ page: 3, top: -100, bottom: 1100 }], VIEWPORT),
+    ).toEqual([{ page: 3, weight: 1 }])
   })
 
   // The point of the change: two sections on screen are two sections being read.
@@ -91,7 +93,10 @@ describe('pageWeights', () => {
   // fall short of it, when part of the window was not a page.
   it('never credits more than the tick it is dividing', () => {
     const arrangements = [
-      [{ page: 1, top: -300, bottom: 400 }, { page: 2, top: 400, bottom: 1400 }],
+      [
+        { page: 1, top: -300, bottom: 400 },
+        { page: 2, top: 400, bottom: 1400 },
+      ],
       [
         { page: 4, top: -50, bottom: 250 },
         { page: 5, top: 250, bottom: 700 },
@@ -100,7 +105,10 @@ describe('pageWeights', () => {
       [{ page: 9, top: 100, bottom: 900 }],
     ]
     for (const boxes of arrangements) {
-      const total = pageWeights(boxes, VIEWPORT).reduce((s, w) => s + w.weight, 0)
+      const total = pageWeights(boxes, VIEWPORT).reduce(
+        (s, w) => s + w.weight,
+        0,
+      )
       expect(total).toBeLessThanOrEqual(1)
       expect(total).toBeGreaterThan(0)
     }
@@ -127,7 +135,9 @@ describe('pageWeights', () => {
   })
 
   it('reports nothing when every page is a sliver, so the caller can hold', () => {
-    expect(pageWeights([{ page: 2, top: 980, bottom: 1200 }], VIEWPORT)).toEqual([])
+    expect(
+      pageWeights([{ page: 2, top: 980, bottom: 1200 }], VIEWPORT),
+    ).toEqual([])
     expect(pageWeights([], VIEWPORT)).toEqual([])
   })
 

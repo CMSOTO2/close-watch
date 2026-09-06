@@ -1,5 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
-import { getSupabaseAdminClient, getSupabaseServerClient } from '#/lib/supabase/server'
+import {
+  getSupabaseAdminClient,
+  getSupabaseServerClient,
+} from '#/lib/supabase/server'
 import { publicEnv, serverEnv } from '#/env'
 import { billingConfigured, getStripe } from '#/lib/billing/stripe'
 
@@ -13,7 +16,8 @@ import { billingConfigured, getStripe } from '#/lib/billing/stripe'
  */
 export const startSoloCheckout = createServerFn({ method: 'POST' }).handler(
   async (): Promise<{ url: string }> => {
-    if (!billingConfigured()) throw new Error('Card payments are not switched on yet')
+    if (!billingConfigured())
+      throw new Error('Card payments are not switched on yet')
 
     const supabase = getSupabaseServerClient()
     const { data: auth } = await supabase.auth.getUser()
@@ -35,7 +39,9 @@ export const startSoloCheckout = createServerFn({ method: 'POST' }).handler(
     // deleted customer. Better to notice here than to hand the user a dead
     // upgrade button forever.
     if (customerId) {
-      const customer = await stripe.customers.retrieve(customerId).catch(() => null)
+      const customer = await stripe.customers
+        .retrieve(customerId)
+        .catch(() => null)
       if (!customer || customer.deleted) customerId = null
     }
 
@@ -52,7 +58,10 @@ export const startSoloCheckout = createServerFn({ method: 'POST' }).handler(
       // the point of it.
       const { error } = await admin
         .from('subscriptions')
-        .upsert({ user_id: auth.user.id, stripe_customer_id: customerId }, { onConflict: 'user_id' })
+        .upsert(
+          { user_id: auth.user.id, stripe_customer_id: customerId },
+          { onConflict: 'user_id' },
+        )
       if (error) throw new Error(`Could not start checkout: ${error.message}`)
     }
 
@@ -84,7 +93,8 @@ export const startSoloCheckout = createServerFn({ method: 'POST' }).handler(
  */
 export const openBillingPortal = createServerFn({ method: 'POST' }).handler(
   async (): Promise<{ url: string }> => {
-    if (!billingConfigured()) throw new Error('Card payments are not switched on yet')
+    if (!billingConfigured())
+      throw new Error('Card payments are not switched on yet')
 
     const supabase = getSupabaseServerClient()
     const { data: auth } = await supabase.auth.getUser()

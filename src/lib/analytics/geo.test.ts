@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { locationLabel, normalizeGeo, requestGeo } from './geo'
 
-function cfRequest(cf?: Record<string, unknown>, headers?: Record<string, string>) {
+function cfRequest(
+  cf?: Record<string, unknown>,
+  headers?: Record<string, string>,
+) {
   const request = new Request('https://getclosewatch.com/p/tok', { headers })
   if (cf) Object.defineProperty(request, 'cf', { value: cf })
   return request
@@ -48,7 +51,10 @@ describe('requestGeo', () => {
   })
 
   it('takes the city from cf, which no header carries', () => {
-    const request = cfRequest({ country: 'FR', city: 'Lyon' }, { 'cf-ipcountry': 'FR' })
+    const request = cfRequest(
+      { country: 'FR', city: 'Lyon' },
+      { 'cf-ipcountry': 'FR' },
+    )
     expect(requestGeo(request)).toEqual({ country: 'FR', city: 'Lyon' })
   })
 

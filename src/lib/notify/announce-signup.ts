@@ -1,6 +1,9 @@
 import { createServerFn } from '@tanstack/react-start'
 import { notifySignup } from '#/lib/notify/signup'
-import { getSupabaseAdminClient, getSupabaseServerClient } from '#/lib/supabase/server'
+import {
+  getSupabaseAdminClient,
+  getSupabaseServerClient,
+} from '#/lib/supabase/server'
 
 /**
  * The signed-in caller announcing themselves.

@@ -17,7 +17,11 @@ export const getProfile = createServerFn({ method: 'GET' }).handler(
       .select('full_name, company_name, email')
       .maybeSingle()
     if (!data) return null
-    return { fullName: data.full_name, companyName: data.company_name, email: data.email }
+    return {
+      fullName: data.full_name,
+      companyName: data.company_name,
+      email: data.email,
+    }
   },
 )
 
@@ -40,11 +44,19 @@ export const updateProfile = createServerFn({ method: 'POST' })
 
     const { data: updated, error } = await supabase
       .from('profiles')
-      .update({ full_name: data.fullName || null, company_name: data.companyName || null })
+      .update({
+        full_name: data.fullName || null,
+        company_name: data.companyName || null,
+      })
       .eq('id', auth.user.id)
       .select('full_name, company_name, email')
       .maybeSingle()
 
-    if (error || !updated) throw new Error(error?.message ?? 'Could not save your profile')
-    return { fullName: updated.full_name, companyName: updated.company_name, email: updated.email }
+    if (error || !updated)
+      throw new Error(error?.message ?? 'Could not save your profile')
+    return {
+      fullName: updated.full_name,
+      companyName: updated.company_name,
+      email: updated.email,
+    }
   })

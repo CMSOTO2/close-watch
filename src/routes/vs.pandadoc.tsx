@@ -1,7 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ComparisonPage } from '#/components/compare/comparison-page'
 import { COMPETITORS } from '#/components/compare/competitors'
-import { breadcrumbJsonLd, canonical, jsonLdScript, socialMeta } from '#/lib/seo'
+import {
+  breadcrumbJsonLd,
+  canonical,
+  jsonLdScript,
+  socialMeta,
+} from '#/lib/seo'
 
 const c = COMPETITORS.pandadoc
 const PATH = '/vs/pandadoc'

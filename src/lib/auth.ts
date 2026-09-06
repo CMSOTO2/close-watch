@@ -21,7 +21,8 @@ export const getSessionUser = createServerFn({ method: 'GET' }).handler(
     return {
       id: data.user.id,
       email: data.user.email ?? null,
-      fullName: (data.user.user_metadata.full_name as string | undefined) ?? null,
+      fullName:
+        (data.user.user_metadata.full_name as string | undefined) ?? null,
     }
   },
 )

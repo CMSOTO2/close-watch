@@ -26,7 +26,9 @@ export async function awaitReact(locator: Locator) {
       async () =>
         locator
           .first()
-          .evaluate((el) => Object.keys(el).some((k) => k.startsWith('__reactFiber'))),
+          .evaluate((el) =>
+            Object.keys(el).some((k) => k.startsWith('__reactFiber')),
+          ),
       { timeout: 30_000 },
     )
     .toBe(true)

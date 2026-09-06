@@ -34,7 +34,12 @@ export function partitionLinks(
   links: Array<ShareLink>,
   now = Date.now(),
 ): PartitionedLinks {
-  const result: PartitionedLinks = { live: [], dead: [], revoked: 0, expired: 0 }
+  const result: PartitionedLinks = {
+    live: [],
+    dead: [],
+    revoked: 0,
+    expired: 0,
+  }
   for (const link of links) {
     const status = linkStatus(link, now)
     if (status === 'live') {

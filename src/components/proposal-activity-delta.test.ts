@@ -63,7 +63,9 @@ describe('diffSince', () => {
   // A bot reclassification can take a counter backwards. "1 fewer open than
   // last time" is noise, not news.
   it('never reports a loss', () => {
-    expect(diffSince(snap({ opens: 9 }), totals({ qualifiedVisits: 4 }))).toBeNull()
+    expect(
+      diffSince(snap({ opens: 9 }), totals({ qualifiedVisits: 4 })),
+    ).toBeNull()
   })
 
   it('floors a mixed result rather than netting it off', () => {

@@ -80,8 +80,8 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     q: 'Does it work across all my clients, or one deal at a time?',
     a: (
       <>
-        All of them. The dashboard groups proposals under the client they
-        belong to, so an agency running nine deals across six clients reads six
+        All of them. The dashboard groups proposals under the client they belong
+        to, so an agency running nine deals across six clients reads six
         accounts rather than nine files, and search, heat filtering and sorting
         work across the lot. Seats for a team are still to come; today one
         account holds the whole pipeline.
@@ -95,8 +95,8 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
         A rules-based tally rather than a model, and it shows its working.
         Repeat opens, time on your pricing page, depth of read normalised by
         document length, forwarding, downloads and prints all add points on a
-        fixed scale. Every proposal lists the reasons behind its own score.
-        A number on its own is a horoscope; &ldquo;they came back Tuesday and
+        fixed scale. Every proposal lists the reasons behind its own score. A
+        number on its own is a horoscope; &ldquo;they came back Tuesday and
         spent four minutes on pricing&rdquo; is something you can act on before
         lunch.
       </>

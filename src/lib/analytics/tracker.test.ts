@@ -22,12 +22,19 @@ function flushedEngagedMs(): number {
 }
 
 function start() {
-  return startTracker({ visitId: 'v1', token: 'share-token', getPageElements: () => [] })
+  return startTracker({
+    visitId: 'v1',
+    token: 'share-token',
+    getPageElements: () => [],
+  })
 }
 
 beforeEach(() => {
   setVisibility('visible')
-  Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => visibility })
+  Object.defineProperty(document, 'visibilityState', {
+    configurable: true,
+    get: () => visibility,
+  })
   vi.spyOn(document, 'hasFocus').mockReturnValue(true)
 
   // jsdom ships neither of these; the tracker only needs them to not throw.
@@ -38,7 +45,10 @@ beforeEach(() => {
       disconnect() {}
     },
   )
-  Object.defineProperty(navigator, 'sendBeacon', { configurable: true, value: vi.fn(() => true) })
+  Object.defineProperty(navigator, 'sendBeacon', {
+    configurable: true,
+    value: vi.fn(() => true),
+  })
 
   fetchMock = vi.fn(() => Promise.resolve({ ok: true }))
   vi.stubGlobal('fetch', fetchMock)
@@ -93,7 +103,9 @@ describe('startTracker', () => {
     // back, and the counter had moved. Browsers throttle background tabs and
     // suspend them outright on a phone, so no tick fires while you are away
     // and the first one back carries the whole gap as its delta.
-    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'] })
+    vi.useFakeTimers({
+      toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'],
+    })
     const base = 1_000_000
     const now = vi.spyOn(Date, 'now').mockReturnValue(base)
 
@@ -115,7 +127,9 @@ describe('startTracker', () => {
     vi.advanceTimersByTime(500)
 
     t.recordDownload()
-    const engaged = JSON.parse(fetchMock.mock.calls.at(-1)![1].body as string).engagedMs
+    const engaged = JSON.parse(
+      fetchMock.mock.calls.at(-1)![1].body as string,
+    ).engagedMs
 
     // The second of reading plus the half-second since returning. The four
     // seconds on the other tab are not the reader's attention.
@@ -126,7 +140,9 @@ describe('startTracker', () => {
   it('banks nothing for the window losing focus to another app', () => {
     // Same gap, different cause: the tab stayed visible and the window went
     // behind something else, so only `hasFocus` moved.
-    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'] })
+    vi.useFakeTimers({
+      toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'],
+    })
     const base = 2_000_000
     const now = vi.spyOn(Date, 'now').mockReturnValue(base)
     const hasFocus = vi.spyOn(document, 'hasFocus').mockReturnValue(true)
@@ -145,7 +161,9 @@ describe('startTracker', () => {
     vi.advanceTimersByTime(500)
 
     t.recordDownload()
-    const engaged = JSON.parse(fetchMock.mock.calls.at(-1)![1].body as string).engagedMs
+    const engaged = JSON.parse(
+      fetchMock.mock.calls.at(-1)![1].body as string,
+    ).engagedMs
 
     expect(engaged).toBeLessThanOrEqual(1_600)
     t.stop()
@@ -154,7 +172,9 @@ describe('startTracker', () => {
   it('caps a single tick so waking from sleep cannot dump hours of time', () => {
     // Decouple Date from the timer clock so we can simulate a real-time gap the
     // interval slept through, then fired once for.
-    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'] })
+    vi.useFakeTimers({
+      toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout'],
+    })
     const base = 1_000_000
     const now = vi.spyOn(Date, 'now').mockReturnValue(base)
 
@@ -169,7 +189,9 @@ describe('startTracker', () => {
     vi.advanceTimersByTime(500) // the tick that fires with a one-hour delta
 
     t.recordDownload() // force a synchronous flush we can read
-    const engaged = JSON.parse(fetchMock.mock.calls.at(-1)![1].body as string).engagedMs
+    const engaged = JSON.parse(
+      fetchMock.mock.calls.at(-1)![1].body as string,
+    ).engagedMs
 
     // 500ms + a single capped tick (<=2000), nowhere near the hour that elapsed.
     expect(engaged).toBeLessThan(5_000)

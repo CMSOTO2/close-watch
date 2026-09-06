@@ -23,7 +23,11 @@ try {
   // Absent in CI, where the variables arrive as real environment variables.
 }
 
-const required = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_PUBLISHABLE_KEY', 'SUPABASE_SECRET_KEY']
+const required = [
+  'VITE_SUPABASE_URL',
+  'VITE_SUPABASE_PUBLISHABLE_KEY',
+  'SUPABASE_SECRET_KEY',
+]
 const missing = required.filter((key) => !process.env[key])
 if (missing.length) {
   throw new Error(`e2e needs ${missing.join(', ')} — see .env.example`)

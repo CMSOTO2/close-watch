@@ -60,25 +60,28 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
 
     if (!proposal) return null
 
-    const [{ data: owner }, { data: pages }, { data: links }] = await Promise.all([
-      // The owner is always the signed-in user (RLS scopes proposals to them),
-      // so the "own profile" policy lets this read through.
-      supabase
-        .from('profiles')
-        .select('full_name, company_name, email')
-        .eq('id', proposal.owner_id)
-        .maybeSingle(),
-      supabase
-        .from('proposal_pages')
-        .select('page_number, section, section_auto, label')
-        .eq('proposal_id', data.id)
-        .order('page_number'),
-      supabase
-        .from('share_links')
-        .select('id, token, recipient_name, recipient_email, expires_at, revoked_at, created_at')
-        .eq('proposal_id', data.id)
-        .order('created_at', { ascending: false }),
-    ])
+    const [{ data: owner }, { data: pages }, { data: links }] =
+      await Promise.all([
+        // The owner is always the signed-in user (RLS scopes proposals to them),
+        // so the "own profile" policy lets this read through.
+        supabase
+          .from('profiles')
+          .select('full_name, company_name, email')
+          .eq('id', proposal.owner_id)
+          .maybeSingle(),
+        supabase
+          .from('proposal_pages')
+          .select('page_number, section, section_auto, label')
+          .eq('proposal_id', data.id)
+          .order('page_number'),
+        supabase
+          .from('share_links')
+          .select(
+            'id, token, recipient_name, recipient_email, expires_at, revoked_at, created_at',
+          )
+          .eq('proposal_id', data.id)
+          .order('created_at', { ascending: false }),
+      ])
 
     return {
       id: proposal.id,

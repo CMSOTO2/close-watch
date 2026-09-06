@@ -16,7 +16,10 @@ export function usePersistedChoice<T extends string>(
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(key)
-      if (stored !== null && (allowed as ReadonlyArray<string>).includes(stored)) {
+      if (
+        stored !== null &&
+        (allowed as ReadonlyArray<string>).includes(stored)
+      ) {
         setValue(stored as T)
       }
     } catch {

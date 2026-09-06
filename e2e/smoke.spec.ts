@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test'
-import { createTestOwner, deleteTestOwner, sessionCookies } from './support/supabase'
+import {
+  createTestOwner,
+  deleteTestOwner,
+  sessionCookies,
+} from './support/supabase'
 import type { TestOwner } from './support/supabase'
 
 /**
@@ -18,7 +22,10 @@ test.afterAll(async () => {
   await deleteTestOwner(owner)
 })
 
-test('a session cookie signs the owner into the dashboard', async ({ context, page }) => {
+test('a session cookie signs the owner into the dashboard', async ({
+  context,
+  page,
+}) => {
   await context.addCookies(await sessionCookies(owner))
 
   await page.goto('/dashboard')

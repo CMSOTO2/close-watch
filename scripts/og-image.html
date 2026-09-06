@@ -14,7 +14,6 @@
      with no words on it. See scripts/fetch-og-fonts.py. -->
 <link rel="stylesheet" href="og-fonts.css" />
 <style>
-
   /* The dark palette from src/styles.css. Dark on purpose: a feed is mostly
      white cards, and this one stops the scroll by not being one. */
   :root {
@@ -29,7 +28,11 @@
     --brand-soft: #2a2318;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
   body {
     width: 1200px;
@@ -45,8 +48,15 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .brand { display: flex; align-items: center; gap: 14px; }
-  .brand svg { width: 46px; height: 46px; }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand svg {
+    width: 46px;
+    height: 46px;
+  }
   .brand .name {
     font-family: 'Instrument Sans', 'Inter', sans-serif;
     font-weight: 600;
@@ -68,7 +78,12 @@
     color: var(--brand);
   }
 
-  .body { display: flex; align-items: flex-end; justify-content: space-between; gap: 56px; }
+  .body {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 56px;
+  }
 
   /* Three lines, no orphan. `balance` keeps it that way if the words ever
      change; the width is what stops "read it." landing on a line of its own. */
@@ -138,11 +153,26 @@
     margin-left: auto;
   }
   /* Three rising bars, the same mark the dashboard uses for heat. */
-  .bars { display: flex; align-items: flex-end; gap: 3px; height: 17px; }
-  .bars i { width: 5px; background: var(--brand); border-radius: 1px; }
-  .bars i:nth-child(1) { height: 7px; }
-  .bars i:nth-child(2) { height: 12px; }
-  .bars i:nth-child(3) { height: 17px; }
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 17px;
+  }
+  .bars i {
+    width: 5px;
+    background: var(--brand);
+    border-radius: 1px;
+  }
+  .bars i:nth-child(1) {
+    height: 7px;
+  }
+  .bars i:nth-child(2) {
+    height: 12px;
+  }
+  .bars i:nth-child(3) {
+    height: 17px;
+  }
   .rows {
     margin-top: 20px;
     padding-top: 18px;
@@ -191,8 +221,16 @@
        would all but vanish against this ground. -->
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
     <rect width="32" height="32" rx="8.5" fill="#f0ede7" />
-    <circle cx="16" cy="16" r="9" fill="none" stroke="#875809" stroke-width="3"
-            stroke-linecap="round" stroke-dasharray="44.3 12.25" />
+    <circle
+      cx="16"
+      cy="16"
+      r="9"
+      fill="none"
+      stroke="#875809"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-dasharray="44.3 12.25"
+    />
     <circle cx="22.99" cy="10.34" r="2.7" fill="#875809" />
   </svg>
   <span class="name">Closewatch</span>
@@ -202,7 +240,10 @@
 <div class="body">
   <div>
     <h1>Stop guessing whether they read it.</h1>
-    <p class="sub">Which client opened it. How long on your pricing. Who they forwarded it to.</p>
+    <p class="sub">
+      Which client opened it. How long on your pricing. Who they forwarded it
+      to.
+    </p>
   </div>
 
   <div class="report">

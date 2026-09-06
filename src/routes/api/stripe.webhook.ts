@@ -1,7 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { getSupabaseAdminClient } from '#/lib/supabase/server'
 import { serverEnv } from '#/env'
-import { cancellation, getStripe, periodEnd, planForPrice } from '#/lib/billing/stripe'
+import {
+  cancellation,
+  getStripe,
+  periodEnd,
+  planForPrice,
+} from '#/lib/billing/stripe'
 import Stripe from 'stripe'
 import type { BillingPlan } from '#/lib/supabase/types'
 
@@ -29,12 +34,16 @@ const DEAD = new Set(['canceled', 'incomplete_expired'])
  * reads as a string as far as the types are concerned. This is the one place
  * that admits it can be missing.
  */
-function metadataUserId(metadata: Stripe.Metadata | null | undefined): string | null {
+function metadataUserId(
+  metadata: Stripe.Metadata | null | undefined,
+): string | null {
   const value: string | undefined = metadata?.supabase_user_id
   return value ?? null
 }
 
-async function syncSubscription(subscription: Stripe.Subscription): Promise<void> {
+async function syncSubscription(
+  subscription: Stripe.Subscription,
+): Promise<void> {
   const admin = getSupabaseAdminClient()
   const customerId =
     typeof subscription.customer === 'string'
@@ -96,7 +105,8 @@ export const Route = createFileRoute('/api/stripe/webhook')({
         }
 
         const signature = request.headers.get('stripe-signature')
-        if (!signature) return new Response('Missing signature', { status: 400 })
+        if (!signature)
+          return new Response('Missing signature', { status: 400 })
 
         const body = await request.text()
 
@@ -121,12 +131,15 @@ export const Route = createFileRoute('/api/stripe/webhook')({
               const session = event.data.object
               // Only subscription checkouts carry one, and only a paid session
               // is worth acting on.
-              if (session.mode !== 'subscription' || !session.subscription) break
+              if (session.mode !== 'subscription' || !session.subscription)
+                break
               const id =
                 typeof session.subscription === 'string'
                   ? session.subscription
                   : session.subscription.id
-              await syncSubscription(await getStripe().subscriptions.retrieve(id))
+              await syncSubscription(
+                await getStripe().subscriptions.retrieve(id),
+              )
               break
             }
             case 'customer.subscription.created':

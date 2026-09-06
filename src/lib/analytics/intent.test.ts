@@ -33,21 +33,38 @@ describe('scoreIntent', () => {
 
   it('reports a second reader as an observation, not as a forward', () => {
     const r = scoreIntent({ ...base, distinctViewers: 2 })
-    expect(r.signals).toContainEqual({ label: 'Opened by a second reader', points: 18 })
+    expect(r.signals).toContainEqual({
+      label: 'Opened by a second reader',
+      points: 18,
+    })
   })
 
   it('normalises read depth by document length', () => {
     // 300s over 5 pages is 60s/page: read closely.
-    const deepOverShort = scoreIntent({ ...base, pageCount: 5, totalEngagedMs: 300_000 })
-    expect(deepOverShort.signals).toContainEqual({ label: 'Read closely (5m)', points: 20 })
+    const deepOverShort = scoreIntent({
+      ...base,
+      pageCount: 5,
+      totalEngagedMs: 300_000,
+    })
+    expect(deepOverShort.signals).toContainEqual({
+      label: 'Read closely (5m)',
+      points: 20,
+    })
   })
 
   it('caps the divisor so a long proposal can still be read closely', () => {
     // Twelve minutes is a real read of an 80-page document. Divided by 80 it
     // was 9s/page and scored nothing, which put every long proposal out of
     // reach of the depth signal entirely.
-    const long = scoreIntent({ ...base, pageCount: 80, totalEngagedMs: 720_000 })
-    expect(long.signals).toContainEqual({ label: 'Read closely (12m)', points: 20 })
+    const long = scoreIntent({
+      ...base,
+      pageCount: 80,
+      totalEngagedMs: 720_000,
+    })
+    expect(long.signals).toContainEqual({
+      label: 'Read closely (12m)',
+      points: 20,
+    })
   })
 
   it('still scores a long skim as no read at all', () => {
@@ -61,7 +78,10 @@ describe('scoreIntent', () => {
     const printed = scoreIntent({ ...base, printed: true })
     const downloaded = scoreIntent({ ...base, downloaded: true })
     expect(printed.signals).toContainEqual({ label: 'Printed it', points: 18 })
-    expect(downloaded.signals).toContainEqual({ label: 'Downloaded a copy', points: 15 })
+    expect(downloaded.signals).toContainEqual({
+      label: 'Downloaded a copy',
+      points: 15,
+    })
     expect(printed.score).toBeGreaterThan(downloaded.score)
   })
 
@@ -69,7 +89,10 @@ describe('scoreIntent', () => {
     // Two halves of one act. Summed they were 33 and warm on their own, so a
     // barely-opened proposal came back looking like a live deal.
     const both = scoreIntent({ ...base, printed: true, downloaded: true })
-    expect(both.signals).toContainEqual({ label: 'Printed and downloaded it', points: 20 })
+    expect(both.signals).toContainEqual({
+      label: 'Printed and downloaded it',
+      points: 20,
+    })
     expect(both.band).toBe('cold')
   })
 
@@ -91,7 +114,11 @@ describe('scoreIntent', () => {
 
   it('sums signals into a warm band with the reasons attached', () => {
     // Opened 3 times (15) + 40s on pricing (18) = 33 -> warm.
-    const r = scoreIntent({ ...base, qualifiedVisits: 3, pricingEngagedMs: 40_000 })
+    const r = scoreIntent({
+      ...base,
+      qualifiedVisits: 3,
+      pricingEngagedMs: 40_000,
+    })
     expect(r.score).toBe(33)
     expect(r.band).toBe('warm')
     expect(r.signals.map((s) => s.label)).toEqual(
@@ -115,7 +142,12 @@ describe('scoreIntent', () => {
   })
 
   it('returns signals sorted strongest first', () => {
-    const r = scoreIntent({ ...base, qualifiedVisits: 2, distinctViewers: 2, pricingEngagedMs: 120_000 })
+    const r = scoreIntent({
+      ...base,
+      qualifiedVisits: 2,
+      distinctViewers: 2,
+      pricingEngagedMs: 120_000,
+    })
     const points = r.signals.map((s) => s.points)
     expect(points).toEqual([...points].sort((a, b) => b - a))
   })

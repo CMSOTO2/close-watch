@@ -183,7 +183,14 @@ export function startTracker({
     lastActivityAt = Date.now()
   }
 
-  const activityEvents = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'wheel']
+  const activityEvents = [
+    'mousemove',
+    'mousedown',
+    'keydown',
+    'scroll',
+    'touchstart',
+    'wheel',
+  ]
   for (const name of activityEvents) {
     window.addEventListener(name, markActivity, { passive: true })
   }
@@ -255,7 +262,8 @@ export function startTracker({
   }, TICK_MS)
 
   function drain(): Flush | null {
-    if (engagedMs === 0 && pageMs.size === 0 && queuedEvents.length === 0) return null
+    if (engagedMs === 0 && pageMs.size === 0 && queuedEvents.length === 0)
+      return null
     const payload: Flush = {
       engagedMs,
       // Rounded because splitting a tick across pages leaves fractions, and
@@ -286,7 +294,10 @@ export function startTracker({
 
     // sendBeacon is the only thing that reliably survives a tab close, and it
     // is why the ingest endpoint accepts text/plain.
-    if (useBeacon && navigator.sendBeacon(endpoint, new Blob([body], { type: 'text/plain' }))) {
+    if (
+      useBeacon &&
+      navigator.sendBeacon(endpoint, new Blob([body], { type: 'text/plain' }))
+    ) {
       return
     }
 
@@ -340,7 +351,8 @@ export function startTracker({
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('focus', resumeClock)
       window.removeEventListener('beforeprint', onPrint)
-      for (const name of activityEvents) window.removeEventListener(name, markActivity)
+      for (const name of activityEvents)
+        window.removeEventListener(name, markActivity)
     },
   }
 }

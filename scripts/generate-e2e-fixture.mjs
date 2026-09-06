@@ -57,6 +57,10 @@ const page = `
 const browser = await chromium.launch()
 const p = await browser.newPage()
 await p.setContent(page, { waitUntil: 'load' })
-await p.pdf({ path: 'e2e/fixtures/sample-proposal.pdf', format: 'A4', printBackground: true })
+await p.pdf({
+  path: 'e2e/fixtures/sample-proposal.pdf',
+  format: 'A4',
+  printBackground: true,
+})
 await browser.close()
 console.log('written')
