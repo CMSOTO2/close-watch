@@ -14,15 +14,26 @@ import { cn } from '#/lib/utils'
  * it is, and the number that actually predicts whether someone will pay is how
  * many proposals they have in flight.
  *
- * Which is why the shared feature list is stated once, under the cards, rather
- * than repeated inside each of them. The columns used to carry the same six
- * lines so that neither plan looked thinner than the other — a real problem,
- * solved in a way that caused two more. Two columns identical but for one line
- * read as a duplicate rather than a comparison, and the wrapped lists made the
- * cards different heights at every width, worst at the breakpoint where three
- * columns first appear. Saying "every plan includes" once says the same thing
- * louder, in one place, and leaves each card carrying only what differs, which
- * is the one dial this product is priced on.
+ * Every card carries the whole list, including the lines it shares with the one
+ * beside it. That was briefly moved out to a single "every plan includes" row,
+ * which read as correct and looked hollow: three cards holding a price and two
+ * lines each, with the substance parked underneath them. A pricing card is
+ * where someone decides, and it has to hold enough to decide on.
+ *
+ * The duplication is therefore deliberate twice over. It is what stops Free
+ * looking thinner than Solo — the only entitlement check in the app is the slot
+ * counter, and a list implying otherwise teaches people the free plan is a
+ * worse product than it is. And it is what makes each card readable alone,
+ * which is how they are actually read.
+ *
+ * What keeps it from reading as three identical columns is `limit`: the one
+ * line that is true of this plan and not the next, given its own weight above
+ * the list and separated by a rule. That is the dial this product is priced on,
+ * and it should be the first thing the eye lands on after the price.
+ *
+ * None of this is what made the cards different heights. That was `items-start`
+ * and a three-column layout starting at md; both are fixed below and neither
+ * depends on how long the lists are.
  *
  * Solo points at Settings rather than straight at a checkout: the subscription
  * has to attach to an account, so signing in comes first either way.
@@ -40,15 +51,20 @@ import { cn } from '#/lib/utils'
  * negotiation.
  */
 
+type Feature = { text: string; soon?: boolean }
+
 type Plan = {
   name: string
   price: string
   cadence: string | null
   who: string
-  /** The one line that is true of this plan and not of the one beside it. */
+  /**
+   * The one line that is true of this plan and not of the one beside it. Set
+   * above the list and against a rule, because it is the whole comparison.
+   */
   limit: string
-  /** Only for a plan that adds something beyond the shared list. */
-  extras?: Array<string>
+  /** Everything the plan does, shared lines included. See the note above. */
+  features: Array<Feature>
   cta: string
   /** Where the button goes. Absent means the plan cannot be bought yet. */
   to?: '/login' | '/settings'
@@ -63,15 +79,15 @@ type Plan = {
 }
 
 /**
- * True of every plan, so said once. The only entitlement check in the app is
- * the slot counter; anything listed here is on the free plan too.
+ * On every plan, free included, and written into each card rather than referred
+ * to from one. Repeated on purpose: see the note at the top of this file.
  */
-const SHARED = [
-  'Tracked links and intent scoring',
-  'Attention page by page',
-  'Distinct readers and email alerts',
-  'Grouping by client, search and heat filtering',
-  'Full history — nothing expires',
+const SHARED: Array<Feature> = [
+  { text: 'Tracked links and intent scoring' },
+  { text: 'Attention page by page' },
+  { text: 'Distinct readers and email alerts' },
+  { text: 'Grouping by client, search and heat filtering' },
+  { text: 'Full history — nothing expires' },
 ]
 
 const PLANS: Array<Plan> = [
@@ -81,7 +97,11 @@ const PLANS: Array<Plan> = [
     cadence: null,
     who: 'For trying it on a real proposal this week.',
     limit: '2 proposals being read at a time',
-    extras: ['Unlimited sending; drafts do not count'],
+    features: [
+      { text: 'Unlimited sending — a slot is spent on being opened' },
+      { text: 'Drafts you are still preparing do not count' },
+      ...SHARED,
+    ],
     cta: 'Start free',
     to: '/login',
   },
@@ -91,10 +111,14 @@ const PLANS: Array<Plan> = [
     cadence: '/mo',
     who: 'For the person sending every proposal at a small agency.',
     limit: 'Unlimited proposals being read at once',
-    // The whole pitch in one line, and the reason this card has an extra at
-    // all: with the shared list moved out, Solo had nothing under its limit
-    // and read as the emptiest of the three.
-    extras: ['Nothing else changes — the cap simply comes off'],
+    // Deliberately Free's list, minus its two cap lines and plus the one that
+    // replaces them. The two columns differ by exactly what the plans differ
+    // by, which is the only honest way to show a product with no feature gates.
+    features: [
+      { text: 'Nothing else changes — the cap simply comes off' },
+      { text: 'Unlimited sending, and drafts never count' },
+      ...SHARED,
+    ],
     cta: 'Choose Solo',
     // Settings, not a checkout link: the upgrade needs a signed-in account to
     // attach the subscription to, and that page is where Stripe sends people
@@ -115,7 +139,16 @@ const PLANS: Array<Plan> = [
     cadence: '/mo',
     who: 'For an agency team working one pipeline together.',
     limit: 'Everything in Solo, for a team',
-    extras: ['3 seats', 'Slack alerts', 'Your own domain on share links'],
+    // Features that do not exist yet are marked, not omitted. The plan needs
+    // the shape it will have to be worth reading, and a small "soon" is the
+    // difference between a roadmap and a page selling three things nobody can
+    // deliver.
+    features: [
+      { text: '3 seats', soon: true },
+      { text: 'Slack alerts', soon: true },
+      { text: 'Your own domain on share links', soon: true },
+      ...SHARED,
+    ],
     cta: 'Join the waitlist',
     badge: 'Not open yet',
   },
@@ -180,28 +213,35 @@ export function Pricing() {
               {plan.who}
             </p>
 
-            {/* The difference, given the weight the difference deserves. It is
-                the only thing these three cards do not have in common. */}
-            <p className="mt-5 text-[14px] font-medium text-ink">
+            {/* The difference, given the weight the difference deserves, and
+                fenced off by a rule so it does not read as the first bullet.
+                Three cards carrying much the same list is only confusing if
+                the line that separates them is buried in it. */}
+            <p className="mt-5 border-t border-line-soft pt-4 text-[14px] font-medium text-ink">
               {plan.limit}
             </p>
 
-            {plan.extras && (
-              <ul className="mt-3 flex flex-col gap-2">
-                {plan.extras.map((text) => (
-                  <li
-                    key={text}
-                    className="flex items-start gap-2 text-[13px] text-ink-2"
-                  >
-                    <Check
-                      aria-hidden
-                      className="mt-0.5 size-3.5 shrink-0 text-brand"
-                    />
-                    <span>{text}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <ul className="mt-4 flex flex-col gap-2">
+              {plan.features.map((feature) => (
+                <li
+                  key={feature.text}
+                  className="flex items-start gap-2 text-[13px] text-ink-2"
+                >
+                  <Check
+                    aria-hidden
+                    className="mt-0.5 size-3.5 shrink-0 text-brand"
+                  />
+                  <span>
+                    {feature.text}
+                    {feature.soon && (
+                      <span className="ml-1.5 rounded-sm bg-surface-2 px-1 py-0.5 text-[10px] text-ink-3">
+                        soon
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
 
             {/* Now that the cards are equal height, this puts every button on
                 the same line. */}
@@ -216,26 +256,6 @@ export function Pricing() {
             )}
           </div>
         ))}
-      </div>
-
-      {/* Said once, and above the plan-specific notes, because it is the more
-          important of the two: whatever is on this line is on the free plan. */}
-      <div className="mt-6 rounded-xl border border-line bg-surface-2/40 px-5 py-4">
-        <p className="text-[13px] font-medium">Every plan includes</p>
-        <ul className="mt-2.5 flex flex-wrap gap-x-5 gap-y-2">
-          {SHARED.map((text) => (
-            <li
-              key={text}
-              className="flex items-start gap-2 text-[13px] text-ink-2"
-            >
-              <Check
-                aria-hidden
-                className="mt-0.5 size-3.5 shrink-0 text-brand"
-              />
-              <span>{text}</span>
-            </li>
-          ))}
-        </ul>
       </div>
 
       {/* The cap explained where a visitor meets it, rather than only in the
