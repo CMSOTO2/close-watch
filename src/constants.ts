@@ -107,6 +107,26 @@ export function isShareToken(token: string): boolean {
   return SHARE_TOKEN.test(token)
 }
 
+/**
+ * Shape of a proposal id, which is a database uuid.
+ *
+ * Same reasoning as isShareToken above, for the other identifier that reaches
+ * us straight from a URL. The detail route hands its $id to a server function
+ * that validates `z.uuid()`, so anything not uuid-shaped — a crawler following
+ * a mangled link, a truncated paste, someone typing /proposals/pricing — threw
+ * a raw Zod error out of the loader and rendered the generic something-went-
+ * wrong page. That is a 500 for what is plainly a 404: the route already has a
+ * notFoundComponent for a proposal that does not exist, and an id that could
+ * never exist belongs there too.
+ */
+const PROPOSAL_ID =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+
+/** Whether a string could be an id we issued. Existence is the database's call. */
+export function isProposalId(id: string): boolean {
+  return PROPOSAL_ID.test(id)
+}
+
 /** Full public viewer URL for a share token. */
 export function shareUrl(token: string): string {
   return `${publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')}/p/${token}`

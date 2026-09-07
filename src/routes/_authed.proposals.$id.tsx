@@ -37,7 +37,7 @@ import { BackLink } from '#/components/back-link'
 import { cn, formatMoney } from '#/lib/utils'
 import { formatDay, useTimeZone } from '#/lib/local-date'
 import { deadLinkLabel, partitionLinks } from '#/lib/proposals/link-status'
-import { SECTION_LABELS, queryKeys, shareUrl } from '#/constants'
+import { SECTION_LABELS, isProposalId, queryKeys, shareUrl } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
 
 const detailQuery = (id: string) =>
@@ -52,6 +52,11 @@ export const Route = createFileRoute('/_authed/proposals/$id')({
   // detail view.
   validateSearch: z.object({ sent: z.boolean().optional() }),
   loader: async ({ context, params }) => {
+    // Before the queries, not after: both server functions validate z.uuid(),
+    // so a malformed id threw out of here as a Zod error and got the generic
+    // error page instead of the not-found one two lines down.
+    if (!isProposalId(params.id)) throw notFound()
+
     const [proposal] = await Promise.all([
       context.queryClient.query(detailQuery(params.id)),
       context.queryClient.query(proposalAnalyticsQuery(params.id)),
