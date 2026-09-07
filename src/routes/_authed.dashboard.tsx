@@ -142,7 +142,7 @@ function Dashboard() {
         </p>
         {news !== null && (
           <p className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-brand">
-            <span aria-hidden className="size-1.5 rounded-full bg-brand" />
+            <span aria-hidden className="size-1.5 rounded-full bg-brand-2" />
             {news}
           </p>
         )}

@@ -86,7 +86,7 @@ const TONE: Record<
 > = {
   neutral: {
     className: 'border-line bg-surface text-ink',
-    icon: 'text-brand',
+    icon: 'text-brand-2',
     Icon: Check,
   },
   good: {

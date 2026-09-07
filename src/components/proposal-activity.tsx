@@ -60,7 +60,7 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
 
       {delta !== null && since !== null && (
         <p className="mt-1 flex items-center gap-1.5 text-[13px] font-medium text-brand">
-          <span aria-hidden className="size-1.5 rounded-full bg-brand" />
+          <span aria-hidden className="size-1.5 rounded-full bg-brand-2" />
           {summarizeDelta(delta)} {sinceLabel(since)}
         </p>
       )}
@@ -207,7 +207,10 @@ function EventBadges({ events }: { events: Array<string> }) {
   return (
     <>
       {events.map((e) => (
-        <Badge key={e} className="bg-warm-soft text-warm">
+        <Badge
+          key={e}
+          className="border border-warm-line bg-warm-soft text-warm"
+        >
           {e}
         </Badge>
       ))}
@@ -241,7 +244,7 @@ function RecentVisits({
                 {v.isForward ? (
                   <>
                     <CornerDownRight
-                      className="size-3.5 shrink-0 text-brand"
+                      className="size-3.5 shrink-0 text-brand-2"
                       aria-hidden
                     />
                     <span>Reader {v.viewerIndex}</span>
@@ -253,7 +256,9 @@ function RecentVisits({
                   <span className="truncate">{v.recipientLabel}</span>
                 )}
                 {since !== null && v.startedAt > since && (
-                  <Badge className="bg-brand-soft text-brand">new</Badge>
+                  <Badge className="border border-brand-line bg-brand-soft text-brand">
+                    new
+                  </Badge>
                 )}
                 {v.isReturn && (
                   <Badge className="bg-surface-3 text-ink">return</Badge>

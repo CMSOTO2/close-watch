@@ -91,6 +91,63 @@
   --good-soft: #e6f2ea;
   --good-line: #c2e3d0;
 
+  /* --- the mark tier ---------------------------------------------------
+
+     The last thing wrong with this theme, and the reason it kept reading as
+     bland however the accents were tuned: every token above is a *text*
+     colour, and small text on white has to clear 4.5:1, which pins it near
+     L=0.53. Measured at that lightness, sRGB has no chroma left to give —
+     --brand sits at 0.110 of the 0.111 the gamut allows, --good at 0.122 of
+     0.122, --hot at 0.158 of 0.158. They are not undersaturated. They are
+     *maxed out*, and every attempt to make them pop was pushing on a wall.
+
+     Dark never had that problem. Its accents live at L=0.72-0.77, where the
+     gamut opens up, and they are only spending 0.120 of an available 0.161 —
+     that theme has headroom it does not even use. So the two themes were
+     never fighting the same constraint, and matching light's text colours to
+     dark's was always going to lose.
+
+     What actually pops in dark is not the text. It is the 3px spine down a
+     hot row, the heat meter's bars, the dot on an unread proposal — marks
+     with no text on them, and therefore a 3:1 floor rather than 4.5:1. Light
+     was painting all of those with its text tokens, which is why a hot spine
+     came out dark rust and a heat bar came out brown. At the 3:1 floor these
+     hues get L=0.65 and 27-29% more chroma, which is the pop that was
+     missing. It was never available in the text; it was always available
+     here, and the theme just was not asking for it.
+
+     --brand-2 was already this tier by accident (L 0.654, C 0.136 — within a
+     hair of where the maths lands), so brand needed no new token, only for
+     the marks to stop reaching past it for --brand. These are its peers.
+     Each clears 3:1 on --canvas, the tightest ground any of them is set on. */
+  --good-2: #00a261;
+  --hot-2: #f05f00;
+  --warm-2: var(--brand-2);
+  /* Lost lands on dark's own value. Dark separates a lost deal from a hot one
+     by chroma at nearly the same hue rather than by hue, and once light's
+     version is lifted to the mark tier it can afford dark's chroma exactly —
+     so this is the second token, after --mark-ink, that is simply the same
+     colour in both themes rather than a translation of one. */
+  --lost-2: #c17c62;
+
+  /* Chip edges. A tinted ground behaves differently in the two themes: in
+     dark the chip is *lighter* than the card, so it advances and the eye
+     catches it; in light it is darker, so it recedes. The tints themselves
+     measure fine — light's sit 0.048-0.057 from their surface against dark's
+     0.035-0.050, if anything slightly stronger — so the ground was never the
+     problem and pushing it further is what produced the highlighter stripe
+     two rebuilds ago.
+
+     What a receding chip needs instead is an edge. --good-line has been doing
+     exactly this on the secured chip all along, and it is the one chip in the
+     light theme nobody has complained about. These are the same offset from
+     their own soft that it has from good-soft. --cold-line is held to a tenth
+     the chroma so the neutral chip stays neutral rather than turning beige. */
+  --brand-line: #f0d8b6;
+  --hot-line: #f7cfbf;
+  --warm-line: #f0d7b4;
+  --cold-line: #dedad3;
+
   /* Intent bands. Hot and warm are adjacent on the wheel and co-occur in a
      proposal row, so they are separated by hue rather than by lightness: hot
      is orange-red at 43deg, warm the same brass as the brand at 77deg. Dark
@@ -234,6 +291,19 @@
   --danger-soft: #2c1c15;
   --danger-line: #4a2c20;
 
+  /* Dark's accents already sit where light has to climb to, so here the mark
+     tier is just the accent. The tokens exist so the components can name the
+     distinction once and have it mean the right thing in both themes. */
+  --good-2: var(--good);
+  --hot-2: var(--hot);
+  --warm-2: var(--warm);
+  --lost-2: var(--lost);
+
+  --brand-line: #4a3a23;
+  --hot-line: #4f3024;
+  --warm-line: #49381e;
+  --cold-line: #3d3933;
+
   --lost: #c07a63;
 
   /* Deep brass on the cream tile dark mode gives it: 5.2:1, matching the 5.8:1
@@ -275,22 +345,30 @@
   --color-brand: var(--brand);
   --color-brand-2: var(--brand-2);
   --color-brand-soft: var(--brand-soft);
+  --color-brand-line: var(--brand-line);
   --color-brand-fill: var(--brand-fill);
   --color-brand-fill-ink: var(--brand-fill-ink);
   --color-good: var(--good);
   --color-good-fg: var(--good-fg);
   --color-good-soft: var(--good-soft);
   --color-good-line: var(--good-line);
+  --color-good-2: var(--good-2);
   --color-hot: var(--hot);
   --color-hot-soft: var(--hot-soft);
+  --color-hot-line: var(--hot-line);
+  --color-hot-2: var(--hot-2);
   --color-warm: var(--warm);
   --color-warm-soft: var(--warm-soft);
+  --color-warm-line: var(--warm-line);
+  --color-warm-2: var(--warm-2);
   --color-cold: var(--cold);
   --color-cold-soft: var(--cold-soft);
+  --color-cold-line: var(--cold-line);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-danger-line: var(--danger-line);
   --color-lost: var(--lost);
+  --color-lost-2: var(--lost-2);
   --color-mark-tile: var(--mark-tile);
   --color-mark-ink: var(--mark-ink);
   --color-bar: var(--bar);

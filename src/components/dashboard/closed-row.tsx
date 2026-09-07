@@ -42,9 +42,9 @@ export function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
           // same news; the spine is what separates them down the list. An
           // archived one is neither piece of news, and takes the neutral spine
           // so it reads as filed rather than as a third kind of result.
-          won && 'before:bg-good',
+          won && 'before:bg-good-2',
           archived && 'before:bg-line-strong',
-          !won && !archived && 'before:bg-lost',
+          !won && !archived && 'before:bg-lost-2',
           'hover:border-ink-3 hover:shadow-md',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
           '[&[data-row-nav]]:outline-2 [&[data-row-nav]]:outline-offset-2 [&[data-row-nav]]:outline-ring',

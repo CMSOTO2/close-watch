@@ -228,7 +228,7 @@ function Case({
             {tone === 'us' ? (
               <Check
                 aria-hidden
-                className="mt-1 size-3.5 shrink-0 text-brand"
+                className="mt-1 size-3.5 shrink-0 text-brand-2"
               />
             ) : (
               <Minus

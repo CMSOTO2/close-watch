@@ -101,8 +101,8 @@ export function DashboardShot() {
             3 open deals · 1 running hot
           </p>
           <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-brand">
-            <span aria-hidden className="size-1.5 rounded-full bg-brand" />6 new
-            opens across 2 proposals since yesterday
+            <span aria-hidden className="size-1.5 rounded-full bg-brand-2" />6
+            new opens across 2 proposals since yesterday
           </p>
         </div>
       </div>
@@ -115,9 +115,9 @@ export function DashboardShot() {
               'group relative overflow-hidden rounded-md border border-line bg-surface px-3 py-2.5 shadow-sm',
               'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:content-[""]',
               row.band === 'hot'
-                ? 'before:bg-hot'
+                ? 'before:bg-hot-2'
                 : row.band === 'warm'
-                  ? 'before:bg-warm'
+                  ? 'before:bg-warm-2'
                   : 'before:bg-transparent',
             )}
           >
@@ -142,8 +142,8 @@ export function DashboardShot() {
                   className={cn(
                     'rounded px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide',
                     row.flagTone === 'hot'
-                      ? 'bg-hot-soft text-hot'
-                      : 'bg-warm-soft text-warm',
+                      ? 'border border-hot-line bg-hot-soft text-hot'
+                      : 'border border-warm-line bg-warm-soft text-warm',
                   )}
                 >
                   {row.flag}
@@ -267,7 +267,7 @@ export function ForwardShot() {
                 {visit.badges.map((b) => (
                   <span
                     key={b}
-                    className="rounded-full bg-warm-soft px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-warm"
+                    className="rounded-full border border-warm-line bg-warm-soft px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-warm"
                   >
                     {b}
                   </span>

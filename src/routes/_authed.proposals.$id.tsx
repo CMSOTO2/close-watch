@@ -128,7 +128,7 @@ function SendHandoff({
   return (
     <div className="mt-6 rounded-lg border border-brand-2 bg-brand-soft/60 px-4 py-4">
       <p className="flex items-center gap-2 font-display text-base font-semibold tracking-tight text-ink">
-        <Send aria-hidden className="size-4 text-brand" />
+        <Send aria-hidden className="size-4 text-brand-2" />
         Now send this link to {recipient}
       </p>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-2">

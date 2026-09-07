@@ -10,8 +10,8 @@ import type { ProposalSummary } from '#/lib/analytics/summaries'
 // A 3px spine on the left edge marks hot and warm deals, so the list is
 // scannable in peripheral vision without reading a single label.
 const SPINE = {
-  hot: 'before:bg-hot',
-  warm: 'before:bg-brand-2',
+  hot: 'before:bg-hot-2',
+  warm: 'before:bg-warm-2',
   cold: 'before:bg-transparent',
 } as const
 
@@ -64,7 +64,7 @@ export function ProposalRow({
               {delta && (
                 <span
                   aria-hidden
-                  className="size-1.5 shrink-0 rounded-full bg-brand"
+                  className="size-1.5 shrink-0 rounded-full bg-brand-2"
                 />
               )}
               {/* after:inset-0 stretches the hit area over the whole card,
@@ -107,8 +107,8 @@ export function ProposalRow({
                 className={cn(
                   'rounded px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wide',
                   intent.band === 'hot'
-                    ? 'bg-hot-soft text-hot'
-                    : 'bg-warm-soft text-warm',
+                    ? 'border border-hot-line bg-hot-soft text-hot'
+                    : 'border border-warm-line bg-warm-soft text-warm',
                 )}
               >
                 {flag.label}

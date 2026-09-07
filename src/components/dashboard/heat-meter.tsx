@@ -5,9 +5,12 @@ type Band = IntentResult['band']
 
 const BARS: Record<Band, number> = { cold: 1, warm: 2, hot: 3 }
 
+// The bars take the mark tier, not the text tier the label beside them uses.
+// A 3.5px bar carries no text and answers to the 3:1 floor, which in the light
+// theme buys it materially more chroma than --hot/--warm can legally hold.
 const FILL: Record<Band, string> = {
-  hot: 'bg-hot',
-  warm: 'bg-warm',
+  hot: 'bg-hot-2',
+  warm: 'bg-warm-2',
   cold: 'bg-cold',
 }
 

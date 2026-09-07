@@ -229,7 +229,7 @@ export function Pricing() {
                 >
                   <Check
                     aria-hidden
-                    className="mt-0.5 size-3.5 shrink-0 text-brand"
+                    className="mt-0.5 size-3.5 shrink-0 text-brand-2"
                   />
                   <span>
                     {feature.text}
