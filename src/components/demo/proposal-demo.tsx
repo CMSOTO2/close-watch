@@ -135,7 +135,25 @@ export function ProposalDemo() {
           <article
             key={page.page}
             data-page={page.page}
-            className="rounded-lg border border-line bg-surface px-6 py-7 shadow-sm sm:px-9 sm:py-10"
+            // The aspect ratio is not styling. Time is credited to a page in
+            // proportion to
+            // how much of the window it holds (see pageWeights), and the real
+            // viewer renders a page at its natural aspect ratio, so a portrait
+            // page is as tall as the window or taller and earns close to a
+            // second per second. These are article cards sized by their text:
+            // 217-407px against an 873px window, so no page here could earn
+            // more than 47% and most earned under 40%. That is not a slower
+            // bar, it is a different product — PAGE_READ_MS is 3s of weighted
+            // time, so a page took nearly eight real seconds to count as read
+            // instead of three, and the intent score the demo exists to show
+            // came out deflated for someone who had genuinely read it.
+            //
+            // US Letter, which is what the real viewer arrives at on its own:
+            // it sets aspectRatio from the PDF's natural dimensions, so this is
+            // the same rule rather than a number picked to make the bar move.
+            // At this width that is 1066px against an 873px window, so a page
+            // fills it exactly as a real one does.
+            className="flex aspect-[8.5/11] flex-col rounded-lg border border-line bg-surface px-6 py-7 shadow-sm sm:px-9 sm:py-10"
           >
             <div className="flex items-baseline justify-between gap-4">
               <p className="kicker text-brand">{page.kicker}</p>
