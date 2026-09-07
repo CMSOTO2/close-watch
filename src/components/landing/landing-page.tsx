@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { PageContainer } from '#/components/page-container'
+import { ProductHuntBadge } from '#/components/product-hunt-badge'
 import { Button } from '#/components/ui/button'
 import { Faq } from '#/components/landing/faq'
 import { Pricing } from '#/components/landing/pricing'
@@ -116,6 +117,11 @@ export function LandingPage() {
                 Free to start · Your client installs nothing · Revoke any link
                 at any time
               </p>
+
+              {/* The margin lives on the badge rather than on a wrapper, so
+                  that the pre-launch state — the component returning null —
+                  leaves no empty element holding 32px of space open. */}
+              <ProductHuntBadge className="mt-8 inline-block" />
             </div>
 
             <DashboardShot />
