@@ -85,7 +85,7 @@ export function ProposalRow({
 
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-ink-2">
           {delta && (
-            <span className="rounded bg-brand-soft px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wide text-brand">
+            <span className="rounded border border-brand-line bg-brand-soft px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wide text-brand">
               {describeDelta(delta)}
             </span>
           )}

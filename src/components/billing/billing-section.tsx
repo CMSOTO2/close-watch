@@ -53,7 +53,7 @@ function DiscountNote({
         : 'discounted'
 
   return (
-    <p className="mt-2 rounded-md border border-brand-soft bg-brand-soft/50 px-3 py-2 text-[13px] leading-relaxed text-ink">
+    <p className="mt-2 rounded-md border border-brand-2 bg-brand-soft px-3 py-2 text-[13px] leading-relaxed text-ink">
       <strong className="font-semibold">{label}</strong>
       {discount.code && (
         <>
@@ -136,7 +136,7 @@ export function BillingSection({
         // The webhook is usually faster than the redirect, but not always, and
         // "you are still on Free" is an alarming thing to read straight after
         // paying.
-        <p className="mt-3 rounded-md border border-line bg-brand-soft px-3 py-2 text-[13px] text-ink">
+        <p className="mt-3 rounded-md border border-brand-2 bg-brand-soft px-3 py-2 text-[13px] text-ink">
           Payment received. Stripe is confirming it now — reload in a few
           seconds and your plan will say Solo.
         </p>
