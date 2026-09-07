@@ -23,7 +23,26 @@ const HREF =
 
 const ALT = 'Closewatch on Nick Launches'
 
+/**
+ * The feature runs on 28 Sep 2026, and until it does this badge claims a thing
+ * that has not happened. `featured.png` is a static image rather than a live
+ * count, so nothing about it would look wrong early — which is exactly why it
+ * needs a date rather than an eye.
+ *
+ * A date rather than a boolean so it turns itself on. There is no deploy on the
+ * 28th to remember, and no flag left flipped the wrong way for a month.
+ *
+ * UTC midnight. If the feature actually lands later that day, push this along
+ * by a few hours rather than leaving the badge to claim it from midnight.
+ */
+const LIVE_FROM = Date.UTC(2026, 8, 28)
+
 export function LaunchBadge({ className }: { className?: string }) {
+  // Returns null rather than hiding with CSS, so the badge is absent from the
+  // markup instead of shipped and concealed. The footer's flex `gap` closes up
+  // on its own when a child disappears, so there is no hole left behind.
+  if (Date.now() < LIVE_FROM) return null
+
   // No aria-label on the link: the hidden badge is display:none and so out of
   // the accessibility tree, which leaves exactly one alt to name it.
   return (
