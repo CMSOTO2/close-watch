@@ -126,8 +126,20 @@ export function ProposalDemo() {
         // min-w-0 for the same reason as the landing page's feature rows: the
         // priced table on page five has a min-content width of its own, and a
         // grid track floored at that took the demo sideways on a 320px phone.
+        // Capped, because the aspect ratio above works against itself as the
+        // column grows: a wider page is a taller box *and* needs fewer lines
+        // for the same words, so the two move apart at once. Measured fill per
+        // page ran 72% at a phone's 390px, 34% at 640 and 26% at the 824 this
+        // was reaching on a desktop — pages three-quarters empty at the width
+        // most visitors see, which is not what a proposal looks like.
+        //
+        // 700px is also the readable measure. Minus the padding that is a
+        // ~630px column, near 100 characters a line; uncapped it was ~750px
+        // and 120, about double what anyone reads comfortably. At this width
+        // the box is 906px, so it still fills a laptop window and time is
+        // still credited at 1:1.
         className={cn(
-          'flex min-w-0 flex-col gap-4',
+          'mx-auto flex w-full min-w-0 max-w-[700px] flex-col gap-4',
           !revealed && 'pb-16 lg:pb-0',
         )}
       >
