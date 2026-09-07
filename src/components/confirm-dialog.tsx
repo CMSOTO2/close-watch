@@ -77,7 +77,14 @@ export function ConfirmDialog({
             disabled={busy}
             className={`rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50 ${
               destructive
-                ? 'bg-destructive text-destructive-foreground'
+                ? // The /60 matches the Button component's destructive variant and is
+                  // not decoration. Dark lifts --danger to a light coral, and white on
+                  // it is 2.76:1 — this dialog is the one that confirms deleting a
+                  // proposal, so it was the worst place in the app to be unreadable.
+                  // Compositing at 60% over the surface lands the fill at #9a5340 and
+                  // white back at 5.70:1, and makes a destructive confirm look like
+                  // every other destructive button rather than a brighter one.
+                  'bg-destructive text-destructive-foreground dark:bg-destructive/60'
                 : 'bg-primary text-primary-foreground'
             }`}
           >

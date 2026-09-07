@@ -261,11 +261,17 @@
   --ink-2: #a39c90;
   --ink-3: #8c867d;
   --line: #2d2a25;
+  /* Was #232120, which put this 0.036 in lightness from --surface where light's
+     equivalent sits 0.053 from its own — the same hairline separating two-thirds
+     as well in one theme as the other. --line and --line-strong both track
+     across the themes within a couple of percent; this one had drifted. It
+     divides the rows of the activity list and rules off the pricing card, so it
+     has to be findable even though its whole job is to be quiet. */
   /* Same 2:1 control edge the light theme gets (2.03 on --surface here,
      2.10 there), so an outline button or an input is bounded by
      something you can see in either theme rather than only felt. */
   --line-strong: #4f4b44;
-  --line-soft: #232120;
+  --line-soft: #272524;
 
   --brand: #dfa954;
   --brand-2: #e8b86b;
