@@ -38,9 +38,21 @@ export function SiteFooter() {
           {/* The badge sits under the wordmark rather than in the link rows,
               because it is not navigation: it is the one outbound link here
               that a reader clicks to check us out rather than to go deeper. */}
+          {/* Feedback sits here rather than in the Legal row because it is not
+              legal boilerplate, and not in the Compare nav because it does not
+              go deeper into the site. It is the same kind of link as the badge:
+              the one thing in this footer you click to talk to us rather than
+              to read another page. The subject is pre-filled so a reply lands
+              in one thread instead of a dozen "(no subject)" ones. */}
           <div className="flex flex-col items-start gap-5">
             <Wordmark />
             <LaunchBadge />
+            <a
+              href="mailto:hello@getclosewatch.com?subject=Closewatch%20feedback"
+              className="text-xs text-ink-2 transition-colors hover:text-ink"
+            >
+              Send feedback
+            </a>
           </div>
 
           <nav
