@@ -1,6 +1,6 @@
 # The end-to-end tests, kept off the per-push path on purpose.
 #
-# They cost roughly four billed minutes a run: installing a browser dominates,
+# They cost roughly six billed minutes a run: installing browsers dominates,
 # and the viewer test then waits out real seconds of reading because
 # qualification needs three seconds of visible attention by design. On a private
 # repo, running that on every push would cost more minutes per month than the
@@ -56,7 +56,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
         if: env.SUPABASE_SECRET_KEY != ''
 
-      - run: pnpm exec playwright install --with-deps chromium
+      # WebKit as well as Chromium: the mobile-safari project is the only place
+      # the iPhone half of the traffic is actually exercised, and Playwright's
+      # iPhone device is WebKit. Mobile Chrome rides on the Chromium build and
+      # costs nothing extra.
+      - run: pnpm exec playwright install --with-deps chromium webkit
         if: env.SUPABASE_SECRET_KEY != ''
 
       - run: pnpm test:e2e

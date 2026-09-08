@@ -163,6 +163,12 @@ function NewProposal() {
   const queryClient = useQueryClient()
   const notify = useToast()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  // Which half of the submit is running. Reading a PDF's text happens on this
+  // device, and on a phone it is the slow half — a long proposal can hold the
+  // main thread for many seconds before a single byte is sent. Labelling all of
+  // that "Uploading…" is both wrong and, on a slow connection, indistinguishable
+  // from a button that did nothing.
+  const [phase, setPhase] = useState<'reading' | 'uploading'>('reading')
   const isWebkit = useIsWebkit()
   const { data: entitlements } = useSuspenseQuery(entitlementsQuery)
 
@@ -176,9 +182,11 @@ function NewProposal() {
     },
     onSubmit: async ({ value }) => {
       setSubmitError(null)
+      setPhase('reading')
       try {
         const file = value.file!
         const { pageCount, sections, textless } = await readPdf(file)
+        setPhase('uploading')
 
         const data = new FormData()
         data.set('title', value.title)
@@ -436,16 +444,23 @@ function NewProposal() {
                   <button
                     type="submit"
                     disabled={!canSubmit}
-                    className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
+                    /* min-h-11 is Apple's 44px, and it only applies on the
+                       narrow layout: at sm and up this keeps the 36px the rest
+                       of the app's buttons are. */
+                    className="min-h-11 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 sm:min-h-9"
                   >
-                    {isSubmitting ? 'Uploading…' : 'Create proposal'}
+                    {isSubmitting
+                      ? phase === 'reading'
+                        ? 'Reading PDF…'
+                        : 'Uploading…'
+                      : 'Create proposal'}
                   </button>
                 )}
               </form.Subscribe>
               <button
                 type="button"
                 onClick={() => router.navigate({ to: '/dashboard' })}
-                className="text-[13px] text-ink-2 transition-colors hover:text-ink"
+                className="inline-flex min-h-11 items-center px-1 text-[13px] text-ink-2 transition-colors hover:text-ink sm:min-h-9 sm:px-0"
               >
                 Cancel
               </button>

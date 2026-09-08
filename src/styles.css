@@ -534,3 +534,25 @@
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Every form control is at least 16px on a touch screen, because below that
+   iOS zooms the viewport the moment one takes focus — and never zooms back
+   out. On the upload form that turns four fields into four manual pinches,
+   which is most of what filling it in on a phone actually feels like.
+
+   Unlayered on purpose, for the reason given above @layer base: the inputs
+   carry `text-sm`, a utility, and a layered rule would lose to it. This is the
+   one thing in the app that has to beat a utility, so it sits out here on its
+   own rather than turning ten call sites into `text-base sm:text-sm` and
+   waiting for the eleventh to forget.
+
+   Keyed on `pointer: coarse` rather than a width: an iPhone in landscape is
+   932px wide and zooms exactly the same. Checkboxes and radios are excluded
+   because their font-size is their box size, and nothing about them zooms. */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

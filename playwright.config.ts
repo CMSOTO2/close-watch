@@ -49,7 +49,28 @@ export default defineConfig({
     trace: 'retain-on-failure',
     video: 'retain-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      testIgnore: /upload\.mobile\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Most arrivals are phones — the launch traffic ran 16 mobile to 6 desktop,
+    // 13 of those iOS — and the upload form is the one screen they have to get
+    // through. Only that spec runs here: a second full pass of the suite on
+    // WebKit is the flake tax this file's header is about, while the form
+    // itself has already broken on WebKit alone once (see e2e/upload.spec.ts).
+    {
+      name: 'mobile-safari',
+      testMatch: /upload\.mobile\.spec\.ts/,
+      use: { ...devices['iPhone 14'] },
+    },
+    {
+      name: 'mobile-chrome',
+      testMatch: /upload\.mobile\.spec\.ts/,
+      use: { ...devices['Pixel 7'] },
+    },
+  ],
   webServer: {
     command: 'pnpm dev',
     url: 'http://localhost:3000',
