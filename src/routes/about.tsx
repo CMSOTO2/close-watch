@@ -1,0 +1,96 @@
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { ArrowRight } from 'lucide-react'
+import { PageContainer } from '#/components/page-container'
+import { SiteHeader } from '#/components/landing/site-header'
+import { SiteFooter } from '#/components/site-footer'
+import { Button } from '#/components/ui/button'
+import { canonical, socialMeta } from '#/lib/seo'
+
+export const Route = createFileRoute('/about')({
+  head: () => ({
+    meta: [
+      { title: 'About · Closewatch' },
+      {
+        name: 'description',
+        content:
+          'Why Closewatch exists and what it does with the data it collects.',
+      },
+      ...socialMeta({
+        title: 'About · Closewatch',
+        description:
+          'Why Closewatch exists and what it does with the data it collects.',
+        path: '/about',
+      }),
+    ],
+    links: canonical('/about'),
+  }),
+  component: About,
+})
+
+function About() {
+  return (
+    <div className="min-h-screen bg-canvas">
+      <SiteHeader />
+
+      <main>
+        <PageContainer asMain className="py-14 sm:py-16">
+          <div className="max-w-[70ch]">
+            <p className="kicker text-brand">About</p>
+            <h1 className="mt-3 font-display text-3xl font-semibold tracking-[-0.025em]">
+              A small tool for a specific moment
+            </h1>
+
+            <div className="mt-8 flex flex-col gap-6 text-[15px] leading-relaxed text-ink-2">
+              <p>
+                Closewatch exists for the gap after you hit send: the days
+                between a proposal going out and a client saying yes, no, or
+                nothing at all. That silence is where most deals actually get
+                decided, and it is the part every other tool in this category
+                treats as an afterthought.
+              </p>
+              <p>
+                So the product does one thing. You upload a proposal as a PDF,
+                we give you a link to send instead of an attachment, and when
+                someone opens it you see how they actually read it — how long
+                they spent on pricing, whether they came back a second time,
+                whether they forwarded it to someone else. Not a guess dressed
+                up as a chart. What happened.
+              </p>
+              <p>
+                It is built and run by one person, which is mostly a statement
+                about what does not exist yet: no support queue, no sales
+                team, no roadmap voted on by a committee. If something is
+                broken or missing, an email gets read by the person who wrote
+                the code.
+              </p>
+              <p>
+                Getting the read wrong is worse than not reading at all, so
+                the effort here goes into telling a real read from a scanner
+                or a security bot rather than into features that look good in
+                a screenshot. A tool that reports a spam filter's scan as
+                "your client opened this" trains you to stop trusting it,
+                which defeats the point of building it.
+              </p>
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center gap-3">
+              <Button asChild size="lg">
+                <Link to="/login">
+                  Start free
+                  <ArrowRight aria-hidden className="size-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a href="mailto:hello@getclosewatch.com?subject=Hi">
+                  Say hello
+                </a>
+              </Button>
+            </div>
+          </div>
+        </PageContainer>
+      </main>
+
+      <SiteFooter />
+    </div>
+  )
+}

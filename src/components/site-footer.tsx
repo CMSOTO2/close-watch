@@ -12,8 +12,14 @@ import { PageContainer } from '#/components/page-container'
  * search engines which of its pages matter, and this is the cheapest place to
  * spend them. It is also the honest kind of navigation — someone weighing this
  * against DocSend genuinely wants that page.
+ *
+ * Four even columns rather than one wide nav and one narrow one, so the grid
+ * balances at every breakpoint instead of leaving Product looking heavier than
+ * everything beside it: two columns stacked two-by-two below `sm`, four in a
+ * row from `sm` up. Brand spans both columns of the mobile pair because a
+ * wordmark and a badge next to a bare link list reads lopsided otherwise.
  */
-const COMPARE = [
+const PRODUCT = [
   { label: 'vs Proposify', to: '/vs/proposify' },
   { label: 'vs PandaDoc', to: '/vs/pandadoc' },
   { label: 'vs DocSend', to: '/vs/docsend' },
@@ -24,29 +30,52 @@ const COMPARE = [
   },
 ] as const
 
+const COMPANY = [{ label: 'About', to: '/about' }] as const
+
 const LEGAL = [
   { label: 'Privacy', to: '/privacy' },
   { label: 'Terms', to: '/terms' },
   { label: 'DPA', to: '/dpa' },
 ] as const
 
+function FooterColumn({
+  heading,
+  items,
+}: {
+  heading: string
+  items: ReadonlyArray<{ label: string; to: string }>
+}) {
+  return (
+    <nav aria-label={heading} className="flex flex-col gap-3">
+      <p className="kicker">{heading}</p>
+      <ul className="flex flex-col gap-2 text-xs text-ink-2">
+        {items.map((item) => (
+          <li key={item.to}>
+            <Link to={item.to} className="transition-colors hover:text-ink">
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
 export function SiteFooter() {
   return (
     <footer className="border-t border-line">
       <PageContainer className="py-10">
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
-          {/* The badge sits under the wordmark rather than in the link rows,
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 sm:gap-x-8">
+          {/* The badge sits under the wordmark rather than in a link row,
               because it is not navigation: it is the one outbound link here
               that a reader clicks to check us out rather than to go deeper. */}
-          {/* Feedback sits here rather than in the Legal row because it is not
-              legal boilerplate, and not in the Compare nav because it does not
-              go deeper into the site. It is the same kind of link as the badge:
-              the one thing in this footer you click to talk to us rather than
-              to read another page. The subject is pre-filled so a reply lands
-              in one thread instead of a dozen "(no subject)" ones. */}
-          <div className="flex flex-col items-start gap-5">
+          <div className="col-span-2 flex flex-col items-start gap-5 sm:col-span-1">
             <Wordmark />
             <LaunchBadge />
+            {/* Feedback sits here rather than in a nav column because it is
+                not a page to read, it is the one thing in this footer you
+                click to talk to us. The subject is pre-filled so a reply
+                lands in one thread instead of a dozen "(no subject)" ones. */}
             <a
               href="mailto:hello@getclosewatch.com?subject=Closewatch%20feedback"
               className="text-xs text-ink-2 transition-colors hover:text-ink"
@@ -55,37 +84,13 @@ export function SiteFooter() {
             </a>
           </div>
 
-          <nav
-            aria-label="Compare"
-            className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-ink-2"
-          >
-            {COMPARE.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="transition-colors hover:text-ink"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <FooterColumn heading="Product" items={PRODUCT} />
+          <FooterColumn heading="Company" items={COMPANY} />
+          <FooterColumn heading="Legal" items={LEGAL} />
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-xs text-ink-2">
-          <nav aria-label="Legal" className="flex flex-wrap items-center gap-4">
-            {LEGAL.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="transition-colors hover:text-ink"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <span className="text-ink-3">
-            © {new Date().getUTCFullYear()} Closewatch
-          </span>
+        <div className="mt-10 border-t border-line pt-6 text-xs text-ink-3">
+          © {new Date().getUTCFullYear()} Closewatch
         </div>
       </PageContainer>
     </footer>

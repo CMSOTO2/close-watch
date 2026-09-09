@@ -33,6 +33,7 @@ const PAGES: Array<{ path: string; lastmod: string }> = [
   { path: '/vs/proposify', lastmod: '2026-09-05' },
   { path: '/vs/pandadoc', lastmod: '2026-09-05' },
   { path: '/vs/docsend', lastmod: '2026-09-05' },
+  { path: '/about', lastmod: '2026-09-09' },
   { path: '/privacy', lastmod: '2026-09-03' },
   { path: '/terms', lastmod: '2026-09-05' },
   { path: '/dpa', lastmod: '2026-09-03' },
