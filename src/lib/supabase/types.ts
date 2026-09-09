@@ -66,6 +66,21 @@ type StudioWaitlistRow = {
   created_at: string
 }
 
+export type OnboardingStep =
+  | 'form_opened'
+  | 'file_selected'
+  | 'pdf_read_failed'
+  | 'submit_failed'
+  | 'proposal_created'
+
+type OnboardingEventRow = {
+  id: string
+  user_id: string
+  step: OnboardingStep
+  detail: string | null
+  created_at: string
+}
+
 type ProposalRow = {
   id: string
   owner_id: string
@@ -215,6 +230,13 @@ export type Database = {
         Row: StudioWaitlistRow
         Insert: Partial<StudioWaitlistRow> & Pick<StudioWaitlistRow, 'email'>
         Update: Partial<StudioWaitlistRow>
+        Relationships: []
+      }
+      onboarding_events: {
+        Row: OnboardingEventRow
+        Insert: Partial<OnboardingEventRow> &
+          Pick<OnboardingEventRow, 'user_id' | 'step'>
+        Update: Partial<OnboardingEventRow>
         Relationships: []
       }
       comps: {

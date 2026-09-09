@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { createProposal } from '#/lib/proposals/create'
 import { createShareLink } from '#/lib/proposals/mutations'
+import { logOnboardingEvent } from '#/lib/onboarding/log-event'
 import { classifyPages } from '#/lib/proposals/classify'
 import type { PageText } from '#/lib/proposals/classify'
 import type { PageSection } from '#/lib/supabase/types'
@@ -158,11 +159,30 @@ function SafariNotice() {
   )
 }
 
+/**
+ * Fire-and-forget funnel logging. Never awaited by a caller and never lets a
+ * rejection surface: a step that fails to record is a gap in the data, not a
+ * reason to slow down or interrupt someone uploading a proposal.
+ */
+function logStep(
+  step: Parameters<typeof logOnboardingEvent>[0]['data']['step'],
+  detail?: string,
+) {
+  void logOnboardingEvent({ data: { step, detail } }).catch(() => {})
+}
+
 function NewProposal() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const notify = useToast()
   const [submitError, setSubmitError] = useState<string | null>(null)
+
+  // Once per visit to the form, not once per render: this is "did someone
+  // reach this page", the top of the funnel everything else here is measured
+  // against.
+  useEffect(() => {
+    logStep('form_opened')
+  }, [])
   // Which half of the submit is running. Reading a PDF's text happens on this
   // device, and on a phone it is the slow half — a long proposal can hold the
   // main thread for many seconds before a single byte is sent. Labelling all of
@@ -185,7 +205,17 @@ function NewProposal() {
       setPhase('reading')
       try {
         const file = value.file!
-        const { pageCount, sections, textless } = await readPdf(file)
+        let read: Awaited<ReturnType<typeof readPdf>>
+        try {
+          read = await readPdf(file)
+        } catch (err) {
+          logStep(
+            'pdf_read_failed',
+            err instanceof Error ? err.message : String(err),
+          )
+          throw err
+        }
+        const { pageCount, sections, textless } = read
         setPhase('uploading')
 
         const data = new FormData()
@@ -196,7 +226,17 @@ function NewProposal() {
         data.set('pageCount', String(pageCount))
         data.set('sections', JSON.stringify(sections))
 
-        const { id } = await createProposal({ data })
+        let id: string
+        try {
+          ;({ id } = await createProposal({ data }))
+        } catch (err) {
+          logStep(
+            'submit_failed',
+            err instanceof Error ? err.message : String(err),
+          )
+          throw err
+        }
+        logStep('proposal_created')
 
         // The link is cut here rather than inside createProposal, as a second
         // call, so the upload cannot fail because of the send cap. A proposal
@@ -420,9 +460,11 @@ function NewProposal() {
                   <input
                     type="file"
                     accept={PDF_MIME}
-                    onChange={(e) =>
-                      field.handleChange(e.target.files?.[0] ?? null)
-                    }
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] ?? null
+                      field.handleChange(file)
+                      if (file) logStep('file_selected')
+                    }}
                     className="block w-full cursor-pointer rounded-md border border-dashed border-line bg-surface px-3 py-3 text-[13px] text-ink-2 transition-colors hover:border-ink-3 file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary-foreground"
                   />
                   {isWebkit && <SafariNotice />}
