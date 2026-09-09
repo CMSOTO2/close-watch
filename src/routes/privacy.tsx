@@ -28,7 +28,7 @@ function Privacy() {
   return (
     <LegalPage
       title="Privacy policy"
-      updated="2 September 2026"
+      updated="9 September 2026"
       intro="Closewatch measures how people read the proposals you send. That means we record things about your clients, so this page says plainly what is collected, why, who it reaches, and how long it is kept."
     >
       <Clause heading="Two different people are described here">
@@ -99,24 +99,29 @@ function Privacy() {
           cannot be read by JavaScript, and lasts a year.
         </p>
         <p>
-          There are no advertising cookies and nothing that follows anyone
-          around the rest of the web. Our own pages &mdash; the home page,
-          sign-in and the dashboard &mdash; count visits with Cloudflare Web
-          Analytics, which sets no cookies and does not fingerprint anyone. It
-          never loads on a share link: the page a reader is sent runs no
-          analytics script at all.
+          Our own pages &mdash; the home page, sign-in and the dashboard
+          &mdash; count visits with Cloudflare Web Analytics, which sets no
+          cookies and does not fingerprint anyone. Those pages also run a
+          Google Ads tag, which does set an advertising cookie, so that we can
+          tell whether an ad we paid for led to a signup. Neither ever loads
+          on a share link: the page a reader is sent runs no analytics or
+          advertising script at all, and nothing about a reader is used for
+          advertising.
         </p>
       </Clause>
 
       <Clause heading="Who else sees it">
         <p>
-          We do not sell data and we do not share it for advertising. It reaches
-          these companies only because they run parts of the service:
+          We do not sell data. Aside from the Google Ads tag on our own
+          marketing pages, described above, we do not share data for
+          advertising. It reaches these companies only because they run parts
+          of the service:
         </p>
         <Bullets
           items={[
             'Supabase: the database, sign-in, and file storage.',
             'Cloudflare: hosting the application, and counting visits to our own pages.',
+            'Google Ads: measuring whether an ad led to a signup, on our own marketing pages only.',
             'Resend: sending notification email, when that is switched on.',
             'Stripe: taking payment, for account holders on a paid plan.',
             'Google: only if you choose to sign in with Google.',

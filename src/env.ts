@@ -7,6 +7,9 @@ const publicSchema = z.object({
   // Optional. Site token from Cloudflare dashboard -> Web Analytics. Empty
   // means no beacon is rendered, which is what happens in dev and in CI.
   VITE_CF_BEACON_TOKEN: z.string().optional(),
+  // Optional. Google Ads conversion ID ("AW-XXXXXXXXXX"). Empty means no tag
+  // is rendered, same as the beacon token above.
+  VITE_GOOGLE_ADS_ID: z.string().startsWith('AW-').optional(),
 })
 
 export const publicEnv = publicSchema.parse({
@@ -14,6 +17,7 @@ export const publicEnv = publicSchema.parse({
   VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
   VITE_PUBLIC_URL: import.meta.env.VITE_PUBLIC_URL,
   VITE_CF_BEACON_TOKEN: import.meta.env.VITE_CF_BEACON_TOKEN || undefined,
+  VITE_GOOGLE_ADS_ID: import.meta.env.VITE_GOOGLE_ADS_ID || undefined,
 })
 
 const serverSchema = z.object({

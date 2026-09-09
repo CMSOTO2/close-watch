@@ -95,9 +95,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   // paying for — a second, coarser count of the same visit is noise. It also
   // keeps the promise the privacy policy makes to readers: the page they were
   // sent loads no analytics script at all.
-  const beaconToken = pathname.startsWith('/p/')
-    ? undefined
-    : publicEnv.VITE_CF_BEACON_TOKEN
+  const onShareLink = pathname.startsWith('/p/')
+  const beaconToken = onShareLink ? undefined : publicEnv.VITE_CF_BEACON_TOKEN
+  // Same rule as the beacon above, and for the same reason: a reader's visit
+  // is not an ad conversion to measure, and the privacy policy promises a
+  // share link loads no advertising script at all.
+  const googleAdsId = onShareLink ? undefined : publicEnv.VITE_GOOGLE_ADS_ID
 
   return (
     // The pre-paint script below sets `class="dark"` on this element before
@@ -130,6 +133,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             src="https://static.cloudflareinsights.com/beacon.min.js"
             data-cf-beacon={JSON.stringify({ token: beaconToken })}
           />
+        )}
+        {googleAdsId && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${googleAdsId}');`,
+              }}
+            />
+          </>
         )}
       </body>
     </html>
