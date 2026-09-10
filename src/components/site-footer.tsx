@@ -30,7 +30,10 @@ const PRODUCT = [
   },
 ] as const
 
-const COMPANY = [{ label: 'About', to: '/about' }] as const
+const COMPANY = [
+  { label: 'About', to: '/about' },
+  { label: 'Guides', to: '/guides' },
+] as const
 
 const LEGAL = [
   { label: 'Privacy', to: '/privacy' },

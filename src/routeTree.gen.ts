@@ -14,6 +14,7 @@ import { Route as AuthedRouteImport } from './routes/_authed'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as DpaRouteImport } from './routes/dpa'
+import { Route as GuidesRouteImport } from './routes/guides'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProposalTrackingForAgenciesRouteImport } from './routes/proposal-tracking-for-agencies'
@@ -24,6 +25,8 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed.dashboard'
 import { Route as AuthedSettingsRouteImport } from './routes/_authed.settings'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as GuidesIndexRouteImport } from './routes/guides.index'
+import { Route as GuidesSlugRouteImport } from './routes/guides.$slug'
 import { Route as PTokenRouteImport } from './routes/p.$token'
 import { Route as RSourceRouteImport } from './routes/r.$source'
 import { Route as VsDocsendRouteImport } from './routes/vs.docsend'
@@ -56,6 +59,11 @@ const DemoRoute = DemoRouteImport.update({
 const DpaRoute = DpaRouteImport.update({
   id: '/dpa',
   path: '/dpa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesRoute = GuidesRouteImport.update({
+  id: '/guides',
+  path: '/guides',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -110,6 +118,16 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuidesIndexRoute = GuidesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GuidesRoute,
+} as any)
+const GuidesSlugRoute = GuidesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => GuidesRoute,
+} as any)
 const PTokenRoute = PTokenRouteImport.update({
   id: '/p/$token',
   path: '/p/$token',
@@ -161,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/demo': typeof DemoRoute
   '/dpa': typeof DpaRoute
+  '/guides': typeof GuidesRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
@@ -171,11 +190,13 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthedDashboardRoute
   '/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/guides/$slug': typeof GuidesSlugRoute
   '/p/$token': typeof PTokenRoute
   '/r/$source': typeof RSourceRoute
   '/vs/docsend': typeof VsDocsendRoute
   '/vs/pandadoc': typeof VsPandadocRoute
   '/vs/proposify': typeof VsProposifyRoute
+  '/guides/': typeof GuidesIndexRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
   '/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -196,11 +217,13 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthedDashboardRoute
   '/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/guides/$slug': typeof GuidesSlugRoute
   '/p/$token': typeof PTokenRoute
   '/r/$source': typeof RSourceRoute
   '/vs/docsend': typeof VsDocsendRoute
   '/vs/pandadoc': typeof VsPandadocRoute
   '/vs/proposify': typeof VsProposifyRoute
+  '/guides': typeof GuidesIndexRoute
   '/proposals/$id': typeof AuthedProposalsIdRoute
   '/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -213,6 +236,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/demo': typeof DemoRoute
   '/dpa': typeof DpaRoute
+  '/guides': typeof GuidesRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
@@ -223,11 +247,13 @@ export interface FileRoutesById {
   '/_authed/dashboard': typeof AuthedDashboardRoute
   '/_authed/settings': typeof AuthedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/guides/$slug': typeof GuidesSlugRoute
   '/p/$token': typeof PTokenRoute
   '/r/$source': typeof RSourceRoute
   '/vs/docsend': typeof VsDocsendRoute
   '/vs/pandadoc': typeof VsPandadocRoute
   '/vs/proposify': typeof VsProposifyRoute
+  '/guides/': typeof GuidesIndexRoute
   '/_authed/proposals/$id': typeof AuthedProposalsIdRoute
   '/_authed/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
@@ -240,6 +266,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/demo'
     | '/dpa'
+    | '/guides'
     | '/login'
     | '/privacy'
     | '/proposal-tracking-for-agencies'
@@ -250,11 +277,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/settings'
     | '/auth/callback'
+    | '/guides/$slug'
     | '/p/$token'
     | '/r/$source'
     | '/vs/docsend'
     | '/vs/pandadoc'
     | '/vs/proposify'
+    | '/guides/'
     | '/proposals/$id'
     | '/proposals/new'
     | '/api/stripe/webhook'
@@ -275,11 +304,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/settings'
     | '/auth/callback'
+    | '/guides/$slug'
     | '/p/$token'
     | '/r/$source'
     | '/vs/docsend'
     | '/vs/pandadoc'
     | '/vs/proposify'
+    | '/guides'
     | '/proposals/$id'
     | '/proposals/new'
     | '/api/stripe/webhook'
@@ -291,6 +322,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/demo'
     | '/dpa'
+    | '/guides'
     | '/login'
     | '/privacy'
     | '/proposal-tracking-for-agencies'
@@ -301,11 +333,13 @@ export interface FileRouteTypes {
     | '/_authed/dashboard'
     | '/_authed/settings'
     | '/auth/callback'
+    | '/guides/$slug'
     | '/p/$token'
     | '/r/$source'
     | '/vs/docsend'
     | '/vs/pandadoc'
     | '/vs/proposify'
+    | '/guides/'
     | '/_authed/proposals/$id'
     | '/_authed/proposals/new'
     | '/api/stripe/webhook'
@@ -318,6 +352,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   DemoRoute: typeof DemoRoute
   DpaRoute: typeof DpaRoute
+  GuidesRoute: typeof GuidesRouteWithChildren
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProposalTrackingForAgenciesRoute: typeof ProposalTrackingForAgenciesRoute
@@ -370,6 +405,13 @@ declare module '@tanstack/react-router' {
       path: '/dpa'
       fullPath: '/dpa'
       preLoaderRoute: typeof DpaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides': {
+      id: '/guides'
+      path: '/guides'
+      fullPath: '/guides'
+      preLoaderRoute: typeof GuidesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -441,6 +483,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/guides/': {
+      id: '/guides/'
+      path: '/'
+      fullPath: '/guides/'
+      preLoaderRoute: typeof GuidesIndexRouteImport
+      parentRoute: typeof GuidesRoute
+    }
+    '/guides/$slug': {
+      id: '/guides/$slug'
+      path: '/$slug'
+      fullPath: '/guides/$slug'
+      preLoaderRoute: typeof GuidesSlugRouteImport
+      parentRoute: typeof GuidesRoute
     }
     '/p/$token': {
       id: '/p/$token'
@@ -525,12 +581,26 @@ const AuthedRouteChildren: AuthedRouteChildren = {
 const AuthedRouteWithChildren =
   AuthedRoute._addFileChildren(AuthedRouteChildren)
 
+interface GuidesRouteChildren {
+  GuidesSlugRoute: typeof GuidesSlugRoute
+  GuidesIndexRoute: typeof GuidesIndexRoute
+}
+
+const GuidesRouteChildren: GuidesRouteChildren = {
+  GuidesSlugRoute: GuidesSlugRoute,
+  GuidesIndexRoute: GuidesIndexRoute,
+}
+
+const GuidesRouteWithChildren =
+  GuidesRoute._addFileChildren(GuidesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
   AboutRoute: AboutRoute,
   DemoRoute: DemoRoute,
   DpaRoute: DpaRoute,
+  GuidesRoute: GuidesRouteWithChildren,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ProposalTrackingForAgenciesRoute: ProposalTrackingForAgenciesRoute,

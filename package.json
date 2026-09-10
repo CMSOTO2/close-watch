@@ -26,6 +26,7 @@
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/markdown": "^0.0.13",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-form-start": "^1.33.5",
     "@tanstack/react-query": "latest",

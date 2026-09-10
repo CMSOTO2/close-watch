@@ -152,6 +152,46 @@ export function breadcrumbJsonLd(trail: Array<{ name: string; path: string }>) {
   }
 }
 
+/**
+ * Structured data for a guide.
+ *
+ * `author` is the Closewatch organization rather than a named person: the
+ * product is built and run by one person who is deliberately not named on
+ * `/about`, and inventing a byline here would contradict that page.
+ */
+export function articleJsonLd({
+  title,
+  description,
+  path,
+  datePublished,
+  dateModified,
+}: {
+  title: string
+  description: string
+  path: string
+  datePublished: string
+  dateModified: string
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    url: `${origin}${path}`,
+    mainEntityOfPage: `${origin}${path}`,
+    image: `${origin}/og.png`,
+    datePublished,
+    dateModified,
+    author: { '@type': 'Organization', name: 'Closewatch', url: `${origin}/` },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Closewatch',
+      url: `${origin}/`,
+      logo: `${origin}/android-chrome-512x512.png`,
+    },
+  }
+}
+
 /** The JSON-LD block as a head script. */
 export function jsonLdScript(data: unknown) {
   return [
