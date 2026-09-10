@@ -91,7 +91,9 @@ supabase/migrations/          schema, RLS, ingest fn, share-link lock, bucket li
 4. The viewer renders each page to a canvas and hands those elements to the tracker.
 5. The tracker accrues time in 500ms ticks, but only while the tab is visible, the window
    has focus, and there has been input within the last sixty seconds. An IntersectionObserver
-   attributes each tick to whichever page occupies most of the viewport.
+   finds the pages in view, and `pageWeights` divides each tick between them: a page wholly
+   on screen takes it over pages cut off at the edges (the slide-deck case), and otherwise
+   each page gets the share of the window it holds.
 6. Every ten seconds, and on `pagehide`, the accumulated time is flushed to
    `/api/track/:visitId` via `sendBeacon`.
 7. The ingest endpoint re-validates the share token, then calls `record_engagement`, which

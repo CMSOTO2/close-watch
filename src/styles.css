@@ -451,6 +451,30 @@
     color: inherit;
   }
 
+  /* Tailwind v4's preflight took the pointer off buttons, to match the browser
+     default, so most controls here had been showing an arrow. Everything that
+     can be pressed gets it back in one place rather than a cursor-pointer on
+     every button. In the base layer, so a cursor-* utility still wins. */
+  a[href],
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  select:not(:disabled),
+  summary,
+  label[for],
+  input[type='checkbox']:not(:disabled),
+  input[type='radio']:not(:disabled),
+  input[type='file']:not(:disabled),
+  input[type='file']:not(:disabled)::file-selector-button {
+    cursor: pointer;
+  }
+
+  /* A disabled control says it cannot be pressed rather than going quiet. */
+  button:disabled,
+  select:disabled,
+  input:disabled {
+    cursor: not-allowed;
+  }
+
   code {
     font-family: var(--font-mono);
     font-size: 0.9em;

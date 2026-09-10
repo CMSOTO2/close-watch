@@ -73,18 +73,31 @@ export function pickPage(
  */
 const MIN_SHARE = 0.1
 
+/** Rounding slack for "wholly on screen": a page framed exactly can report -0.5. */
+const WHOLE_SLACK_PX = 2
+
 /**
  * How to divide a tick between the pages on screen.
  *
- * A reader with two sections in front of them is not reading only one of them,
- * and handing the whole tick to a single page was making that claim several
- * times a second. Each page gets the share of the window it actually holds.
+ * A page wholly on screen is the one being read. When there is one, it takes
+ * the tick, and pages cut off at the top or bottom edge get none of it: they
+ * are the ones being scrolled to or from. This is the shape a slide deck lives
+ * in. A 16:9 page is 486px tall in the viewer, so the slide being read nearly
+ * always sits between the tail of the one before and the head of the one after,
+ * and splitting by area gave it barely half the time spent on it. A real deck,
+ * read on its pricing slide for most of each visit, came back as 45s on pricing
+ * and 39s on the two slides either side.
  *
- * Deliberately not normalised to sum to one. Some of a window is often not a
- * page at all — on a phone the demo puts its report under the proposal — and
- * normalising would hand a page peeking in at the top the whole tick while the
- * reader looked at something else entirely. Shares of disjoint strips can only
- * sum to one, so page time still cannot exceed engaged time; it is simply
+ * With no page wholly on screen — a portrait page taller than the window, or
+ * two halves across a page boundary — each page gets the share of the window it
+ * holds, because a reader with two sections in front of them is not reading
+ * only one of them. Two or more whole pages split the same way.
+ *
+ * The cut-off pages' shares are handed to the whole ones rather than dropped,
+ * so a framed slide is credited with the screen it is being read on. What is
+ * never handed to anyone is the part of the window that is not a page at all —
+ * on a phone the demo puts its report under the proposal — so weights still
+ * sum to at most one and page time still cannot exceed engaged time; it is
  * allowed to fall short of it, which is the honest answer when part of the
  * screen was not the document.
  */
@@ -94,16 +107,31 @@ export function pageWeights(
 ): Array<{ page: number; weight: number }> {
   if (viewportHeight <= 0) return []
 
-  const shares = boxes.map((box) => ({
-    page: box.page,
-    share:
-      Math.max(0, Math.min(box.bottom, viewportHeight) - Math.max(box.top, 0)) /
-      viewportHeight,
-  }))
-
-  return shares
+  const shares = boxes
+    .map((box) => ({
+      page: box.page,
+      share:
+        Math.max(
+          0,
+          Math.min(box.bottom, viewportHeight) - Math.max(box.top, 0),
+        ) / viewportHeight,
+      whole:
+        box.top >= -WHOLE_SLACK_PX &&
+        box.bottom <= viewportHeight + WHOLE_SLACK_PX,
+    }))
     .filter((s) => s.share >= MIN_SHARE)
-    .map((s) => ({ page: s.page, weight: s.share }))
+
+  const whole = shares.filter((s) => s.whole)
+  if (whole.length === 0 || whole.length === shares.length) {
+    return shares.map((s) => ({ page: s.page, weight: s.share }))
+  }
+
+  const wholeShare = whole.reduce((sum, s) => sum + s.share, 0)
+  const total = shares.reduce((sum, s) => sum + s.share, 0)
+  return whole.map((s) => ({
+    page: s.page,
+    weight: (s.share / wholeShare) * total,
+  }))
 }
 
 export type Flush = {

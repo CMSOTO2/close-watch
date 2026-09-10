@@ -301,6 +301,37 @@ describe('page attribution in the PDF viewer', () => {
     expect(flushedMs(2) + flushedMs(3)).toBeGreaterThan(9_000)
   })
 
+  // The deck this was changed for: slide 8 framed in the window, the tail of 7
+  // above it and the head of 9 below. By area, 8 got barely half of the tick.
+  it('gives a slide wholly on screen the time, not the slides cut off around it', () => {
+    vi.useFakeTimers()
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 873,
+    })
+    setScroll({ scrollY: 3400, scrollHeight: 4749 })
+    const DECK_H = 486
+    const pages = [
+      page(7, -300, -300 + DECK_H),
+      page(8, 210, 210 + DECK_H),
+      page(9, 720, 720 + DECK_H),
+    ]
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
+
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    expect(flushedMs(7)).toBe(0)
+    expect(flushedMs(9)).toBe(0)
+    // The window's worth of page, less the two gaps between slides.
+    expect(flushedMs(8)).toBeGreaterThan(9_000)
+    expect(flushedMs(8)).toBeLessThanOrEqual(10_000)
+  })
+
   it('reads geometry only for the pages on screen, not all 500', () => {
     vi.useFakeTimers()
     setScroll({ scrollY: 2000, scrollHeight: 600_000 })
@@ -391,5 +422,98 @@ describe('when the reader is not looking at any page', () => {
     )
     expect(engaged).toBeCloseTo(10_000, -2)
     expect(flushedMs(1)).toBe(0)
+  })
+})
+
+/**
+ * The same 16:9 deck under the viewer's zoom. Zoom changes nothing the tracker
+ * reads except how big the boxes are, which is the point: it scores what is on
+ * screen, at whatever size the reader chose to look at it.
+ */
+describe('page attribution under zoom', () => {
+  beforeEach(() => {
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 873,
+    })
+  })
+
+  // 1728×972: twice the fitted width, so a slide is taller than the window.
+  const zoomedIn = () => [
+    page(7, -1050, -78),
+    page(8, -54, 918),
+    page(9, 942, 1914),
+  ]
+
+  it('at 200%, the slide filling the window takes the tick', () => {
+    vi.useFakeTimers()
+    setScroll({ scrollY: 6000, scrollHeight: 9000 })
+    const pages = zoomedIn()
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
+
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    expect(flushedMs(8)).toBeCloseTo(10_000, -2)
+    expect(flushedMs(7)).toBe(0)
+    expect(flushedMs(9)).toBe(0)
+  })
+
+  it('ignores how far a zoomed page is scrolled sideways', () => {
+    vi.useFakeTimers()
+    setScroll({ scrollY: 6000, scrollHeight: 9000 })
+    // The band scrolled to the middle of a page wider than the window.
+    const pages = zoomedIn().map((el) => {
+      const rect = el.getBoundingClientRect()
+      el.getBoundingClientRect = () => ({
+        ...rect,
+        left: -432,
+        right: 1296,
+        x: -432,
+        width: 1728,
+      })
+      return el
+    })
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
+
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    expect(flushedMs(8)).toBeCloseTo(10_000, -2)
+  })
+
+  // 432×243: three or four slides in the window at once. There is no telling
+  // which whole one is being read, so they split it; the cut-off ones get none.
+  it('at 50%, the whole slides share the tick and the cut-off ones get none', () => {
+    vi.useFakeTimers()
+    setScroll({ scrollY: 2000, scrollHeight: 9000 })
+    const pages = [
+      page(3, -100, 143),
+      page(4, 167, 410),
+      page(5, 434, 677),
+      page(6, 701, 944),
+    ]
+    const tracker = startTracker({
+      visitId: 'v1',
+      token: 't',
+      getPageElements: () => pages,
+    })
+
+    vi.advanceTimersByTime(10_000)
+    tracker.stop()
+
+    expect(flushedMs(3)).toBe(0)
+    expect(flushedMs(6)).toBe(0)
+    expect(flushedMs(4)).toBeCloseTo(flushedMs(5), -2)
+    expect(flushedMs(4) + flushedMs(5)).toBeGreaterThan(9_000)
+    expect(flushedMs(4) + flushedMs(5)).toBeLessThanOrEqual(10_000)
   })
 })

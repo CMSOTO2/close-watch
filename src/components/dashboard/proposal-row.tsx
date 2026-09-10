@@ -1,10 +1,12 @@
 import { Link } from '@tanstack/react-router'
-import { CopyLinkButton } from './copy-link-button'
+import { RowMenu } from './row-menu'
 import { ROW_LINK_ATTR } from './use-list-keys'
 import { HeatMeter } from './heat-meter'
 import { formatDuration } from '#/lib/analytics/intent'
 import { cn, formatMoney } from '#/lib/utils'
+import type { ReactNode } from 'react'
 import type { Delta } from './since-last-visit'
+import type { IntentResult, IntentSignal } from '#/lib/analytics/intent'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
 
 // A 3px spine on the left edge marks hot and warm deals, so the list is
@@ -15,6 +17,12 @@ const SPINE = {
   cold: 'before:bg-transparent',
 } as const
 
+const REASON = {
+  hot: 'border-hot-line bg-hot-soft text-hot',
+  warm: 'border-warm-line bg-warm-soft text-warm',
+  cold: 'border-line bg-surface-2 text-ink-2',
+} as const
+
 export function ProposalRow({
   proposal,
   delta,
@@ -23,21 +31,38 @@ export function ProposalRow({
   delta?: Delta
 }) {
   const { intent } = proposal
-  const metrics = readMetrics(proposal)
-  // Non-empty in practice, but a low-scoring visit can leave it empty.
-  const flag = intent.signals.length > 0 ? intent.signals[0] : null
+  const reason = reasonFor(intent)
+
+  // One line of plain facts, with what is new since the last visit leading it
+  // in the brand colour. It used to be a second chip, in a second colour, in
+  // capitals, which made two badges fighting over one row.
+  const facts: Array<{ key: string; node: ReactNode }> = [
+    ...(delta
+      ? [
+          {
+            key: 'delta',
+            node: (
+              <span className="font-medium text-brand">
+                {describeDelta(delta)}
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...readMetrics(proposal).map((m) => ({ key: m, node: <span>{m}</span> })),
+  ]
 
   // Rendered at one breakpoint or the other, never both — so the markup lives
   // here once instead of being duplicated into each branch.
   const money = (
-    <div className="flex shrink-0 items-center justify-end gap-3.5">
+    <div className="flex shrink-0 items-center justify-end gap-3">
       {proposal.dealValueCents != null && (
         <span className="font-display text-base font-semibold tracking-tight tnum">
           {formatMoney(proposal.dealValueCents, proposal.currency)}
         </span>
       )}
       <HeatMeter band={intent.band} score={intent.score} />
-      <CopyLinkButton url={proposal.shareUrl} client={proposal.clientName} />
+      <RowMenu proposal={proposal} />
     </div>
   )
 
@@ -68,7 +93,7 @@ export function ProposalRow({
                 />
               )}
               {/* after:inset-0 stretches the hit area over the whole card,
-                    so the row still opens from anywhere the copy button is not. */}
+                    so the row still opens from anywhere the menu is not. */}
               <Link
                 to="/proposals/$id"
                 params={{ id: proposal.id }}
@@ -83,36 +108,26 @@ export function ProposalRow({
           <div className="xl:hidden">{money}</div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-ink-2">
-          {delta && (
-            <span className="rounded border border-brand-line bg-brand-soft px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wide text-brand">
-              {describeDelta(delta)}
-            </span>
-          )}
-          {metrics.map((m, i) => (
-            <span key={m} className="flex items-center gap-2">
-              {(i > 0 || delta) && (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[13px] text-ink-2">
+          {facts.map((fact, i) => (
+            <span key={fact.key} className="flex items-center gap-2">
+              {i > 0 && (
                 <span
                   aria-hidden
                   className="size-[3px] rounded-full bg-ink-3"
                 />
               )}
-              <span>{m}</span>
+              {fact.node}
             </span>
           ))}
-          {flag !== null && flag.points > 0 && (
-            <span className="flex items-center gap-2">
-              <span aria-hidden className="size-[3px] rounded-full bg-ink-3" />
-              <span
-                className={cn(
-                  'rounded px-1.5 py-0.5 font-mono text-[11px] uppercase tracking-wide',
-                  intent.band === 'hot'
-                    ? 'border border-hot-line bg-hot-soft text-hot'
-                    : 'border border-warm-line bg-warm-soft text-warm',
-                )}
-              >
-                {flag.label}
-              </span>
+          {reason && (
+            <span
+              className={cn(
+                'ml-1 rounded-full border px-2 py-px text-[12px] font-medium',
+                REASON[intent.band],
+              )}
+            >
+              {reason.label}
             </span>
           )}
         </div>
@@ -120,6 +135,24 @@ export function ProposalRow({
         <div className="hidden xl:block">{money}</div>
       </div>
     </li>
+  )
+}
+
+/**
+ * Signals the metrics line already states: how many times, how many readers,
+ * how long. "Opened by 3 readers" beside "3 readers" was the same fact twice.
+ */
+const RESTATES_METRICS = /^(Opened|Read (closely|it properly))/
+
+/**
+ * The one reason worth a chip: the strongest signal the facts beside it do not
+ * already say — time on pricing, a print, a return on a later day.
+ */
+function reasonFor(intent: IntentResult): IntentSignal | null {
+  return (
+    intent.signals.find(
+      (s) => s.points > 0 && !RESTATES_METRICS.test(s.label),
+    ) ?? null
   )
 }
 
