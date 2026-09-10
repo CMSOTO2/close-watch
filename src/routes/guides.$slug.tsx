@@ -117,8 +117,9 @@ function GuidePage() {
                 Put a real proposal through Closewatch.
               </p>
               <p className="mt-2 text-[14px] leading-relaxed text-ink-2">
-                Two proposals can be live and read at once on the free plan,
-                every feature switched on. $19 a month after that, flat.
+                Two proposals can be live and read at once on the free plan, all
+                the tracking switched on. $19 a month for unlimited, with
+                follow-up alerts.
               </p>
               <Button asChild size="lg" className="mt-5">
                 <Link to="/login">

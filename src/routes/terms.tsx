@@ -113,8 +113,10 @@ function Terms() {
 
       <Clause heading="Paying">
         <p>
-          Every feature is on the free plan. A paid plan lifts the limit on how
-          many proposals can be read at once, and nothing else changes.
+          All of the tracking is on the free plan, along with an email the first
+          time each proposal is opened. A paid plan lifts the limit on how many
+          proposals can be read at once and adds emails when a reader comes
+          back, when a new reader opens a proposal, and when one turns hot.
         </p>
         <p>
           Solo is $19 per month, charged in advance, and renews each month until

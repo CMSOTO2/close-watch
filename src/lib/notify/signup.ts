@@ -1,5 +1,6 @@
 import { serverEnv } from '#/env'
 import type { getSupabaseAdminClient } from '#/lib/supabase/server'
+import { DEFAULT_FROM, escapeHtml, sendEmail } from './resend'
 
 type AdminClient = ReturnType<typeof getSupabaseAdminClient>
 
@@ -7,7 +8,7 @@ type AdminClient = ReturnType<typeof getSupabaseAdminClient>
  * Sends the "someone signed up" email to whoever runs the place — once per
  * account, the first time a new user reaches a session.
  *
- * Best-effort in the same way as the first-open email: every failure is
+ * Best-effort in the same way as the activity emails: every failure is
  * swallowed so a signup never fails because we could not send a note about it,
  * and the claim is rolled back on a send failure so the user's next sign-in
  * retries. Silent until both RESEND_API_KEY and SIGNUP_NOTIFY_TO are set.
@@ -41,12 +42,14 @@ export async function notifySignup(
   try {
     await sendEmail({
       apiKey: RESEND_API_KEY,
-      from: EMAIL_FROM ?? 'Closewatch <onboarding@resend.dev>',
+      from: EMAIL_FROM ?? DEFAULT_FROM,
       to: SIGNUP_NOTIFY_TO,
-      email: claimed.email,
-      fullName: claimed.full_name,
-      companyName: claimed.company_name,
-      total: count ?? null,
+      ...signupEmail({
+        email: claimed.email,
+        fullName: claimed.full_name,
+        companyName: claimed.company_name,
+        total: count ?? null,
+      }),
     })
   } catch {
     // Undo the claim so their next sign-in tries again rather than the signup
@@ -58,17 +61,12 @@ export async function notifySignup(
   }
 }
 
-type EmailInput = {
-  apiKey: string
-  from: string
-  to: string
+function signupEmail(input: {
   email: string | null
   fullName: string | null
   companyName: string | null
   total: number | null
-}
-
-async function sendEmail(input: EmailInput): Promise<void> {
+}) {
   const who = input.email ?? 'an account with no email on it'
   const details = [
     input.fullName ? `Name: ${input.fullName}` : null,
@@ -86,31 +84,5 @@ async function sendEmail(input: EmailInput): Promise<void> {
       ${details.map((line) => `<p style="color:#525252">${escapeHtml(line)}</p>`).join('')}
     </div>`
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${input.apiKey}`,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: input.from,
-      to: input.to,
-      subject: `New Closewatch signup: ${who}`,
-      text,
-      html,
-    }),
-  })
-
-  if (!res.ok) {
-    const body = await res.text().catch(() => '')
-    throw new Error(`Resend ${res.status}: ${body.slice(0, 200)}`)
-  }
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+  return { subject: `New Closewatch signup: ${who}`, text, html }
 }

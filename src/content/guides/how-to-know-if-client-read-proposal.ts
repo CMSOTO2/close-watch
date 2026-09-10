@@ -90,7 +90,7 @@ Closewatch filters two ways: known bots and link-preview fetchers are excluded o
 4. Get notified when it opens.
 5. Check page-level engagement before you follow up.
 
-Closewatch is $19 a month, flat, with no per-seat pricing, and does not require rebuilding the proposal in a new editor. Two proposals can be live and read at once on the free plan with every feature switched on. If you want the proposal builder as well as the tracking, Proposify or PandaDoc will suit you better, and both start around $19 per user per month. See [pricing](/#pricing) for the full breakdown.
+Closewatch is $19 a month, flat, with no per-seat pricing, and does not require rebuilding the proposal in a new editor. Two proposals can be live and read at once on the free plan, with all the tracking and an email on first open; Solo adds emails when a client comes back, a new reader opens it, or it turns hot. If you want the proposal builder as well as the tracking, Proposify or PandaDoc will suit you better, and both start around $19 per user per month. See [pricing](/#pricing) for the full breakdown.
 
 ## Frequently asked questions
 

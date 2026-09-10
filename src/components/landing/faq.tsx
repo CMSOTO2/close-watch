@@ -145,7 +145,8 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
         happens next is the same as if you had never upgraded: nothing is
         deleted, every proposal stays readable, every link you have sent keeps
         tracking, and you simply cannot start a new proposal until you are back
-        within the free limit.
+        within the free limit. Emails go back to one per proposal, on its first
+        open; everything they would have told you is still on the dashboard.
       </>
     ),
   },

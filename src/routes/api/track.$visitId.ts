@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 import { getSupabaseAdminClient } from '#/lib/supabase/server'
-import { notifyFirstOpen } from '#/lib/notify/first-open'
+import { notifyProposalActivity } from '#/lib/notify/proposal-activity'
 
 /**
  * Engagement ingest for the public viewer.
@@ -110,14 +110,15 @@ export const Route = createFileRoute('/api/track/$visitId')({
           if (eventsError) ingestFailed('events insert', eventsError)
         }
 
-        // The engagement above may have just crossed the qualification line.
-        // Best-effort and self-guarding; must never break the 204.
+        // The engagement above may have just qualified the visit, brought a
+        // reader back, or tipped the score into hot. Best-effort and
+        // self-guarding; must never break the 204.
         try {
-          await notifyFirstOpen(supabase, visitId.data)
+          await notifyProposalActivity(supabase, visitId.data)
         } catch (error) {
           // Never the viewer's problem, but the email is most of the product
           // for anyone who does not open the dashboard, so it is ours.
-          ingestFailed('first-open email', error)
+          ingestFailed('activity email', error)
         }
 
         return noContent()

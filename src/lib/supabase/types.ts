@@ -93,6 +93,8 @@ type ProposalRow = {
   status: ProposalStatus
   outcome_at: string | null
   first_open_notified_at: string | null
+  hot_notified_at: string | null
+  last_alerted_at: string | null
   created_at: string
   updated_at: string
 }
@@ -137,6 +139,8 @@ type VisitRow = {
   is_bot: boolean
   bot_reason: string | null
   is_qualified: boolean
+  /** Set once this session has produced an activity email. */
+  alerted_at: string | null
 }
 
 type PageViewRow = {

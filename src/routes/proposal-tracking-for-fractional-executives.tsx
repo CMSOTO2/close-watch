@@ -214,8 +214,8 @@ function FractionalPage() {
               Find out where your next proposal actually went.
             </h2>
             <p className="mx-auto mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
-              Two proposals can be live at once on the free plan, with every
-              feature switched on. Send the next one as a link and see whether
+              Two proposals can be live at once on the free plan, with all the
+              tracking switched on. Send the next one as a link and see whether
               it travels.
             </p>
             <Button asChild size="lg" className="mt-8">

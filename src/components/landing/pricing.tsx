@@ -8,11 +8,12 @@ import { cn } from '#/lib/utils'
 /**
  * The three plans from POSITIONING.md.
  *
- * Free is not a crippled tier. Every feature is on it and history never
- * expires; the only thing $19 buys is the right to have more than two deals
- * being read at once. A feature gate teaches people the product is worse than
- * it is, and the number that actually predicts whether someone will pay is how
- * many proposals they have in flight.
+ * Free is not a crippled tier. Every measurement is on it and history never
+ * expires. $19 buys two things: more than two deals being read at once, and
+ * the emails past the first open — a client coming back, a new reader, a deal
+ * turning hot. Those emails are the one feature gate, added deliberately on
+ * 2026-09-10 (see POSITIONING.md); a free account still sees every one of
+ * those moments on its dashboard, it just is not interrupted for them.
  *
  * Every card carries the whole list, including the lines it shares with the one
  * beside it. That was briefly moved out to a single "every plan includes" row,
@@ -21,10 +22,10 @@ import { cn } from '#/lib/utils'
  * where someone decides, and it has to hold enough to decide on.
  *
  * The duplication is therefore deliberate twice over. It is what stops Free
- * looking thinner than Solo — the only entitlement check in the app is the slot
- * counter, and a list implying otherwise teaches people the free plan is a
- * worse product than it is. And it is what makes each card readable alone,
- * which is how they are actually read.
+ * looking thinner than Solo — the app checks the slot counter and the alert
+ * emails and nothing else, and a list implying more gates teaches people the
+ * free plan is a worse product than it is. And it is what makes each card
+ * readable alone, which is how they are actually read.
  *
  * What keeps it from reading as three identical columns is `limit`: the one
  * line that is true of this plan and not the next, given its own weight above
@@ -85,10 +86,17 @@ type Plan = {
 const SHARED: Array<Feature> = [
   { text: 'Tracked links and intent scoring' },
   { text: 'Attention page by page' },
-  { text: 'Distinct readers and email alerts' },
+  { text: 'Distinct readers, and an email on first open' },
   { text: 'Grouping by client, search and heat filtering' },
   { text: 'Full history — nothing expires' },
 ]
+
+/**
+ * The one feature line Free does not carry. Kept in step with UPSELL_NOTE in
+ * src/lib/notify/alerts.ts, which is the same promise made in an email.
+ */
+const ALERTS =
+  'Emails when they come back, a new reader opens it, or it turns hot'
 
 const PLANS: Array<Plan> = [
   {
@@ -111,11 +119,11 @@ const PLANS: Array<Plan> = [
     cadence: '/mo',
     who: 'For the person sending every proposal at a small agency.',
     limit: 'Unlimited proposals being read at once',
-    // Deliberately Free's list, minus its two cap lines and plus the one that
-    // replaces them. The two columns differ by exactly what the plans differ
-    // by, which is the only honest way to show a product with no feature gates.
+    // Deliberately Free's list, minus its two cap lines and plus the two that
+    // replace them. The columns differ by exactly what the plans differ by:
+    // the cap, and the emails past the first open.
     features: [
-      { text: 'Nothing else changes — the cap simply comes off' },
+      { text: ALERTS },
       { text: 'Unlimited sending, and drafts never count' },
       ...SHARED,
     ],
@@ -144,6 +152,7 @@ const PLANS: Array<Plan> = [
     // difference between a roadmap and a page selling three things nobody can
     // deliver.
     features: [
+      { text: ALERTS },
       { text: '3 seats', soon: true },
       { text: 'Slack alerts', soon: true },
       { text: 'Your own domain on share links', soon: true },

@@ -187,8 +187,8 @@ export function ComparisonPage({ c }: { c: Competitor }) {
             </h2>
             <p className="mx-auto mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
               The free plan is not a trial with a clock on it. Two proposals can
-              be live at once with every feature switched on, which is enough to
-              find out whether knowing beats guessing.
+              be live at once with all the tracking switched on, which is enough
+              to find out whether knowing beats guessing.
             </p>
             <Button asChild size="lg" className="mt-8">
               <Link to="/login">

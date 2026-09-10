@@ -7,7 +7,8 @@ import {
   FREE_LIVE_PROPOSALS,
   queryKeys,
 } from '#/constants'
-import type { BillingPlan } from '#/lib/supabase/types'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { BillingPlan, Database } from '#/lib/supabase/types'
 
 export type Entitlements = {
   plan: BillingPlan
@@ -203,9 +204,13 @@ export function isProposalLimitError(error: unknown): boolean {
   )
 }
 
-/** Paying or comped, either of which lifts every cap. */
-async function hasUnlimitedPlan(
-  supabase: ReturnType<typeof getSupabaseServerClient>,
+/**
+ * Paying or comped, either of which lifts every cap and turns on the activity
+ * emails past the first open. Takes any client so the ingest endpoint can ask
+ * with the admin one.
+ */
+export async function hasUnlimitedPlan(
+  supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<boolean> {
   const [subscription, comp] = await Promise.all([

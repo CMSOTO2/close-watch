@@ -227,8 +227,8 @@ function AgenciesPage() {
               Put your next proposal through it.
             </h2>
             <p className="mx-auto mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
-              Two proposals can be live at once on the free plan with every
-              feature switched on. One real send is enough to find out whether
+              Two proposals can be live at once on the free plan with all the
+              tracking switched on. One real send is enough to find out whether
               this changes how your week runs.
             </p>
             <Button asChild size="lg" className="mt-8">

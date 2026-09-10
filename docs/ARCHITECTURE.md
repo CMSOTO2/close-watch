@@ -34,8 +34,11 @@ src/
       summaries.ts            server fn: dashboard aggregation
       proposal-analytics.ts   server fn: per-proposal activity, download/print counts
       intent.ts               buying-intent scoring (download/print are signals)
+      intent-input.ts         one proposal's rows -> scoring input, shared by dashboard and email
     notify/
-      first-open.ts           server-side first-qualified-open email (Resend)
+      alerts.ts               which reads earn an email, and its wording (pure, tested)
+      proposal-activity.ts    reads, claims and sends those emails from the ingest endpoint
+      resend.ts               the Resend HTTP call every email goes through
     profile.ts                server fns: read/update the sender's display name
     auth.ts                   session lookup
   components/
@@ -68,12 +71,12 @@ src/
     _authed.proposals.new.tsx     upload + create
     _authed.proposals.$id.tsx     proposal detail, share links, activity
     p.$token.tsx              public viewer
-    api/track.$visitId.ts     engagement ingest (+ fires the first-open email)
+    api/track.$visitId.ts     engagement ingest (+ fires the activity emails)
 public/                       favicon.svg (theme-aware) + PNG fallbacks
 scripts/generate-icons.py     redraws the PNG icons from the mark's geometry
 supabase/migrations/          schema, RLS, ingest fn, share-link lock, bucket limit,
                               first-open flag, definer-function lockdown,
-                              open-counted free cap
+                              open-counted free cap, activity-email claims
 ```
 
 ## How tracking works
@@ -99,16 +102,39 @@ supabase/migrations/          schema, RLS, ingest fn, share-link lock, bucket li
    plus the browser's own print). They show on the proposal, and both feed the intent score —
    taking a proposal offline is a deliberate buying signal.
 
-## The first-open email
+## Activity emails
 
-On the same qualifying flush, the ingest endpoint calls `notifyFirstOpen`. It sends the
-owner one email the first time a real, non-bot, qualified open happens. Once-only is enforced
-by claiming `proposals.first_open_notified_at` atomically (`update … where it is null`), so
-concurrent beacons cannot double-send; a failed send rolls the claim back so a later open
-retries. The whole thing is best-effort inside a `try/catch` — a notification hiccup never
-breaks the viewer's 204. It is gated on `RESEND_API_KEY` and does nothing until that is set,
-which keeps local and CI runs silent. Resend is called over its HTTP API, so it works from
-the Cloudflare Worker with no SMTP.
+After every flush the ingest endpoint calls `notifyProposalActivity`, which emails the owner
+when a read is worth interrupting them for. `pickAlert` in `lib/notify/alerts.ts` decides,
+and there are four things it will say:
+
+- **First open.** The first real, non-bot, qualified read. Once per proposal.
+- **Went hot.** This read pushed the intent score across 65. Once per proposal, and on the
+  crossing rather than the state, so proposals already hot when this shipped stay quiet.
+- **New reader.** A browser the proposal has not seen before, reported as that and not as a
+  forward, with this read's device and place next to the earlier ones so the owner can judge.
+- **Came back.** The same reader again, at least twelve hours after the proposal was last open.
+  The email states the real gap.
+
+Pricing time, downloads and prints are not emails of their own. Every email carries the
+score and its reasons, so they arrive as part of whichever moment they belong to.
+
+Two limits keep it quiet. A reading session sends at most one email (`visits.alerted_at`), and
+a proposal sends at most one an hour (`proposals.last_alerted_at`). Hot is exempt from both:
+it is the one alert that needs reading to build up, so it nearly always lands in a session
+that has already sent something, and since it fires once ever the exemption costs at most
+one extra email per proposal.
+
+Every email is claimed atomically before sending (`update … where` the claim is still open), so
+concurrent beacons cannot double-send, and a failed send gives the claim back so a later flush
+retries. The whole thing is best-effort inside a `try/catch`, so a notification hiccup never
+breaks the viewer's 204, though a send failure now reaches the `[ingest]` log. It is gated on
+`RESEND_API_KEY` and does nothing until that is set, which keeps local and CI runs silent.
+Resend is called over its HTTP API (`lib/notify/resend.ts`), so it works from the Cloudflare
+Worker with no SMTP.
+
+The email and the dashboard score from the same function, `intentInputFor`, so an email can
+never call a proposal hot that the dashboard shows as warm.
 
 ## Design system
 

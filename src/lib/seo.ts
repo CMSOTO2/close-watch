@@ -118,14 +118,15 @@ export function productJsonLd() {
         price: '0',
         priceCurrency: 'USD',
         description:
-          'Every feature. Send as many as you like; two being read at a time.',
+          'All tracking and a first-open email. Send as many as you like; two being read at a time.',
       },
       {
         '@type': 'Offer',
         name: 'Solo',
         price: '19',
         priceCurrency: 'USD',
-        description: 'Unlimited live proposals, billed monthly.',
+        description:
+          'Unlimited live proposals, plus emails when a client comes back, a new reader opens it, or it turns hot. Billed monthly.',
       },
     ],
   }

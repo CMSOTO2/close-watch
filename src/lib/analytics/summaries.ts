@@ -1,7 +1,8 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import { scoreIntent } from './intent'
-import { PAGE_READ_MS, shareUrl } from '#/constants'
+import { intentInputFor } from './intent-input'
+import { shareUrl } from '#/constants'
 import type { IntentResult } from './intent'
 import type { ProposalStatus } from '#/lib/supabase/types'
 
@@ -112,7 +113,7 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
         .eq('is_qualified', true),
       supabase
         .from('page_views')
-        .select('proposal_id, page_number, engaged_ms')
+        .select('visit_id, page_number, engaged_ms')
         .in('proposal_id', ids),
       supabase
         .from('proposal_pages')
@@ -136,14 +137,16 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
       liveLink.set(l.proposal_id, shareUrl(l.token))
     }
 
-    const pricingPages = new Set(
-      (pages ?? [])
-        .filter((p) => p.section === 'pricing')
-        .map((p) => `${p.proposal_id}:${p.page_number}`),
-    )
+    const pricingPages = new Map<string, Set<number>>()
+    for (const p of pages ?? []) {
+      if (p.section !== 'pricing') continue
+      const own = pricingPages.get(p.proposal_id) ?? new Set<number>()
+      own.add(p.page_number)
+      pricingPages.set(p.proposal_id, own)
+    }
 
-    // Which proposals were downloaded or printed, from events on their qualified
-    // visits. Both are buying signals that feed the intent score below.
+    // Downloads and prints on the qualified visits. Both are buying signals;
+    // intentInputFor sorts them by proposal.
     const visitIds = (visits ?? []).map((v) => v.id)
     const { data: events } = visitIds.length
       ? await supabase
@@ -152,29 +155,15 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
           .in('visit_id', visitIds)
       : { data: [] as Array<{ visit_id: string; type: string }> }
 
-    const visitProposal = new Map(
-      (visits ?? []).map((v) => [v.id, v.proposal_id]),
-    )
-    const downloadedProposals = new Set<string>()
-    const printedProposals = new Set<string>()
-    for (const e of events ?? []) {
-      const proposalId = visitProposal.get(e.visit_id)
-      if (!proposalId) continue
-      if (e.type === 'download') downloadedProposals.add(proposalId)
-      else if (e.type === 'print') printedProposals.add(proposalId)
-    }
-
     return proposals.map((p) => {
       const own = (visits ?? []).filter((v) => v.proposal_id === p.id)
-      const ownPages = (pageViews ?? []).filter((pv) => pv.proposal_id === p.id)
-
-      const totalEngagedMs = own.reduce((sum, v) => sum + v.engaged_ms, 0)
-      const pricingEngagedMs = ownPages
-        .filter((pv) => pricingPages.has(`${p.id}:${pv.page_number}`))
-        .reduce((sum, pv) => sum + pv.engaged_ms, 0)
-
-      const distinctViewers = new Set(own.map((v) => v.visitor_id)).size
-      const startTimes = own.map((v) => new Date(v.started_at).getTime())
+      const input = intentInputFor({
+        pageCount: p.page_count,
+        visits: own,
+        pageViews: pageViews ?? [],
+        events: events ?? [],
+        pricingPages: pricingPages.get(p.id) ?? new Set(),
+      })
       const seenTimes = own.map((v) => new Date(v.last_seen_at).getTime())
 
       return {
@@ -187,38 +176,15 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
         dealValueCents: p.deal_value_cents,
         currency: p.currency,
         outcomeAt: p.outcome_at,
-        qualifiedVisits: own.length,
-        distinctViewers,
-        totalEngagedMs,
-        pricingEngagedMs,
+        qualifiedVisits: input.qualifiedVisits,
+        distinctViewers: input.distinctViewers,
+        totalEngagedMs: input.totalEngagedMs,
+        pricingEngagedMs: input.pricingEngagedMs,
         lastViewedAt: seenTimes.length
           ? new Date(Math.max(...seenTimes)).toISOString()
           : null,
         shareUrl: liveLink.get(p.id) ?? null,
-        intent: scoreIntent({
-          pageCount: p.page_count,
-          qualifiedVisits: own.length,
-          distinctViewers,
-          totalEngagedMs,
-          pricingEngagedMs,
-          // Summed across visits and held to PAGE_READ_MS, not merely
-          // "a row exists for the last page". A row is written for any page
-          // that held a tenth of the window for a single tick, so scrolling
-          // to the bottom of a document wrote one for every page on the way
-          // and handed this signal its 8 points for a scroll.
-          reachedLastPage:
-            ownPages
-              .filter((pv) => pv.page_number === p.page_count)
-              .reduce((sum, pv) => sum + pv.engaged_ms, 0) >= PAGE_READ_MS,
-          firstVisitAt: startTimes.length
-            ? new Date(Math.min(...startTimes))
-            : null,
-          lastVisitAt: startTimes.length
-            ? new Date(Math.max(...startTimes))
-            : null,
-          downloaded: downloadedProposals.has(p.id),
-          printed: printedProposals.has(p.id),
-        }),
+        intent: scoreIntent(input),
       }
     })
   },
