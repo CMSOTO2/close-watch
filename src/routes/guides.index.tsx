@@ -14,7 +14,7 @@ import {
 const PATH = '/guides'
 const TITLE = 'Guides | Closewatch'
 const DESCRIPTION =
-  'Straight answers on proposal tracking: how to tell if a client read your proposal, and how it differs from email open tracking.'
+  'Straight answers on proposal tracking and follow-up: whether a client read it, how long to wait, what silence means, and how to track a PDF.'
 
 export const Route = createFileRoute('/guides/')({
   head: () => ({
@@ -47,34 +47,47 @@ function GuidesIndex() {
           </h1>
           <p className="mt-5 max-w-[58ch] text-[17px] leading-relaxed text-ink-2">
             No pitch, no padding. Each one answers a question you would
-            otherwise ask an assistant, and says plainly where the honest
-            answer isn&rsquo;t Closewatch.
+            otherwise ask an assistant, and says plainly where the honest answer
+            isn&rsquo;t Closewatch.
           </p>
 
-          <ol className="mt-10 flex max-w-3xl flex-col gap-px overflow-hidden rounded-lg border border-line bg-line">
+          {/* Tiles rather than one stacked list. The list was capped at 3xl
+              inside a container twice that wide, so it stopped two thirds of
+              the way across the page and left the right side empty, and every
+              new guide made it taller rather than using the room beside it. A
+              grid fills the width at every breakpoint and grows by rows of
+              three. The heading stays left-aligned with the tiles, like every
+              other marketing page; with the width filled, nothing needs
+              centring to look balanced.
+
+              "Read the guide" is pushed to the bottom of each tile (mt-auto)
+              so a row with one long title and one short one still lines up.
+              Hover text is brand on surface-2, 4.7:1 in light, 7.8:1 in dark. */}
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {GUIDES.map((g) => (
-              <li key={g.slug} className="bg-surface">
+              <li key={g.slug} className="flex">
                 <Link
                   to="/guides/$slug"
                   params={{ slug: g.slug }}
-                  className="group flex items-start justify-between gap-4 px-5 py-6 transition-colors hover:bg-surface-2"
+                  className="group flex w-full flex-col rounded-lg border border-line bg-surface p-5 transition-colors hover:border-line-strong hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
-                  <div>
-                    <p className="font-display text-lg font-semibold tracking-[-0.015em] text-ink group-hover:text-brand">
-                      {g.title}
-                    </p>
-                    <p className="mt-2 max-w-[62ch] text-[14px] leading-relaxed text-ink-2">
-                      {g.dek}
-                    </p>
-                  </div>
-                  <ArrowRight
-                    aria-hidden
-                    className="mt-1 size-4 shrink-0 text-ink-3 transition-transform group-hover:translate-x-0.5 group-hover:text-brand"
-                  />
+                  <h2 className="font-display text-[17px] leading-snug font-semibold tracking-[-0.015em] text-ink group-hover:text-brand">
+                    {g.title}
+                  </h2>
+                  <p className="mt-2 text-[14px] leading-relaxed text-ink-2">
+                    {g.dek}
+                  </p>
+                  <span className="mt-auto flex items-center gap-1.5 pt-5 text-[13px] font-medium text-ink-2 group-hover:text-brand">
+                    Read the guide
+                    <ArrowRight
+                      aria-hidden
+                      className="size-3.5 transition-transform group-hover:translate-x-0.5"
+                    />
+                  </span>
                 </Link>
               </li>
             ))}
-          </ol>
+          </ul>
         </PageContainer>
       </main>
 
