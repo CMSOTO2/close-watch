@@ -17,6 +17,7 @@ export const guide: Guide = {
   slug: 'is-proposal-tracking-legal',
   stage: 'reading',
   title: 'Is Proposal Tracking Legal, and Does the Client Know?',
+  metaTitle: 'Is Proposal Tracking Legal?',
   description:
     'Tracking views of a proposal you sent is standard practice and generally lawful. What varies is disclosure and data handling, under the GDPR in the UK and EU.',
   dek: 'The question every tracking tool avoids. What is recorded, what the client is told, and where the law actually bites.',
