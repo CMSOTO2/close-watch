@@ -5,11 +5,11 @@ export const guide: Guide = {
   stage: 'closing',
   title: 'How to Find Out Why You Lost a Proposal',
   description:
-    'Ask within a week of the no, in a short email that makes an honest answer easy. Then record the outcome next to how the proposal was read, and look for the pattern.',
+    'Ask within a week of the no, in a short email that makes an honest answer easy. Then record the outcome next to how the proposal was read, and find the pattern.',
   dek: 'The reason a client gives is rarely the whole reason. How to get a better one, and how to learn from losses nobody explains.',
   datePublished: '2026-09-11',
   dateModified: '2026-09-11',
-  body: `Ask, within a week of hearing no, in a short email that makes an honest answer easy: one or two questions, and no attempt to reopen the deal. Then record the outcome next to how the proposal was read. One explanation can mislead you, but the pattern across twenty losses will not, and it is the best teacher you have.
+  body: `Ask, within a week of hearing no, in a short email that makes an honest answer easy: one or two questions, and no attempt to reopen the deal. Then record the outcome next to how the proposal was read. One explanation can mislead you, but the pattern across twenty losses will not.
 
 Most people either never ask, because it feels awkward, or ask in a way that sounds like a second pitch. Both leave you guessing about the most expensive thing that happens in your business.
 

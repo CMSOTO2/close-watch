@@ -5,11 +5,11 @@ export const guide: Guide = {
   stage: 'reading',
   title: 'What It Means When a Client Spends a Long Time on Your Pricing Page',
   description:
-    'Long time on a proposal pricing page usually means the number is being tested against a budget, a rival quote or an expectation. How to read it, and what to do next.',
+    'Long time on a proposal pricing page usually means the number is being tested against a budget, a rival quote or an expectation. How to read it, and what to do.',
   dek: 'The pricing page is where a proposal gets decided. How long someone stays there, and what they do after, says more than any other page.',
   datePublished: '2026-09-11',
   dateModified: '2026-09-11',
-  body: `A long time on the pricing page usually means the client is testing the number: against a budget, a rival quote, or what they expected to pay. It is interest, not a verdict. Closewatch treats 15 seconds on pricing as a signal and 90 seconds or more as one of the strongest it records. What they did next tells you which way it is leaning.
+  body: `A long time on the pricing page usually means the client is testing the number against a budget, a rival quote or their expectations. It is interest, not a verdict. Closewatch counts 15 seconds on pricing as a signal and 90 seconds as one of its strongest. What they do next shows which way it leans.
 
 ## Why the pricing page says more than any other
 

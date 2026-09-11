@@ -5,11 +5,11 @@ export const guide: Guide = {
   stage: 'silence',
   title: 'How to Tell If a Client Is Actually Interested in Your Proposal',
   description:
-    'Interested clients ask specific questions, bring in other people, talk about dates and reread the proposal. Polite ones say it looks great and go quiet. How to tell.',
+    'Interested clients ask specific questions, bring in other people, talk about dates and reread the proposal. Polite ones say it looks great and go quiet.',
   dek: 'Watch what clients do, not what they say. The signals that mean a deal is real, and the ones that only feel like it.',
   datePublished: '2026-09-11',
   dateModified: '2026-09-11',
-  body: `Watch what the client does, not what they say. Interested clients ask specific questions, bring other people in, talk about dates, and come back to the proposal. Polite ones say it looks great and go quiet. The three strongest signals are a question about start dates, a new reader on the proposal, and a return visit on a later day.
+  body: `Watch what the client does, not what they say. Interested clients ask specific questions, bring other people in, talk about dates, and come back to the proposal. Polite ones say it looks great and go quiet. The three strongest signals are a question about start dates, a new reader, and a return visit on a later day.
 
 "This looks great" is the most misleading sentence in sales. It costs nothing to say, it ends the conversation politely, and it is said as often before a no as before a yes.
 

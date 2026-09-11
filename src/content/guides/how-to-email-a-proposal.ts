@@ -5,7 +5,7 @@ export const guide: Guide = {
   stage: 'sending',
   title: 'How to Email a Proposal to a Client',
   description:
-    'Keep the email short: a line of context, the proposal near the top, where the summary and pricing are, and one next step with a date. Templates for four situations.',
+    'Keep it short: a line of context, the proposal near the top, where the summary and pricing are, and one next step with a date. Templates for four situations.',
   dek: 'The email is not the pitch. Its job is to get the proposal opened by the right person, and to make the next step obvious.',
   datePublished: '2026-09-11',
   dateModified: '2026-09-11',

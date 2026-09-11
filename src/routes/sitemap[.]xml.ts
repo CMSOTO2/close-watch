@@ -84,7 +84,7 @@ const PAGES: Array<{ path: string; lastmod: string }> = [
   },
   {
     path: '/guides/proposal-tracking-vs-email-open-tracking',
-    lastmod: '2026-09-10',
+    lastmod: '2026-09-11',
   },
   { path: '/privacy', lastmod: '2026-09-03' },
   { path: '/terms', lastmod: '2026-09-05' },

@@ -8,7 +8,7 @@ export const guide: Guide = {
     'Email open tracking shows a message was rendered. Proposal tracking shows the document was read. Why it matters, and when the free pixel is enough.',
   dek: 'One measures the envelope. The other measures the letter. They get treated as the same product, and they are not.',
   datePublished: '2026-09-10',
-  dateModified: '2026-09-10',
+  dateModified: '2026-09-11',
   body: `Email open tracking fires a pixel when your message renders, so it tells you the email was opened, not that the proposal was read. Proposal tracking serves the document from a link, so it records time spent, pages viewed and return visits. If you want to know whether the client read your pricing, only the second one answers that.
 
 This page exists because the two get treated as the same product and they measure completely different events.
@@ -107,5 +107,9 @@ Yes, because it records the document session directly rather than inferring it f
 ### Do I need both?
 
 Usually not. If the deal size justifies proposal tracking, that covers the question you actually care about. Pixel tracking on the covering email adds a rough deliverability check and little else.
+
+### Why does Apple Mail show every email as opened?
+
+Apple Mail Privacy Protection, on by default since 2021, loads the images in every message through Apple's servers whether or not the recipient reads it. That fires the tracking pixel, so a tracker records an open that never happened. There is no reliable way to filter these out from the sender's side.
 `,
 }

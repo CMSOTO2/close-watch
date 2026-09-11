@@ -5,7 +5,7 @@ export const guide: Guide = {
   stage: 'follow-up',
   title: 'What to Do When a Client Says They Need to Think About It',
   description:
-    '"We need to think about it" means one of four things: approval, price, comparison or politeness. Ask one question to find out which, and agree a date to reconnect.',
+    '"We need to think about it" means one of four things: approval, price, comparison or politeness. Ask one question to find out which, and agree a date.',
   dek: 'It sounds like a pause. It is usually an objection that has not been said out loud yet.',
   datePublished: '2026-09-11',
   dateModified: '2026-09-11',

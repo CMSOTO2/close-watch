@@ -9,7 +9,7 @@ export const guide: Guide = {
   dek: 'The person you send a proposal to is often not the person who says yes. How to reach the one who does without going around the one who brought you in.',
   datePublished: '2026-09-11',
   dateModified: '2026-09-11',
-  body: `Ask who else is involved before you write the proposal, not after you send it. Then write for the person who signs: put the outcome, price and timeline on one page they can read in two minutes, send them their own link, and offer your contact a short call with them. Most proposals reach the decision maker second-hand, stripped of context.
+  body: `Ask who else is involved before you write the proposal, not after you send it. Then write for the person who signs: put the outcome, price and timeline on one page they can read in two minutes, send them their own link, and offer your contact a short call with them. Otherwise it reaches them second-hand, stripped of context.
 
 ## Why proposals reach the signer second-hand
 

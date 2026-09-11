@@ -18,11 +18,11 @@ export const guide: Guide = {
   stage: 'reading',
   title: 'Is Proposal Tracking Legal, and Does the Client Know?',
   description:
-    'Tracking views of a proposal you sent is standard practice and generally lawful. What varies is disclosure and data handling, especially under the GDPR in the UK and EU.',
+    'Tracking views of a proposal you sent is standard practice and generally lawful. What varies is disclosure and data handling, under the GDPR in the UK and EU.',
   dek: 'The question every tracking tool avoids. What is recorded, what the client is told, and where the law actually bites.',
   datePublished: '2026-09-11',
   dateModified: '2026-09-11',
-  body: `In most places, yes: seeing when a proposal you sent was opened is standard sales practice and generally lawful. What varies is how the data is handled and whether readers are told. In the UK and EU the GDPR applies to what is recorded about readers. Closewatch tells every reader on the page, and stores IP addresses only as a salted hash. This is not legal advice.
+  body: `Generally, yes: seeing when a proposal you sent was opened is standard sales practice. What varies is how the data is handled and whether readers are told, and in the UK and EU the GDPR applies. Closewatch tells every reader on the page and stores IP addresses only as a salted hash. This is not legal advice.
 
 Many tools answer "does the client know?" with a reassuring no. That is the wrong thing to be proud of, and it is the part of this question that matters most.
 
