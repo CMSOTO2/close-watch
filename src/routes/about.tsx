@@ -60,10 +60,10 @@ function About() {
           someone else. Not a guess dressed up as a chart. What happened.
         </p>
         <p>
-          It is built and run by one person, which is mostly a statement about
-          what does not exist yet: no support queue, no sales team, no roadmap
-          voted on by a committee. If something is broken or missing, an email
-          gets read by the person who wrote the code.
+          It is built and run by one person, Carlos Soto, which is mostly a
+          statement about what does not exist yet: no support queue, no sales
+          team, no roadmap voted on by a committee. If something is broken or
+          missing, an email gets read by the person who wrote the code.
         </p>
         <p>
           Getting the read wrong is worse than not reading at all, so the effort

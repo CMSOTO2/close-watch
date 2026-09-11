@@ -79,7 +79,13 @@ function GuidePage() {
       dek={guide.dek}
       meta={
         <>
-          Published {guide.datePublished}
+          {/* The same person the Article markup names as author (FOUNDER in
+              lib/seo.ts). Linked to /about, which is where he is introduced. */}
+          By{' '}
+          <Link to="/about" className="transition-colors hover:text-ink">
+            Carlos Soto
+          </Link>{' '}
+          · Published {guide.datePublished}
           {guide.dateModified !== guide.datePublished &&
             ` · Updated ${guide.dateModified}`}
         </>

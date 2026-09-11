@@ -3,6 +3,22 @@ import { publicEnv } from '#/env'
 const origin = publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')
 
 /**
+ * The person behind Closewatch, named on /about since 2026-09-11.
+ *
+ * Named because a one-person product that will not say which person reads as
+ * hiding to the consultants it sells to, and because "Closewatch" alone is
+ * claimed by a farm-camera company and a police tip app: a real founder tied to
+ * "Closewatch proposal tracking" gives search engines and assistants a second
+ * thread to the right entity. `sameAs` should carry the founder's LinkedIn
+ * profile once it is added; until then `url` points at the page that names him.
+ */
+const FOUNDER = {
+  '@type': 'Person',
+  name: 'Carlos Soto',
+  url: `${origin}/about`,
+}
+
+/**
  * Self-referencing canonical for a public page.
  *
  * Every indexable page gets one. Without it the same page reachable with a
@@ -110,6 +126,7 @@ export function productJsonLd() {
       name: 'Closewatch',
       url: `${origin}/`,
       logo: `${origin}/android-chrome-512x512.png`,
+      founder: FOUNDER,
     },
     offers: [
       {
@@ -156,9 +173,10 @@ export function breadcrumbJsonLd(trail: Array<{ name: string; path: string }>) {
 /**
  * Structured data for a guide.
  *
- * `author` is the Closewatch organization rather than a named person: the
- * product is built and run by one person who is deliberately not named on
- * `/about`, and inventing a byline here would contradict that page.
+ * `author` is the founder, matching the visible byline on every guide. It was
+ * the Closewatch organization while the founder went unnamed; the two have to
+ * agree with each other and with /about, or the markup describes a page that
+ * does not exist.
  */
 export function articleJsonLd({
   title,
@@ -183,12 +201,13 @@ export function articleJsonLd({
     image: `${origin}/og.png`,
     datePublished,
     dateModified,
-    author: { '@type': 'Organization', name: 'Closewatch', url: `${origin}/` },
+    author: FOUNDER,
     publisher: {
       '@type': 'Organization',
       name: 'Closewatch',
       url: `${origin}/`,
       logo: `${origin}/android-chrome-512x512.png`,
+      founder: FOUNDER,
     },
   }
 }
