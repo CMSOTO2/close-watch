@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'how-to-tell-if-client-is-interested',
   stage: 'silence',
   title: 'How to Tell If a Client Is Actually Interested in Your Proposal',
+  metaTitle: 'How to Tell If a Client Is Really Interested',
   description:
     'Interested clients ask specific questions, bring in other people, talk about dates and reread the proposal. Polite ones say it looks great and go quiet.',
   dek: 'Watch what clients do, not what they say. The signals that mean a deal is real, and the ones that only feel like it.',

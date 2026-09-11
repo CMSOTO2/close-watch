@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'can-you-tell-if-someone-downloaded-a-proposal',
   stage: 'reading',
   title: 'Can You Tell If Someone Downloaded Your Proposal?',
+  metaTitle: 'Can You Tell If Someone Downloaded a Proposal?',
   description:
     'You cannot see downloads of an emailed attachment. A tracked link can record them. What a download means, what it hides, and whether you can stop one.',
   dek: 'Only if you sent a link. What a download tells you, and what it stops telling you once the copy leaves the browser.',

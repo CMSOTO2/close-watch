@@ -23,7 +23,9 @@ export const Route = createFileRoute('/guides/$slug')({
     const path = `/guides/${loaderData.slug}`
     return {
       meta: [
-        { title: `${loaderData.title} | Closewatch` },
+        {
+          title: `${loaderData.metaTitle ?? loaderData.title} | Closewatch`,
+        },
         { name: 'description', content: loaderData.description },
         ...socialMeta({
           title: loaderData.title,

@@ -176,10 +176,11 @@ cancelling it, and a webhook that is the only thing allowed to write the table t
 reads. Live means sent: a proposal counts once it has a share link, so drafts you are
 still preparing are free.
 
-Public surface: a landing page, a live demo, three comparison pages and two audience
-pages, a privacy policy, terms and a DPA (the middle two linked from Google's OAuth
-consent screen), and the brand mark and favicons. What each public page claims about
-search is in [docs/SEO.md](docs/SEO.md).
+Public surface: a landing page, a live demo, an about page, three comparison pages and two
+audience pages, the `/proposal-tracking` pillar and twenty-two guides under `/guides`, a
+privacy policy, terms and a DPA (the first two linked from Google's OAuth consent screen),
+and the brand mark and favicons. What each public page claims about search is in
+[docs/SEO.md](docs/SEO.md); run `node scripts/check-guides.mjs` before deploying a guide.
 
 See [docs/PRODUCTION.md](docs/PRODUCTION.md) for what is still operational rather than
 built.
@@ -192,6 +193,8 @@ and they are easy to break by accident.
 
 - [Positioning](docs/POSITIONING.md) — market, competitors, target customer, pricing
 - [SEO](docs/SEO.md) — which query each public page answers, and the rules for adding one
+- [GEO / AEO](docs/geo:aeo/README.md) — the guides: which questions get one, the template, the
+  starting baseline, and how appearing in AI answers gets measured
 - [Metrics](docs/METRICS.md) — the SQL for the numbers worth watching, all of it runnable
 - [Browsers](docs/BROWSERS.md) — what the viewer owes every reader, and where the app degrades
 - [MVP](docs/MVP.md) — scope, what is deliberately excluded, sequencing

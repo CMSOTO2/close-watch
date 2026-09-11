@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'client-not-responding-to-proposal',
   stage: 'silence',
   title: 'What to Do When a Client Is Not Responding to Your Proposal',
+  metaTitle: 'Client Not Responding to Your Proposal?',
   description:
     'Silence after a proposal means something different if it was never opened, skimmed, reread or forwarded. Four scenarios, and the right follow-up for each.',
   dek: 'Silence is not one situation. It is four, and each one wants a different follow-up.',

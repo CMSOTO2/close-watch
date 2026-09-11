@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'time-spent-on-proposal-pricing-page',
   stage: 'reading',
   title: 'What It Means When a Client Spends a Long Time on Your Pricing Page',
+  metaTitle: 'Long Time on Your Proposal Pricing Page?',
   description:
     'Long time on a proposal pricing page usually means the number is being tested against a budget, a rival quote or an expectation. How to read it, and what to do.',
   dek: 'The pricing page is where a proposal gets decided. How long someone stays there, and what they do after, says more than any other page.',

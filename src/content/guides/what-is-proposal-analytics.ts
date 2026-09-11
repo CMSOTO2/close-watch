@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'what-is-proposal-analytics',
   stage: 'reading',
   title: 'Proposal Analytics: What It Is and What to Measure',
+  metaTitle: 'What Is Proposal Analytics? What to Measure',
   description:
     'Proposal analytics turns tracking data into follow-up decisions. The eight metrics worth measuring, the ones that mislead, and how it differs from tracking.',
   dek: 'Tracking records what the client did. Analytics decides what it means. The metrics worth watching, and the ones that flatter you.',

@@ -349,6 +349,26 @@ export function LandingPage() {
               </Link>
               .
             </p>
+            {/* SEO.md: pages worth anything are linked from the home page body,
+                not only the footer. These two are the hubs every guide sits
+                under. */}
+            <p className="mt-2 text-[13px] text-ink-3">
+              New to proposal tracking? Start with{' '}
+              <Link
+                to="/proposal-tracking"
+                className="text-ink-2 underline underline-offset-2 hover:text-ink"
+              >
+                what it is
+              </Link>
+              , or browse the{' '}
+              <Link
+                to="/guides"
+                className="text-ink-2 underline underline-offset-2 hover:text-ink"
+              >
+                guides
+              </Link>
+              .
+            </p>
           </PageContainer>
         </section>
 

@@ -15,6 +15,7 @@ import type { Guide } from './guides/types'
  */
 export const pillar: Omit<Guide, 'slug' | 'stage'> = {
   title: 'Proposal Tracking: See When Clients Open and Read Your Proposals',
+  metaTitle: 'Proposal Tracking: See Who Reads Your Proposal',
   description:
     'Proposal tracking shows when a client opens your proposal, which pages they read, how long they spend and whether they come back. How it works, and its limits.',
   dek: 'What proposal tracking is, what it can and cannot tell you, and what to look for in a tool. Written by the people who make one, so read the limits section first.',

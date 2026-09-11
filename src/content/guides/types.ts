@@ -23,8 +23,14 @@ export type GuideStage =
 export type Guide = {
   slug: string
   stage: GuideStage
-  /** The <title> and the H1. Matches the question as someone would ask it. */
+  /** The H1, and the <title> unless `metaTitle` is set. Matches the question as someone would ask it. */
   title: string
+  /**
+   * A shorter <title> for when `title` plus " | Closewatch" would pass 60
+   * characters, where Google truncates. SEO.md's rule: the title answers the
+   * search, the H1 can say more. Keeps the searched phrase, drops the rest.
+   */
+  metaTitle?: string
   /** 150-160 chars, contains the answer, not a teaser. */
   description: string
   /** One line under the title on the index card. */

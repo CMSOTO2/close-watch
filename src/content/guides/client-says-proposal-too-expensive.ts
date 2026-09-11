@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'client-says-proposal-too-expensive',
   stage: 'negotiating',
   title: 'What to Do When a Client Says Your Proposal Is Too Expensive',
+  metaTitle: 'Client Says Your Proposal Is Too Expensive?',
   description:
     '"Too expensive" means over budget, not worth it, or dearer than another quote. Find out which, then change scope, outcome or comparison before touching price.',
   dek: 'Three objections share one sentence. Answer the wrong one and you give away margin without winning the deal.',

@@ -40,7 +40,14 @@ src/
       proposal-activity.ts    reads, claims and sends those emails from the ingest endpoint
       resend.ts               the Resend HTTP call every email goes through
     profile.ts                server fns: read/update the sender's display name
-    auth.ts                   session lookup
+    auth.ts                   session lookup (verified with getUser)
+    auth-redirect.ts          `next` through sign-in: safeNext is the open-redirect boundary
+    seo.ts                    canonical, social tags, JSON-LD; FOUNDER (Carlos Soto) is here
+    use-signed-in.ts          cookie-read session for public headers: a label, never a gate
+  content/
+    guides/                   one file per guide (markdown body in a typed object), index.ts
+                                registers them and defines STAGES; types.ts is the Guide shape
+    proposal-tracking.ts      the /proposal-tracking pillar, held to the same content rules
   components/
     brand-mark.tsx            the mark and wordmark, drawn as SVG
     account-menu.tsx          avatar disclosure: signed-in email, settings, sign out
@@ -48,7 +55,11 @@ src/
     theme-toggle.tsx          light/dark toggle + the pre-paint script
     toast.tsx                 provider and hook; neutral / good / danger
     confirm-dialog.tsx        modal used for destructive actions
-    legal-page.tsx            shared chrome for the privacy policy and terms
+    content-page.tsx          the reading layout (680px column) and `prose` element styles,
+                                shared by guides, the pillar, /about and the legal pages
+    legal-page.tsx            privacy, terms and DPA on ContentPage: Clause, Bullets
+    site-footer.tsx           the public footer: comparison, audience, hub and legal links
+    app-footer.tsx            the slim footer under every signed-in page
     pdf-viewer.tsx            client-side pdfjs renderer + download/print toolbar
     proposal-activity.tsx     per-proposal activity panel
     auth/                     sign-in form, Google button, field, zod schemas
@@ -58,14 +69,26 @@ src/
                                 use-list-keys     j/k navigation
                                 proposal-row, closed-row, client-group, list-controls,
                                 summary-strip, heat-meter, copy-link-button
-    landing/                  product shots, FAQ, scroll-into-view hook
+    landing/                  product shots, FAQ, pricing, site-header (shows Dashboard
+                                when signed in), scroll-into-view hook
+    guides/guide-markdown.tsx renders guide bodies with `prose`; tables, blockquotes
+    compare/                  the /vs pages; competitors.ts holds their claims and prices
     ui/button.tsx             the one shadcn primitive in use
   routes/
     index.tsx                 landing page
+    demo.tsx, about.tsx       live demo; who builds it (names and links the founder)
+    proposal-tracking*.tsx    the pillar, and the agency / fractional-executive pages
+    vs.*.tsx                  /vs/proposify, /vs/pandadoc, /vs/docsend
+    guides.tsx, guides.index.tsx, guides.$slug.tsx
+                              the guides: index grouped by stage, one page per guide
     privacy.tsx, terms.tsx    linked from the footer, sign-in, and Google's consent screen
-    login.tsx                 login route shell (renders components/auth)
+    dpa.tsx                   the Article 28 terms
+    sitemap[.]xml.ts, robots[.]txt.ts
+                              the sitemap lists every indexable page; add new ones by hand
+    r.$source.tsx             the landing page under a tracked name, canonical to /
+    login.tsx                 login route shell; a signed-in visitor is sent on to `next`
     auth.callback.ts          PKCE code exchange (magic link and OAuth)
-    _authed.tsx              auth guard + app header
+    _authed.tsx              auth guard + app header and AppFooter
     _authed.dashboard.tsx     proposal list
     _authed.settings.tsx      profile: sender name shown to recipients
     _authed.proposals.new.tsx     upload + create
@@ -74,6 +97,10 @@ src/
     api/track.$visitId.ts     engagement ingest (+ fires the activity emails)
 public/                       favicon.svg (theme-aware) + PNG fallbacks
 scripts/generate-icons.py     redraws the PNG icons from the mark's geometry
+scripts/indexnow.mjs          pushes the live sitemap's URLs to Bing after every deploy; it can
+                              read the previous version's sitemap in the seconds after one, so
+                              re-run `npm run indexnow` when a deploy adds pages
+scripts/check-guides.mjs      the guide content rules, checked; run before deploying content
 supabase/migrations/          schema, RLS, ingest fn, share-link lock, bucket limit,
                               first-open flag, definer-function lockdown,
                               open-counted free cap, activity-email claims

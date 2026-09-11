@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'get-proposal-to-decision-maker',
   stage: 'negotiating',
   title: 'How to Get Your Proposal in Front of the Real Decision Maker',
+  metaTitle: 'Getting Your Proposal to the Decision Maker',
   description:
     'Ask who signs before you write the proposal. Then give them a one-page summary, their own link, and a short call. Most proposals reach the signer second-hand.',
   dek: 'The person you send a proposal to is often not the person who says yes. How to reach the one who does without going around the one who brought you in.',

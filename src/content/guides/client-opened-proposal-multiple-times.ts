@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'client-opened-proposal-multiple-times',
   stage: 'reading',
   title: 'What It Means When a Client Opens Your Proposal Multiple Times',
+  metaTitle: 'Client Opened Your Proposal Multiple Times?',
   description:
     'Repeat opens usually mean a proposal is being seriously considered. What same-sitting rereads, later-day returns and new readers each mean, and how to respond.',
   dek: 'How often matters less than when. Three kinds of repeat open, what each one usually means, and what to do about it.',

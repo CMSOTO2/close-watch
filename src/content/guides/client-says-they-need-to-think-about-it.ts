@@ -4,6 +4,7 @@ export const guide: Guide = {
   slug: 'client-says-they-need-to-think-about-it',
   stage: 'follow-up',
   title: 'What to Do When a Client Says They Need to Think About It',
+  metaTitle: 'Client Says They Need to Think About It?',
   description:
     '"We need to think about it" means one of four things: approval, price, comparison or politeness. Ask one question to find out which, and agree a date.',
   dek: 'It sounds like a pause. It is usually an objection that has not been said out loud yet.',

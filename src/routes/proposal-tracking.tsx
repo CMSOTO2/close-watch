@@ -19,7 +19,7 @@ const PATH = '/proposal-tracking'
 export const Route = createFileRoute('/proposal-tracking')({
   head: () => ({
     meta: [
-      { title: `${pillar.title} | Closewatch` },
+      { title: `${pillar.metaTitle ?? pillar.title} | Closewatch` },
       { name: 'description', content: pillar.description },
       ...socialMeta({
         title: pillar.title,
