@@ -3,6 +3,7 @@ import { Wordmark } from '#/components/brand-mark'
 import { PageContainer } from '#/components/page-container'
 import { ThemeToggle } from '#/components/theme-toggle'
 import { Button } from '#/components/ui/button'
+import { useSignedIn } from '#/lib/use-signed-in'
 
 /**
  * Shared chrome for the privacy policy and the terms.
@@ -22,6 +23,10 @@ export function LegalPage({
   intro: string
   children: React.ReactNode
 }) {
+  // Terms and privacy are exactly what a paying owner opens while signed in,
+  // from the app footer; "Sign in" here read as being logged out.
+  const signedIn = useSignedIn()
+
   return (
     <div className="min-h-screen bg-canvas">
       <header className="border-b border-line bg-surface">
@@ -32,7 +37,11 @@ export function LegalPage({
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <Button asChild size="sm" variant="outline">
-              <Link to="/login">Sign in</Link>
+              {signedIn ? (
+                <Link to="/dashboard">Dashboard</Link>
+              ) : (
+                <Link to="/login">Sign in</Link>
+              )}
             </Button>
           </div>
         </PageContainer>
