@@ -5,7 +5,14 @@
  * one sequence rather than a pile of posts.
  */
 export type GuideStage =
-  'sending' | 'reading' | 'silence' | 'follow-up' | 'negotiating' | 'closing'
+  | 'sending'
+  | 'reading'
+  | 'silence'
+  | 'follow-up'
+  | 'negotiating'
+  | 'closing'
+  /** Not a moment in a proposal's life: the honest tool comparisons. Last. */
+  | 'choosing'
 
 /**
  * A guide is reading, not a landing page: no pricing card, no product screenshot,

@@ -35,6 +35,11 @@ const PAGES: Array<{ path: string; lastmod: string }> = [
   { path: '/vs/docsend', lastmod: '2026-09-05' },
   { path: '/about', lastmod: '2026-09-09' },
   { path: '/guides', lastmod: '2026-09-11' },
+  {
+    path: '/guides/best-proposal-tracking-software',
+    lastmod: '2026-09-11',
+  },
+  { path: '/guides/docsend-alternatives', lastmod: '2026-09-11' },
   { path: '/guides/how-to-email-a-proposal', lastmod: '2026-09-11' },
   {
     path: '/guides/time-spent-on-proposal-pricing-page',

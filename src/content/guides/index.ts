@@ -1,7 +1,9 @@
+import { guide as bestTrackingSoftware } from './best-proposal-tracking-software'
 import { guide as clientNotResponding } from './client-not-responding-to-proposal'
 import { guide as clientSaysTooExpensive } from './client-says-proposal-too-expensive'
 import { guide as clientNeedsToThink } from './client-says-they-need-to-think-about-it'
 import { guide as didClientForward } from './did-my-client-forward-my-proposal'
+import { guide as docsendAlternatives } from './docsend-alternatives'
 import { guide as whyYouLost } from './find-out-why-you-lost-a-proposal'
 import { guide as reachDecisionMaker } from './get-proposal-to-decision-maker'
 import { guide as howLongToWait } from './how-long-to-wait-after-sending-proposal'
@@ -55,6 +57,11 @@ export const STAGES: ReadonlyArray<{
     label: 'Won or lost',
     blurb: 'Closing the deal, and learning from the ones that got away.',
   },
+  {
+    key: 'choosing',
+    label: 'Choosing a tool',
+    blurb: 'Honest comparisons, including where Closewatch is the wrong pick.',
+  },
 ]
 
 /**
@@ -66,6 +73,8 @@ export const STAGES: ReadonlyArray<{
  * of its own.
  */
 export const GUIDES: Array<Guide> = [
+  bestTrackingSoftware,
+  docsendAlternatives,
   howToEmailAProposal,
   pricingPageTime,
   isClientInterested,

@@ -166,7 +166,7 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
     name: 'DocSend',
     category: 'a document sharing and tracking tool',
     pricingUrl: 'https://www.docsend.com/pricing/',
-    price: 'from around $45/user/mo',
+    price: 'from around $10/user/mo',
     title: 'Closewatch vs DocSend: a cheaper DocSend alternative',
     description:
       'DocSend is the brand in document tracking, priced per user with no free plan. Closewatch is narrower, scores intent, and starts free.',
@@ -188,7 +188,7 @@ export const COMPETITORS: Record<Competitor['slug'], Competitor> = {
       'Proposals are the document that matters, and a general file-sharing tool is more than you need.',
       'You want a pipeline ordered by who to chase, not a list of documents with view counts.',
       'You want the reasons behind the score, because the reasons are what you act on.',
-      'Per-user pricing with no free plan is a hard sell for a five-person agency, and $45 a seat buys a lot of other software.',
+      'Per-user pricing with no free plan is a hard sell for a five-person agency, and Standard, the plan most teams end up on, is $45 a seat.',
     ],
     table: [
       {
