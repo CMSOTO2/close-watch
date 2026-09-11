@@ -61,7 +61,7 @@ Knowing it was opened is the boring part. The useful information is in the patte
 
 **Opened once, several minutes, reached the end.** Genuine consideration. This is your best follow-up window and it closes fast.
 
-**Opened, then opened again a couple of days later.** Someone is thinking about it, or has shown it to a colleague. A return visit is one of the strongest positive signals you get without the client saying anything, since nobody reopens a proposal they have mentally rejected.
+**Opened, then opened again a couple of days later.** Someone is thinking about it, or has shown it to a colleague. A return visit is one of the strongest positive signals you get without the client saying anything, since nobody reopens a proposal they have mentally rejected. See [what it means when a client opens your proposal multiple times](/guides/client-opened-proposal-multiple-times).
 
 **A link you sent to one person turns into two or three distinct readers.** Often the proposal is being circulated internally. Ask who else is involved in the decision, and you will usually be right, though the same person on a second device or a cleared browser looks identical, so treat it as a strong hint rather than a fact.
 

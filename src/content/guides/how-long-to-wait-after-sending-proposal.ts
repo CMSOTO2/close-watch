@@ -63,7 +63,7 @@ Short beats thorough. Each of these is under 60 words, and each asks one questio
 
 > Hi Dana, if the proposal is making the rounds internally, I am glad to join a short call with whoever else is weighing in, or send a one-page summary they can read in two minutes. Which would help more?
 
-None of these says "just checking in", and none tells the client you watched them read it. The tracking data changes when you write and what you lead with. It does not need to be mentioned. For eleven more, one per situation, see the [proposal follow-up email templates](/guides/proposal-follow-up-email-templates).
+None of these says "just checking in", and none tells the client you watched them read it. The tracking data changes when you write and what you lead with. It does not need to be mentioned. For eleven more, one per situation, see the [proposal follow-up email templates](/guides/proposal-follow-up-email-templates). For the whole sequence from first email to last, see [how to follow up on a proposal](/guides/how-to-follow-up-on-a-proposal).
 
 ## When this advice is wrong
 

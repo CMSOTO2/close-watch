@@ -11,7 +11,7 @@ export const guide: Guide = {
   dateModified: '2026-09-11',
   body: `Eleven short follow-up emails for after you send a proposal, one for each situation: no reply after four days, never opened, skimmed, read closely, reopened, forwarded, stuck on pricing, "we need to think about it", after a call, the last email, and reviving a proposal months later. Each is under 60 words.
 
-Copy them, change the names and the specifics, and send the one that matches what you know. If you do not know which situation you are in, use the first.
+Copy them, change the names and the specifics, and send the one that matches what you know. If you do not know which situation you are in, use the first. For how they fit into a three-week plan, see [how to follow up on a proposal](/guides/how-to-follow-up-on-a-proposal).
 
 ## Three rules every template follows
 

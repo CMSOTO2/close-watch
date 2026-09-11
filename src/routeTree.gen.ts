@@ -17,6 +17,7 @@ import { Route as DpaRouteImport } from './routes/dpa'
 import { Route as GuidesRouteImport } from './routes/guides'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProposalTrackingRouteImport } from './routes/proposal-tracking'
 import { Route as ProposalTrackingForAgenciesRouteImport } from './routes/proposal-tracking-for-agencies'
 import { Route as ProposalTrackingForFractionalExecutivesRouteImport } from './routes/proposal-tracking-for-fractional-executives'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -74,6 +75,11 @@ const LoginRoute = LoginRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProposalTrackingRoute = ProposalTrackingRouteImport.update({
+  id: '/proposal-tracking',
+  path: '/proposal-tracking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProposalTrackingForAgenciesRoute =
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/guides': typeof GuidesRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/proposal-tracking': typeof ProposalTrackingRoute
   '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
   '/proposal-tracking-for-fractional-executives': typeof ProposalTrackingForFractionalExecutivesRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/dpa': typeof DpaRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/proposal-tracking': typeof ProposalTrackingRoute
   '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
   '/proposal-tracking-for-fractional-executives': typeof ProposalTrackingForFractionalExecutivesRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/guides': typeof GuidesRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
+  '/proposal-tracking': typeof ProposalTrackingRoute
   '/proposal-tracking-for-agencies': typeof ProposalTrackingForAgenciesRoute
   '/proposal-tracking-for-fractional-executives': typeof ProposalTrackingForFractionalExecutivesRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -269,6 +278,7 @@ export interface FileRouteTypes {
     | '/guides'
     | '/login'
     | '/privacy'
+    | '/proposal-tracking'
     | '/proposal-tracking-for-agencies'
     | '/proposal-tracking-for-fractional-executives'
     | '/robots.txt'
@@ -296,6 +306,7 @@ export interface FileRouteTypes {
     | '/dpa'
     | '/login'
     | '/privacy'
+    | '/proposal-tracking'
     | '/proposal-tracking-for-agencies'
     | '/proposal-tracking-for-fractional-executives'
     | '/robots.txt'
@@ -325,6 +336,7 @@ export interface FileRouteTypes {
     | '/guides'
     | '/login'
     | '/privacy'
+    | '/proposal-tracking'
     | '/proposal-tracking-for-agencies'
     | '/proposal-tracking-for-fractional-executives'
     | '/robots.txt'
@@ -355,6 +367,7 @@ export interface RootRouteChildren {
   GuidesRoute: typeof GuidesRouteWithChildren
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProposalTrackingRoute: typeof ProposalTrackingRoute
   ProposalTrackingForAgenciesRoute: typeof ProposalTrackingForAgenciesRoute
   ProposalTrackingForFractionalExecutivesRoute: typeof ProposalTrackingForFractionalExecutivesRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
@@ -426,6 +439,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/proposal-tracking': {
+      id: '/proposal-tracking'
+      path: '/proposal-tracking'
+      fullPath: '/proposal-tracking'
+      preLoaderRoute: typeof ProposalTrackingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/proposal-tracking-for-agencies': {
@@ -603,6 +623,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuidesRoute: GuidesRouteWithChildren,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
+  ProposalTrackingRoute: ProposalTrackingRoute,
   ProposalTrackingForAgenciesRoute: ProposalTrackingForAgenciesRoute,
   ProposalTrackingForFractionalExecutivesRoute:
     ProposalTrackingForFractionalExecutivesRoute,

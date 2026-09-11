@@ -39,7 +39,7 @@ If the proposal went as a tracked link, the reading history adds evidence the cl
 
 **A download or a print.** Taking it offline to keep, mark up or bring to a meeting is a deliberate step past reading.
 
-Closewatch combines these into a single score, labelled cold, warm or hot, and lists the reasons behind it in plain words. A proposal turns hot at 65 out of 100, which in practice takes several of these together, since no one signal gets there on its own.
+Closewatch combines these into a single score, labelled cold, warm or hot, and lists the reasons behind it in plain words. A proposal turns hot at 65 out of 100, which in practice takes several of these together, since no one signal gets there on its own. See [how to score proposal engagement](/guides/how-to-score-proposal-engagement) for the full model.
 
 ## Signals that feel good and mean little
 

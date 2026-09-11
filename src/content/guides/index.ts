@@ -1,5 +1,7 @@
 import { guide as bestTrackingSoftware } from './best-proposal-tracking-software'
+import { guide as downloadedProposal } from './can-you-tell-if-someone-downloaded-a-proposal'
 import { guide as clientNotResponding } from './client-not-responding-to-proposal'
+import { guide as openedMultipleTimes } from './client-opened-proposal-multiple-times'
 import { guide as clientSaysTooExpensive } from './client-says-proposal-too-expensive'
 import { guide as clientNeedsToThink } from './client-says-they-need-to-think-about-it'
 import { guide as didClientForward } from './did-my-client-forward-my-proposal'
@@ -8,9 +10,12 @@ import { guide as whyYouLost } from './find-out-why-you-lost-a-proposal'
 import { guide as reachDecisionMaker } from './get-proposal-to-decision-maker'
 import { guide as howLongToWait } from './how-long-to-wait-after-sending-proposal'
 import { guide as howToEmailAProposal } from './how-to-email-a-proposal'
+import { guide as howToFollowUp } from './how-to-follow-up-on-a-proposal'
 import { guide as howToKnowIfClientRead } from './how-to-know-if-client-read-proposal'
+import { guide as scoringEngagement } from './how-to-score-proposal-engagement'
 import { guide as isClientInterested } from './how-to-tell-if-client-is-interested'
 import { guide as pricingPageTime } from './time-spent-on-proposal-pricing-page'
+import { guide as whatIsProposalAnalytics } from './what-is-proposal-analytics'
 import { guide as followUpTemplates } from './proposal-follow-up-email-templates'
 import { guide as proposalTrackingVsEmailOpenTracking } from './proposal-tracking-vs-email-open-tracking'
 import { guide as pdfOrLink } from './send-proposal-as-pdf-or-link'
@@ -73,6 +78,11 @@ export const STAGES: ReadonlyArray<{
  * of its own.
  */
 export const GUIDES: Array<Guide> = [
+  howToFollowUp,
+  whatIsProposalAnalytics,
+  scoringEngagement,
+  openedMultipleTimes,
+  downloadedProposal,
   bestTrackingSoftware,
   docsendAlternatives,
   howToEmailAProposal,

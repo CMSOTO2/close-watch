@@ -1,6 +1,6 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
-import { ContentPage } from '#/components/content-page'
+import { ContentPage, prose } from '#/components/content-page'
 import { GuideMarkdown } from '#/components/guides/guide-markdown'
 import { Button } from '#/components/ui/button'
 import { getGuide } from '#/content/guides'
@@ -110,6 +110,15 @@ function GuidePage() {
       }
     >
       <GuideMarkdown>{guide.body}</GuideMarkdown>
+      {/* Every guide links up to the category page, which links down to every
+          guide. One line here instead of a link written into 22 bodies. */}
+      <p className={`mt-10 ${prose.p}`}>
+        New to proposal tracking? Start with{' '}
+        <Link to="/proposal-tracking" className={prose.a}>
+          what it is and how it works
+        </Link>
+        .
+      </p>
     </ContentPage>
   )
 }

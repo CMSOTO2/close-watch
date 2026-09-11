@@ -49,6 +49,14 @@ function GuidesIndex() {
             Straight answers for the days between sending a proposal and hearing
             back, in the order the questions come up. No pitch, no padding, and
             each says plainly where the honest answer isn&rsquo;t Closewatch.
+            New to it? Start with{' '}
+            <Link
+              to="/proposal-tracking"
+              className="font-medium text-brand underline decoration-current decoration-1 underline-offset-[3px] hover:text-ink"
+            >
+              what proposal tracking is
+            </Link>
+            .
           </p>
 
           {/* Grouped by stage in the life of a sent proposal, in order, rather

@@ -34,7 +34,25 @@ const PAGES: Array<{ path: string; lastmod: string }> = [
   { path: '/vs/pandadoc', lastmod: '2026-09-05' },
   { path: '/vs/docsend', lastmod: '2026-09-05' },
   { path: '/about', lastmod: '2026-09-09' },
+  { path: '/proposal-tracking', lastmod: '2026-09-11' },
   { path: '/guides', lastmod: '2026-09-11' },
+  {
+    path: '/guides/how-to-follow-up-on-a-proposal',
+    lastmod: '2026-09-11',
+  },
+  { path: '/guides/what-is-proposal-analytics', lastmod: '2026-09-11' },
+  {
+    path: '/guides/how-to-score-proposal-engagement',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/client-opened-proposal-multiple-times',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/can-you-tell-if-someone-downloaded-a-proposal',
+    lastmod: '2026-09-11',
+  },
   {
     path: '/guides/best-proposal-tracking-software',
     lastmod: '2026-09-11',

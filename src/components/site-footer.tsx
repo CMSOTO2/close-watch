@@ -20,6 +20,7 @@ import { PageContainer } from '#/components/page-container'
  * wordmark and a badge next to a bare link list reads lopsided otherwise.
  */
 const PRODUCT = [
+  { label: 'Proposal tracking', to: '/proposal-tracking' },
   { label: 'vs Proposify', to: '/vs/proposify' },
   { label: 'vs PandaDoc', to: '/vs/pandadoc' },
   { label: 'vs DocSend', to: '/vs/docsend' },

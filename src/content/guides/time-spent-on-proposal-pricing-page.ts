@@ -34,7 +34,7 @@ The time alone is ambiguous. The sequence around it is not.
 
 There is no universal benchmark, and anyone quoting one is guessing. What counts depends on how much is on the page: a single figure takes seconds to read, and a table of options with payment terms takes minutes.
 
-For scoring, Closewatch uses fixed thresholds: 15 seconds on pricing counts as a signal, 40 seconds as a stronger one, and 90 seconds or more as one of the heaviest signals in its intent score, alongside return visits and new readers. Compare against your own proposals over time rather than against anyone else's.
+For scoring, Closewatch uses fixed thresholds: 15 seconds on pricing counts as a signal, 40 seconds as a stronger one, and 90 seconds or more as one of the heaviest signals in its intent score, alongside return visits and new readers. Compare against your own proposals over time rather than against anyone else's. For how pricing time combines with the other signals, see [how to score proposal engagement](/guides/how-to-score-proposal-engagement).
 
 ## What to do with it
 

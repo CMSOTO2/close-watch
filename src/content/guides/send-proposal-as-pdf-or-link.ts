@@ -50,7 +50,7 @@ Most people send a PDF because it is what they have always done. That is a reaso
 
 You do not have to choose between tracking and giving the client a file. Send the link in the email, and let the viewer offer a download button. Most clients read it in the browser; the ones who want a copy take one.
 
-A download is itself a useful signal: someone wanted to keep it, print it or share it. Closewatch records downloads and prints alongside reads. After that the copy on their machine is as untracked as any attachment, which is the honest trade.
+A download is itself a useful signal: someone wanted to keep it, print it or share it. See [can you tell if someone downloaded your proposal](/guides/can-you-tell-if-someone-downloaded-a-proposal). Closewatch records downloads and prints alongside reads. After that the copy on their machine is as untracked as any attachment, which is the honest trade.
 
 ## What can go wrong with a link
 
