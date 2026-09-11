@@ -1,7 +1,8 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { Wordmark } from '#/components/brand-mark'
 import { LoginForm } from '#/components/auth/login-form'
-import { safeNext } from '#/lib/auth-redirect'
+import { getSessionUser } from '#/lib/auth'
+import { AFTER_SIGN_IN, safeNext } from '#/lib/auth-redirect'
 
 export const Route = createFileRoute('/login')({
   // `next` is where to go after signing in, and it is whatever the URL says,
@@ -11,6 +12,15 @@ export const Route = createFileRoute('/login')({
   validateSearch: (search: Record<string, unknown>): { next?: string } => {
     const next = safeNext(search.next)
     return next ? { next } : {}
+  },
+  // Someone already signed in has nothing to do here. The public header's
+  // Sign in button used to land a signed-in owner on this form, which read as
+  // "sign out first" when all they wanted was their dashboard back. Verified
+  // server-side with getUser rather than trusting the cookie, because the
+  // redirect target can be a page of someone's proposals.
+  beforeLoad: async ({ search }) => {
+    const user = await getSessionUser()
+    if (user) throw redirect({ href: search.next ?? AFTER_SIGN_IN })
   },
   // A sign-in form has nothing to offer a search result, and an indexed one
   // competes with the landing page for the brand query. `follow` so the links

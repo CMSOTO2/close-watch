@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import { AccountMenu } from '#/components/account-menu'
+import { AppFooter } from '#/components/app-footer'
 import { Wordmark } from '#/components/brand-mark'
 import { PageContainer } from '#/components/page-container'
 import { ThemeToggle } from '#/components/theme-toggle'
@@ -52,8 +53,10 @@ function AuthedLayout() {
     await router.navigate({ to: '/login' })
   }
 
+  // A flex column so the footer sits at the bottom of a short page (an empty
+  // dashboard, settings) instead of floating under the last card.
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="flex min-h-screen flex-col bg-canvas">
       <header className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur">
         <PageContainer className="flex items-center justify-between gap-4 py-3">
           <Link
@@ -85,7 +88,10 @@ function AuthedLayout() {
           </nav>
         </PageContainer>
       </header>
-      <Outlet />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+      <AppFooter />
     </div>
   )
 }
