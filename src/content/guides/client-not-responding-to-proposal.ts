@@ -2,6 +2,7 @@ import type { Guide } from './types'
 
 export const guide: Guide = {
   slug: 'client-not-responding-to-proposal',
+  stage: 'silence',
   title: 'What to Do When a Client Is Not Responding to Your Proposal',
   description:
     'Silence after a proposal means something different if it was never opened, skimmed, reread or forwarded. Four scenarios, and the right follow-up for each.',
@@ -41,7 +42,7 @@ If the proposal went out as a tracked link, the reading history tells you which 
 
 **What it means:** usually a price or scope mismatch. They looked for the number, did not like it, and did not know how to start that conversation. Occasionally it means the first page did not make them want to read the second.
 
-**What to do:** make the price easy to talk about. Offer a smaller first phase, a different payment structure, or a quick call to adjust the scope. Something like: "If the full scope is more than you want to commit to right now, there is a smaller first phase that gets you the audit and the roadmap for about a third of the cost. Worth a look?"
+**What to do:** make the price easy to talk about. Offer a smaller first phase, a different payment structure, or a quick call to adjust the scope. Something like: "If the full scope is more than you want to commit to right now, there is a smaller first phase that gets you the audit and the roadmap for about a third of the cost. Worth a look?" If they do come back and say it costs too much, see [what to do when a client says your proposal is too expensive](/guides/client-says-proposal-too-expensive).
 
 ### Scenario 3: Opened repeatedly, no reply
 
@@ -57,7 +58,7 @@ If the proposal went out as a tracked link, the reading history tells you which 
 
 **What it means:** the proposal has often been forwarded to other decision makers. It can also be your contact on a phone, a second browser, or after clearing cookies, so treat it as a strong hint rather than proof. You know who you sent it to; the pattern is yours to interpret.
 
-**What to do:** get in front of the people now reading it. Offer a short call with the wider group, or ask your contact what the other readers care about. Proposals that circulate without their author tend to get judged on price alone, because price is the only thing that survives being summarised in a forwarded email.
+**What to do:** get in front of the people now reading it. Offer a short call with the wider group, or ask your contact what the other readers care about. Proposals that circulate without their author tend to get judged on price alone, because price is the only thing that survives being summarised in a forwarded email. See [how to tell if a client forwarded your proposal](/guides/did-my-client-forward-my-proposal) for how to read the signal.
 
 ## When you cannot see which one it is
 

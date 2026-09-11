@@ -2,6 +2,7 @@ import type { Guide } from './types'
 
 export const guide: Guide = {
   slug: 'track-pdf-proposals',
+  stage: 'reading',
   title: 'How to Track a PDF Proposal',
   description:
     'An emailed PDF cannot be tracked, and nothing embedded in the file changes that. Send it as a link instead. Three ways to do that, and what each one can see.',
@@ -74,7 +75,7 @@ Put the PDF on your own website or a file host and send the URL.
 
 ## The trade-off of sending a link
 
-A link is not always the easier thing to receive.
+A link is not always the easier thing to receive. For the whole trade-off, see [should you send a proposal as a PDF or a link](/guides/send-proposal-as-pdf-or-link).
 
 Some procurement teams and some older clients want an attachment they can file, and a few corporate filters are wary of links to domains they have not seen before. If a client asks for the file, let them have it: most tracking tools include a download button. A download is itself a useful signal, but after that the copy on their machine is as untracked as any attachment.
 

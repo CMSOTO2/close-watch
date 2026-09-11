@@ -36,6 +36,19 @@ const PAGES: Array<{ path: string; lastmod: string }> = [
   { path: '/about', lastmod: '2026-09-09' },
   { path: '/guides', lastmod: '2026-09-11' },
   {
+    path: '/guides/did-my-client-forward-my-proposal',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/client-says-proposal-too-expensive',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/proposal-follow-up-email-templates',
+    lastmod: '2026-09-11',
+  },
+  { path: '/guides/send-proposal-as-pdf-or-link', lastmod: '2026-09-11' },
+  {
     path: '/guides/client-not-responding-to-proposal',
     lastmod: '2026-09-11',
   },

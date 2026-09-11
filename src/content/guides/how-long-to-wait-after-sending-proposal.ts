@@ -2,6 +2,7 @@ import type { Guide } from './types'
 
 export const guide: Guide = {
   slug: 'how-long-to-wait-after-sending-proposal',
+  stage: 'follow-up',
   title: 'How Long to Wait After Sending a Proposal',
   description:
     'Wait three to five business days if the proposal was opened, less if the client came back to it, and resend rather than chase if it sits unopened for four days.',
@@ -62,7 +63,7 @@ Short beats thorough. Each of these is under 60 words, and each asks one questio
 
 > Hi Dana, if the proposal is making the rounds internally, I am glad to join a short call with whoever else is weighing in, or send a one-page summary they can read in two minutes. Which would help more?
 
-None of these says "just checking in", and none tells the client you watched them read it. The tracking data changes when you write and what you lead with. It does not need to be mentioned.
+None of these says "just checking in", and none tells the client you watched them read it. The tracking data changes when you write and what you lead with. It does not need to be mentioned. For eleven more, one per situation, see the [proposal follow-up email templates](/guides/proposal-follow-up-email-templates).
 
 ## When this advice is wrong
 

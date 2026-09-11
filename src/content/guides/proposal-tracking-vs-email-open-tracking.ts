@@ -2,13 +2,14 @@ import type { Guide } from './types'
 
 export const guide: Guide = {
   slug: 'proposal-tracking-vs-email-open-tracking',
+  stage: 'reading',
   title: 'Proposal Tracking vs Email Open Tracking',
   description:
-    'Email open tracking tells you a message was rendered. Proposal tracking tells you the document was read. Why the difference matters, and when the free pixel is enough.',
+    'Email open tracking shows a message was rendered. Proposal tracking shows the document was read. Why it matters, and when the free pixel is enough.',
   dek: 'One measures the envelope. The other measures the letter. They get treated as the same product, and they are not.',
   datePublished: '2026-09-10',
   dateModified: '2026-09-10',
-  body: `Email open tracking fires a pixel when your message renders, so it tells you the email was opened, not that the proposal was read. Proposal tracking serves the document itself from a link, so it records time spent, pages viewed and return visits. If you want to know whether the client read your pricing, only the second one answers that.
+  body: `Email open tracking fires a pixel when your message renders, so it tells you the email was opened, not that the proposal was read. Proposal tracking serves the document from a link, so it records time spent, pages viewed and return visits. If you want to know whether the client read your pricing, only the second one answers that.
 
 This page exists because the two get treated as the same product and they measure completely different events.
 

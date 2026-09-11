@@ -2,13 +2,14 @@ import type { Guide } from './types'
 
 export const guide: Guide = {
   slug: 'how-to-know-if-client-read-proposal',
+  stage: 'reading',
   title: 'How to Know If a Client Read Your Proposal',
   description:
-    'Four ways to tell whether a client opened your proposal, ranked by what actually works. A tracked link shows opens, time spent, pages read and return visits. An emailed PDF shows nothing.',
+    'Four ways to tell if a client opened your proposal, ranked. A tracked link shows opens, time spent, pages read and return visits. An emailed PDF shows nothing.',
   dek: 'Four methods, ranked by what actually works, and why an emailed PDF gives you nothing at all.',
   datePublished: '2026-09-10',
   dateModified: '2026-09-11',
-  body: `The reliable way is to send the proposal as a tracked link instead of an email attachment. A tracking tool then shows you when the client opened it, how long they spent, which pages they read, whether they reached the pricing section, and how many times they came back. An emailed PDF gives you none of this: once it leaves your outbox, it is a file on someone else's computer.
+  body: `Send the proposal as a tracked link instead of an email attachment. A tracking tool then shows when the client opened it, how long they spent, which pages they read, whether they reached pricing, and how many times they came back. An emailed PDF shows none of this: once sent, it is a file on someone else's computer.
 
 Everything else is guesswork, and most of it is worse guesswork than people realize.
 
@@ -108,7 +109,7 @@ Yes. On Closewatch the link opens like any other web page: no account, no plugin
 
 ### What if the client forwards my proposal to someone else?
 
-Closewatch counts distinct readers on each link: a browser that has not opened it before, marked the first time it does. So the dashboard reports "opened by a second reader" rather than claiming a forward outright, because that is what was actually observed. You know who you sent the link to and the tool does not, so the inference is yours to make, but when one link turns into three readers in an afternoon, it usually went round the room.
+Closewatch counts distinct readers on each link: a browser that has not opened it before, marked the first time it does. So the dashboard reports "opened by a second reader" rather than claiming a forward outright, because that is what was actually observed. You know who you sent the link to and the tool does not, so the inference is yours to make, but when one link turns into three readers in an afternoon, it usually went round the room. See [how to tell if a client forwarded your proposal](/guides/did-my-client-forward-my-proposal) for how to read the pattern.
 
 ### Is it worth paying for proposal tracking if I only send a few proposals a month?
 

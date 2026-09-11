@@ -1,9 +1,55 @@
 import { guide as clientNotResponding } from './client-not-responding-to-proposal'
+import { guide as clientSaysTooExpensive } from './client-says-proposal-too-expensive'
+import { guide as didClientForward } from './did-my-client-forward-my-proposal'
 import { guide as howLongToWait } from './how-long-to-wait-after-sending-proposal'
 import { guide as howToKnowIfClientRead } from './how-to-know-if-client-read-proposal'
+import { guide as followUpTemplates } from './proposal-follow-up-email-templates'
 import { guide as proposalTrackingVsEmailOpenTracking } from './proposal-tracking-vs-email-open-tracking'
+import { guide as pdfOrLink } from './send-proposal-as-pdf-or-link'
 import { guide as trackPdfProposals } from './track-pdf-proposals'
-import type { Guide } from './types'
+import type { Guide, GuideStage } from './types'
+
+/**
+ * The stages a sent proposal passes through, in order, and how the index
+ * labels them. A stage with no guides yet is simply not shown, so 'closing'
+ * waits here for its first one rather than being a heading over nothing.
+ */
+export const STAGES: ReadonlyArray<{
+  key: GuideStage
+  label: string
+  blurb: string
+}> = [
+  {
+    key: 'sending',
+    label: 'Sending it',
+    blurb: 'How to deliver a proposal so you can see what happens next.',
+  },
+  {
+    key: 'reading',
+    label: 'Is it being read?',
+    blurb: 'What you can know once it lands, and what the signals mean.',
+  },
+  {
+    key: 'silence',
+    label: 'When it goes quiet',
+    blurb: 'Why clients stop replying, and how to tell which reason it is.',
+  },
+  {
+    key: 'follow-up',
+    label: 'Following up',
+    blurb: 'When to write, and what to say when you do.',
+  },
+  {
+    key: 'negotiating',
+    label: 'When they come back',
+    blurb: 'Objections, pricing, and getting to a decision.',
+  },
+  {
+    key: 'closing',
+    label: 'Won or lost',
+    blurb: 'Closing the deal, and learning from the ones that got away.',
+  },
+]
 
 /**
  * Newest first — this is the order the index page lists them in.
@@ -14,6 +60,10 @@ import type { Guide } from './types'
  * of its own.
  */
 export const GUIDES: Array<Guide> = [
+  didClientForward,
+  clientSaysTooExpensive,
+  followUpTemplates,
+  pdfOrLink,
   clientNotResponding,
   howLongToWait,
   trackPdfProposals,
