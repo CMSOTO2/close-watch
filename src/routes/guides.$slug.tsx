@@ -1,9 +1,7 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
+import { ContentPage } from '#/components/content-page'
 import { GuideMarkdown } from '#/components/guides/guide-markdown'
-import { PageContainer } from '#/components/page-container'
-import { SiteHeader } from '#/components/landing/site-header'
-import { SiteFooter } from '#/components/site-footer'
 import { Button } from '#/components/ui/button'
 import { getGuide } from '#/content/guides'
 import {
@@ -75,68 +73,37 @@ function GuidePage() {
   const guide = Route.useLoaderData()
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <SiteHeader />
-
-      <main>
-        <PageContainer asMain className="py-14 sm:py-16">
-          {/* A blog post reads best as its own centered column, not left-aligned
-              under the wide marketing container every other public page uses:
-              680px keeps lines around 65-75 characters regardless of viewport,
-              so the eye tracks back to the start of the next line without
-              losing it. */}
-          {/* Selected text uses the brand fill and its paired ink: 7.5:1 light,
-              8.9:1 dark, and the highlight itself stands clear of the canvas.
-              The browser default kept the text colour, which put brand links
-              and ink-2 body text on an unknown blue. */}
-          <div className="mx-auto max-w-[680px] selection:bg-brand-fill selection:text-brand-fill-ink">
-            <Link
-              to="/guides"
-              className="inline-flex items-center gap-1.5 text-[13px] text-ink-2 transition-colors hover:text-ink"
-            >
-              <ArrowLeft aria-hidden className="size-3.5" />
-              Guides
+    <ContentPage
+      back={{ to: '/guides', label: 'Guides' }}
+      title={guide.title}
+      dek={guide.dek}
+      meta={
+        <>
+          Published {guide.datePublished}
+          {guide.dateModified !== guide.datePublished &&
+            ` · Updated ${guide.dateModified}`}
+        </>
+      }
+      after={
+        <div className="mt-14 border-t border-line pt-8">
+          <p className="font-display text-lg font-semibold tracking-[-0.015em]">
+            Put a real proposal through Closewatch.
+          </p>
+          <p className="mt-2 text-[14px] leading-relaxed text-ink-2">
+            Two proposals can be live and read at once on the free plan, all the
+            tracking switched on. $19 a month for unlimited, with follow-up
+            alerts.
+          </p>
+          <Button asChild size="lg" className="mt-5">
+            <Link to="/login">
+              Start free
+              <ArrowRight aria-hidden className="size-4" />
             </Link>
-
-            <article className="mt-6">
-              <h1 className="font-display text-3xl font-semibold tracking-[-0.03em] sm:text-[34px]">
-                {guide.title}
-              </h1>
-              <p className="mt-4 text-[17px] leading-relaxed text-ink-2">
-                {guide.dek}
-              </p>
-              <p className="kicker mt-4">
-                Published {guide.datePublished}
-                {guide.dateModified !== guide.datePublished &&
-                  ` · Updated ${guide.dateModified}`}
-              </p>
-
-              <div className="mt-2">
-                <GuideMarkdown>{guide.body}</GuideMarkdown>
-              </div>
-            </article>
-
-            <div className="mt-14 border-t border-line pt-8">
-              <p className="font-display text-lg font-semibold tracking-[-0.015em]">
-                Put a real proposal through Closewatch.
-              </p>
-              <p className="mt-2 text-[14px] leading-relaxed text-ink-2">
-                Two proposals can be live and read at once on the free plan, all
-                the tracking switched on. $19 a month for unlimited, with
-                follow-up alerts.
-              </p>
-              <Button asChild size="lg" className="mt-5">
-                <Link to="/login">
-                  Start free
-                  <ArrowRight aria-hidden className="size-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </PageContainer>
-      </main>
-
-      <SiteFooter />
-    </div>
+          </Button>
+        </div>
+      }
+    >
+      <GuideMarkdown>{guide.body}</GuideMarkdown>
+    </ContentPage>
   )
 }

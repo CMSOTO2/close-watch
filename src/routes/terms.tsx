@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { canonical, socialMeta } from '#/lib/seo'
+import { prose } from '#/components/content-page'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
 import {
   FREE_DRAFT_PROPOSALS,
@@ -76,10 +77,7 @@ function Terms() {
         <p>
           You are responsible for meeting any disclosure obligation that applies
           to you. What Closewatch records is set out in the{' '}
-          <Link
-            to="/privacy"
-            className="font-medium text-brand hover:underline"
-          >
+          <Link to="/privacy" className={prose.a}>
             privacy policy
           </Link>
           .

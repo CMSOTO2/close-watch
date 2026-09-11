@@ -2,26 +2,23 @@ import { Markdown } from '@tanstack/markdown/react'
 import type { MarkdownComponents } from '@tanstack/markdown/react'
 import type { ComponentPropsWithoutRef } from 'react'
 import type { MarkdownInput } from '@tanstack/markdown'
+import { prose } from '#/components/content-page'
 import { cn } from '#/lib/utils'
 
 /**
  * Renders a guide body to match the rest of the site's type rather than the
- * typography plugin's default gray prose. Internal links stay plain <a>
- * rather than the router's <Link>: these are static content pages, a full
- * navigation between two of them costs nothing, and it keeps this map free of
- * the router's literal-path typing.
+ * typography plugin's default gray prose. The element styles live in `prose`
+ * so the legal pages and About, written in JSX, read the same as this does.
+ * Internal links stay plain <a> rather than the router's <Link>: these are
+ * static content pages, a full navigation between two of them costs nothing,
+ * and it keeps this map free of the router's literal-path typing.
  */
 function Anchor(props: ComponentPropsWithoutRef<'a'>) {
   const external = props.href?.startsWith('http') ?? false
   return (
     <a
       {...props}
-      // The underline is what marks a link here: brand against the ink-2 body
-      // text is only 1.4:1, so it has to be drawn in the link's own colour
-      // (5:1 light, 8.9:1 dark) rather than brand-line, which was 1.3:1 and
-      // close to invisible. Hover goes to ink, not brand-2, which is 3:1 on the
-      // light canvas.
-      className="font-medium text-brand underline decoration-current decoration-1 underline-offset-[3px] hover:text-ink"
+      className={prose.a}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
     />
@@ -29,41 +26,14 @@ function Anchor(props: ComponentPropsWithoutRef<'a'>) {
 }
 
 const components: MarkdownComponents = {
-  h2: (props) => (
-    <h2
-      {...props}
-      className="mt-12 font-display text-2xl font-semibold tracking-[-0.02em] first:mt-0 sm:text-[26px]"
-    />
-  ),
-  h3: (props) => (
-    <h3
-      {...props}
-      className="mt-8 font-display text-lg font-semibold tracking-[-0.015em]"
-    />
-  ),
-  p: (props) => (
-    <p {...props} className="mt-4 text-[15px] leading-relaxed text-ink-2" />
-  ),
+  h2: (props) => <h2 {...props} className={prose.h2} />,
+  h3: (props) => <h3 {...props} className={prose.h3} />,
+  p: (props) => <p {...props} className={cn('mt-4', prose.p)} />,
   a: Anchor,
-  strong: (props) => <strong {...props} className="font-semibold text-ink" />,
-  ul: (props) => (
-    <ul
-      {...props}
-      className="mt-4 flex list-disc flex-col gap-2 pl-5 text-[15px] leading-relaxed text-ink-2 marker:text-ink-3"
-    />
-  ),
-  ol: (props) => (
-    <ol
-      {...props}
-      className="mt-4 flex list-decimal flex-col gap-2 pl-5 text-[15px] leading-relaxed text-ink-2 marker:text-ink-3"
-    />
-  ),
-  blockquote: (props) => (
-    <blockquote
-      {...props}
-      className="mt-4 border-l-2 border-brand-line pl-4 text-ink-2 italic"
-    />
-  ),
+  strong: (props) => <strong {...props} className={prose.strong} />,
+  ul: (props) => <ul {...props} className={cn('mt-4', prose.ul)} />,
+  ol: (props) => <ol {...props} className={cn('mt-4', prose.ol)} />,
+  blockquote: (props) => <blockquote {...props} className={prose.blockquote} />,
   table: (props) => (
     // Not w-full: a table of short "Yes/No" values stretched to the full
     // 680px column reads as a grid of empty cells. Sized to its own content

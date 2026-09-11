@@ -11,9 +11,11 @@ import { getSupabaseBrowserClient } from '#/lib/supabase/client'
  * to decide one word. The server renders the signed-out label and this swaps
  * it after hydration, so only signed-in visitors ever see it change.
  *
- * Shared by every public header (SiteHeader, and LegalPage's own bar) so none
- * of them tells a signed-in owner to sign in. Without it an owner who opened a
- * guide or the terms had no way back to the app but the browser's back button.
+ * Every public page's header is SiteHeader now (the legal pages had a bar of
+ * their own until they moved onto ContentPage), so this has one caller; it
+ * stays its own module so a second header cannot quietly go without it. Without
+ * it an owner who opened a guide or the terms had no way back to the app but
+ * the browser's back button.
  */
 export function useSignedIn(): boolean {
   const [signedIn, setSignedIn] = useState(false)

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { prose } from '#/components/content-page'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
 import { canonical, socialMeta } from '#/lib/seo'
 
@@ -52,10 +53,7 @@ function Dpa() {
         <p>
           For your own account — your email, your name, your billing details —
           we are the controller, and the{' '}
-          <Link
-            to="/privacy"
-            className="underline underline-offset-2 hover:text-ink"
-          >
+          <Link to="/privacy" className={prose.a}>
             privacy policy
           </Link>{' '}
           covers that half.
@@ -147,10 +145,7 @@ function Dpa() {
       <Clause heading="Signing it">
         <p>
           These terms apply to every account as part of the{' '}
-          <Link
-            to="/terms"
-            className="underline underline-offset-2 hover:text-ink"
-          >
+          <Link to="/terms" className={prose.a}>
             terms of service
           </Link>
           , so there is nothing to countersign for them to bind us. If your

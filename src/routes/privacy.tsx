@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { prose } from '#/components/content-page'
 import { Bullets, Clause, LegalPage } from '#/components/legal-page'
 import { canonical, socialMeta } from '#/lib/seo'
 import { SHARE_LINK_TTL_DAYS } from '#/constants'
@@ -99,14 +100,13 @@ function Privacy() {
           cannot be read by JavaScript, and lasts a year.
         </p>
         <p>
-          Our own pages &mdash; the home page, sign-in and the dashboard
-          &mdash; count visits with Cloudflare Web Analytics, which sets no
-          cookies and does not fingerprint anyone. Those pages also run a
-          Google Ads tag, which does set an advertising cookie, so that we can
-          tell whether an ad we paid for led to a signup. Neither ever loads
-          on a share link: the page a reader is sent runs no analytics or
-          advertising script at all, and nothing about a reader is used for
-          advertising.
+          Our own pages &mdash; the home page, sign-in and the dashboard &mdash;
+          count visits with Cloudflare Web Analytics, which sets no cookies and
+          does not fingerprint anyone. Those pages also run a Google Ads tag,
+          which does set an advertising cookie, so that we can tell whether an
+          ad we paid for led to a signup. Neither ever loads on a share link:
+          the page a reader is sent runs no analytics or advertising script at
+          all, and nothing about a reader is used for advertising.
         </p>
       </Clause>
 
@@ -114,8 +114,8 @@ function Privacy() {
         <p>
           We do not sell data. Aside from the Google Ads tag on our own
           marketing pages, described above, we do not share data for
-          advertising. It reaches these companies only because they run parts
-          of the service:
+          advertising. It reaches these companies only because they run parts of
+          the service:
         </p>
         <Bullets
           items={[
@@ -131,10 +131,7 @@ function Privacy() {
           If you are an account holder in the UK or EU, the data you collect
           about your own clients is yours and we process it on your
           instructions. Our{' '}
-          <Link
-            to="/dpa"
-            className="underline underline-offset-2 hover:text-ink"
-          >
+          <Link to="/dpa" className={prose.a}>
             data processing agreement
           </Link>{' '}
           sets out those terms, and lists the same companies above as
