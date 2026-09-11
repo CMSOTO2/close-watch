@@ -9,13 +9,18 @@ const origin = publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')
  * hiding to the consultants it sells to, and because "Closewatch" alone is
  * claimed by a farm-camera company and a police tip app: a real founder tied to
  * "Closewatch proposal tracking" gives search engines and assistants a second
- * thread to the right entity. `sameAs` should carry the founder's LinkedIn
- * profile once it is added; until then `url` points at the page that names him.
+ * thread to the right entity. `sameAs` is what makes that thread checkable:
+ * "Carlos Soto" is a common name, and the LinkedIn profile (which links back
+ * to getclosewatch.com from its Featured section) says which one. /about links
+ * the same profile, so the markup and the visible page agree.
  */
+export const FOUNDER_LINKEDIN = 'https://www.linkedin.com/in/carlos-m-soto/'
+
 const FOUNDER = {
   '@type': 'Person',
   name: 'Carlos Soto',
   url: `${origin}/about`,
+  sameAs: [FOUNDER_LINKEDIN],
 }
 
 /**

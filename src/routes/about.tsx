@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { ContentPage, prose } from '#/components/content-page'
 import { Button } from '#/components/ui/button'
-import { canonical, socialMeta } from '#/lib/seo'
+import { FOUNDER_LINKEDIN, canonical, socialMeta } from '#/lib/seo'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/about')({
@@ -60,10 +60,21 @@ function About() {
           someone else. Not a guess dressed up as a chart. What happened.
         </p>
         <p>
-          It is built and run by one person, Carlos Soto, which is mostly a
-          statement about what does not exist yet: no support queue, no sales
-          team, no roadmap voted on by a committee. If something is broken or
-          missing, an email gets read by the person who wrote the code.
+          It is built and run by one person,{' '}
+          {/* The same profile the founder markup names as sameAs, so a reader
+              can check the person exists and a crawler can tie the two. */}
+          <a
+            href={FOUNDER_LINKEDIN}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={prose.a}
+          >
+            Carlos Soto
+          </a>
+          , which is mostly a statement about what does not exist yet: no
+          support queue, no sales team, no roadmap voted on by a committee. If
+          something is broken or missing, an email gets read by the person who
+          wrote the code.
         </p>
         <p>
           Getting the read wrong is worse than not reading at all, so the effort
