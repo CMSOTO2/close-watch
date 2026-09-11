@@ -16,7 +16,12 @@ function Anchor(props: ComponentPropsWithoutRef<'a'>) {
   return (
     <a
       {...props}
-      className="font-medium text-brand underline decoration-brand-line underline-offset-2 hover:text-brand-2"
+      // The underline is what marks a link here: brand against the ink-2 body
+      // text is only 1.4:1, so it has to be drawn in the link's own colour
+      // (5:1 light, 8.9:1 dark) rather than brand-line, which was 1.3:1 and
+      // close to invisible. Hover goes to ink, not brand-2, which is 3:1 on the
+      // light canvas.
+      className="font-medium text-brand underline decoration-current decoration-1 underline-offset-[3px] hover:text-ink"
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
     />
@@ -63,9 +68,11 @@ const components: MarkdownComponents = {
     // Not w-full: a table of short "Yes/No" values stretched to the full
     // 680px column reads as a grid of empty cells. Sized to its own content
     // instead, the way a table in plain text would be, with the scroll
-    // container as the fallback for anything that still runs wide.
-    <div className="mt-4 overflow-x-auto rounded-lg border border-line">
-      <table {...props} className="border-collapse text-[13px]" />
+    // container as the fallback for anything that still runs wide. The border
+    // sits on the wrapper, so the wrapper has to shrink with it (w-fit) or it
+    // draws a box round an empty strip beside the table.
+    <div className="mt-5 w-fit max-w-full overflow-x-auto rounded-lg border border-line">
+      <table {...props} className="border-collapse text-[14px] leading-snug" />
     </div>
   ),
   thead: (props) => <thead {...props} className="bg-surface-2" />,

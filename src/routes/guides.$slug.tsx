@@ -85,7 +85,11 @@ function GuidePage() {
               680px keeps lines around 65-75 characters regardless of viewport,
               so the eye tracks back to the start of the next line without
               losing it. */}
-          <div className="mx-auto max-w-[680px]">
+          {/* Selected text uses the brand fill and its paired ink: 7.5:1 light,
+              8.9:1 dark, and the highlight itself stands clear of the canvas.
+              The browser default kept the text colour, which put brand links
+              and ink-2 body text on an unknown blue. */}
+          <div className="mx-auto max-w-[680px] selection:bg-brand-fill selection:text-brand-fill-ink">
             <Link
               to="/guides"
               className="inline-flex items-center gap-1.5 text-[13px] text-ink-2 transition-colors hover:text-ink"
