@@ -7,7 +7,7 @@ export const guide: Guide = {
     'Four ways to tell whether a client opened your proposal, ranked by what actually works. A tracked link shows opens, time spent, pages read and return visits. An emailed PDF shows nothing.',
   dek: 'Four methods, ranked by what actually works, and why an emailed PDF gives you nothing at all.',
   datePublished: '2026-09-10',
-  dateModified: '2026-09-10',
+  dateModified: '2026-09-11',
   body: `The reliable way is to send the proposal as a tracked link instead of an email attachment. A tracking tool then shows you when the client opened it, how long they spent, which pages they read, whether they reached the pricing section, and how many times they came back. An emailed PDF gives you none of this: once it leaves your outbox, it is a file on someone else's computer.
 
 Everything else is guesswork, and most of it is worse guesswork than people realize.
@@ -66,7 +66,7 @@ Knowing it was opened is the boring part. The useful information is in the patte
 
 **Long time on the pricing page.** They are working out whether they can afford it or comparing you to a quote. Follow up with payment terms or scope options rather than more features.
 
-**Never opened after four days.** Not a rejection. Most commonly the email got buried. Resend with a different subject line before you assume anything. See [how long to wait after sending a proposal](/guides/proposal-tracking-vs-email-open-tracking) for the fuller timing case.
+**Never opened after four days.** Not a rejection. Most commonly the email got buried. Resend with a different subject line before you assume anything. See [how long to wait after sending a proposal](/guides/how-long-to-wait-after-sending-proposal) for the fuller timing case.
 
 **Opened repeatedly but no reply.** Interest without authority, usually. Your contact likes it and cannot approve it alone.
 

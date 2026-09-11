@@ -1,5 +1,8 @@
+import { guide as clientNotResponding } from './client-not-responding-to-proposal'
+import { guide as howLongToWait } from './how-long-to-wait-after-sending-proposal'
 import { guide as howToKnowIfClientRead } from './how-to-know-if-client-read-proposal'
 import { guide as proposalTrackingVsEmailOpenTracking } from './proposal-tracking-vs-email-open-tracking'
+import { guide as trackPdfProposals } from './track-pdf-proposals'
 import type { Guide } from './types'
 
 /**
@@ -11,6 +14,9 @@ import type { Guide } from './types'
  * of its own.
  */
 export const GUIDES: Array<Guide> = [
+  clientNotResponding,
+  howLongToWait,
+  trackPdfProposals,
   howToKnowIfClientRead,
   proposalTrackingVsEmailOpenTracking,
 ]

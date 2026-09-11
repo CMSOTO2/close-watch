@@ -34,10 +34,19 @@ const PAGES: Array<{ path: string; lastmod: string }> = [
   { path: '/vs/pandadoc', lastmod: '2026-09-05' },
   { path: '/vs/docsend', lastmod: '2026-09-05' },
   { path: '/about', lastmod: '2026-09-09' },
-  { path: '/guides', lastmod: '2026-09-10' },
+  { path: '/guides', lastmod: '2026-09-11' },
+  {
+    path: '/guides/client-not-responding-to-proposal',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/how-long-to-wait-after-sending-proposal',
+    lastmod: '2026-09-11',
+  },
+  { path: '/guides/track-pdf-proposals', lastmod: '2026-09-11' },
   {
     path: '/guides/how-to-know-if-client-read-proposal',
-    lastmod: '2026-09-10',
+    lastmod: '2026-09-11',
   },
   {
     path: '/guides/proposal-tracking-vs-email-open-tracking',
