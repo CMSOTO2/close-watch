@@ -50,7 +50,7 @@ If the proposal went out as a tracked link, the reading history tells you which 
 
 **What it means:** genuine interest, and a decision in progress. A client who rereads a proposal is working something out. The most common reason for silence at this stage is that your contact does not have the final say and is waiting on someone who does.
 
-**What to do:** ask about the decision, not the document. "Is there anyone else who should see this before you decide, or anything that would make it easier to take to them?" Offer a one-page summary your contact can pass upward. This is the scenario where a follow-up call earns its place.
+**What to do:** ask about the decision, not the document. "Is there anyone else who should see this before you decide, or anything that would make it easier to take to them?" Offer a one-page summary your contact can pass upward. This is the scenario where a follow-up call earns its place. See [how to get your proposal in front of the real decision maker](/guides/get-proposal-to-decision-maker).
 
 ### Scenario 4: Opened by someone new
 

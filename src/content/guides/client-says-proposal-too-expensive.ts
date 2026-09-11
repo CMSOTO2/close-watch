@@ -31,7 +31,7 @@ Ask, briefly and without defending the number:
 - "Compared with what? Another quote, or what you had in mind?"
 - "If the price were right, is this the scope you want?"
 
-Their answer usually places them in one row of the table. If they will not say, the reading history of a tracked proposal often hints at it. Minutes spent on the pricing page, or coming back to it on a later day, usually means someone is working out whether it fits a budget. A new reader going straight to pricing usually means it has reached whoever holds that budget. A single short visit that stopped at the price usually means the number was a surprise, and the conversation you needed happened too late.
+Their answer usually places them in one row of the table. If they will not say, the reading history of a tracked proposal often hints at it. Minutes spent on the pricing page, or coming back to it on a later day, usually means someone is working out whether it fits a budget. A new reader going straight to pricing usually means it has reached whoever holds that budget. A single short visit that stopped at the price usually means the number was a surprise, and the conversation you needed happened too late. See [what a long time on your pricing page means](/guides/time-spent-on-proposal-pricing-page) for how to read those patterns.
 
 ## Five ways to respond without discounting
 

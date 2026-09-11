@@ -35,6 +35,27 @@ const PAGES: Array<{ path: string; lastmod: string }> = [
   { path: '/vs/docsend', lastmod: '2026-09-05' },
   { path: '/about', lastmod: '2026-09-09' },
   { path: '/guides', lastmod: '2026-09-11' },
+  { path: '/guides/how-to-email-a-proposal', lastmod: '2026-09-11' },
+  {
+    path: '/guides/time-spent-on-proposal-pricing-page',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/how-to-tell-if-client-is-interested',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/client-says-they-need-to-think-about-it',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/get-proposal-to-decision-maker',
+    lastmod: '2026-09-11',
+  },
+  {
+    path: '/guides/find-out-why-you-lost-a-proposal',
+    lastmod: '2026-09-11',
+  },
   {
     path: '/guides/did-my-client-forward-my-proposal',
     lastmod: '2026-09-11',

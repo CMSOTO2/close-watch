@@ -58,6 +58,8 @@ Instead, act on what a forward usually means:
 - **Give your contact something to pass upward.** A one-page summary with the outcome, the price and the timeline travels better than a fifteen-page document.
 - **Make the pricing page stand on its own.** It is the page most likely to be read without you there to explain it.
 
+For the fuller playbook, see [how to get your proposal in front of the real decision maker](/guides/get-proposal-to-decision-maker).
+
 ## What this cannot tell you
 
 A new reader is never named. Closewatch does not learn a reader's name or email address from their visit, so it cannot tell you who the second reader was, only that there was one.

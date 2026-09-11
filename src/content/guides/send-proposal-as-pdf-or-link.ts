@@ -62,7 +62,7 @@ A download is itself a useful signal: someone wanted to keep it, print it or sha
 
 ## How to write the email that carries the link
 
-Keep the link near the top and say what it is, so it does not look like a marketing email.
+Keep the link near the top and say what it is, so it does not look like a marketing email. For more templates and subject lines, see [how to email a proposal to a client](/guides/how-to-email-a-proposal).
 
 > **Subject:** Proposal: Q4 rebrand for Acme
 >

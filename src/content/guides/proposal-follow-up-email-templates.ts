@@ -81,7 +81,7 @@ The number is being tested against a budget.
 
 ### 8. "We need to think about it"
 
-The client replied, without a decision.
+The client replied, without a decision. See [what to do when a client says they need to think about it](/guides/client-says-they-need-to-think-about-it).
 
 > **Subject:** Re: Rebrand proposal
 >
@@ -97,7 +97,7 @@ Send it within a day of speaking.
 
 ### 10. The last email
 
-Three unanswered follow-ups over about three weeks. This one gets more replies than the ones before it.
+Three unanswered follow-ups over about three weeks. This one gets more replies than the ones before it. If the reply is a no, see [how to find out why you lost a proposal](/guides/find-out-why-you-lost-a-proposal).
 
 > **Subject:** Closing the file on the rebrand
 >

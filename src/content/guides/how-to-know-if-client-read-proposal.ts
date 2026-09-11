@@ -65,7 +65,7 @@ Knowing it was opened is the boring part. The useful information is in the patte
 
 **A link you sent to one person turns into two or three distinct readers.** Often the proposal is being circulated internally. Ask who else is involved in the decision, and you will usually be right, though the same person on a second device or a cleared browser looks identical, so treat it as a strong hint rather than a fact.
 
-**Long time on the pricing page.** They are working out whether they can afford it or comparing you to a quote. Follow up with payment terms or scope options rather than more features.
+**Long time on the pricing page.** They are working out whether they can afford it or comparing you to a quote. Follow up with payment terms or scope options rather than more features. See [what a long time on your pricing page means](/guides/time-spent-on-proposal-pricing-page).
 
 **Never opened after four days.** Not a rejection. Most commonly the email got buried. Resend with a different subject line before you assume anything. See [how long to wait after sending a proposal](/guides/how-long-to-wait-after-sending-proposal) for the fuller timing case.
 
