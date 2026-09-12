@@ -95,6 +95,8 @@ And a link from a domain the client has never seen can occasionally meet a stric
 
 Closewatch turns the proposal PDF you already have into a link you paste into this email, and then tells you whether it was opened, which pages were read, how long they spent on pricing, and whether it reached someone new. You can create a separately named link for each person you send it to. It is $19 a month, flat, and it does not write or send the email for you.
 
+![Closewatch showing a tracked link ready to paste into your own email, named for the person it is going to](/images/closewatch-tracked-link-per-recipient.webp "The link you paste into the email where the attachment would have gone. Sample data.")
+
 For whether to attach the file or send a link, see [should you send a proposal as a PDF or a link](/guides/send-proposal-as-pdf-or-link). For what to send if nobody replies, see the [proposal follow-up email templates](/guides/proposal-follow-up-email-templates).
 
 ## Frequently asked questions
@@ -118,5 +120,9 @@ Within 24 hours if you can. The client still remembers what they asked for, and 
 ### Should I copy the decision maker on the proposal email?
 
 If you know who signs and your contact is comfortable with it, yes, or better, send them their own copy of the link so you can see whether they read it. Ask your contact first. Going around the person who brought you in rarely helps.
+
+### Can you give an example of a proposal email?
+
+Subject: "Proposal: Q4 rebrand for Acme". Body: "Hi Dana, thanks for Tuesday's call. Here is the proposal: [link]. The summary is on page 2 and pricing on page 7. Could we talk it through on Thursday or Friday?" That is four sentences: the context, the proposal, where to look, and one next step with a date.
 `,
 }

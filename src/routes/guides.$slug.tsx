@@ -1,13 +1,17 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { ContentPage, prose } from '#/components/content-page'
-import { GuideMarkdown } from '#/components/guides/guide-markdown'
+import { ArticleBody } from '#/components/guides/guide-markdown'
 import { Button } from '#/components/ui/button'
 import { getGuide } from '#/content/guides'
 import {
+  AUTHOR_LINK,
+  AUTHOR_META,
   articleJsonLd,
   breadcrumbJsonLd,
   canonical,
+  faqJsonLd,
+  faqsFromMarkdown,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -21,19 +25,21 @@ export const Route = createFileRoute('/guides/$slug')({
   head: ({ loaderData }) => {
     if (!loaderData) return {}
     const path = `/guides/${loaderData.slug}`
+    const faqs = faqsFromMarkdown(loaderData.body)
     return {
       meta: [
         {
           title: `${loaderData.metaTitle ?? loaderData.title} | Closewatch`,
         },
         { name: 'description', content: loaderData.description },
+        AUTHOR_META,
         ...socialMeta({
           title: loaderData.title,
           description: loaderData.dek,
           path,
         }),
       ],
-      links: canonical(path),
+      links: [...canonical(path), AUTHOR_LINK],
       scripts: [
         ...jsonLdScript(
           breadcrumbJsonLd([
@@ -51,6 +57,7 @@ export const Route = createFileRoute('/guides/$slug')({
             dateModified: loaderData.dateModified,
           }),
         ),
+        ...(faqs.length ? jsonLdScript(faqJsonLd(faqs)) : []),
       ],
     }
   },
@@ -111,15 +118,22 @@ function GuidePage() {
         </div>
       }
     >
-      <GuideMarkdown>{guide.body}</GuideMarkdown>
+      <ArticleBody body={guide.body} />
       {/* Every guide links up to the category page, which links down to every
-          guide. One line here instead of a link written into 22 bodies. */}
+          guide, and across to the demo, which nothing else linked to in prose.
+          One paragraph here instead of the same two links written into 22
+          bodies. The anchors carry the phrase each page is about. */}
       <p className={`mt-10 ${prose.p}`}>
         New to proposal tracking? Start with{' '}
         <Link to="/proposal-tracking" className={prose.a}>
-          what it is and how it works
+          what proposal tracking is and how it works
         </Link>
-        .
+        , or{' '}
+        <Link to="/demo" className={prose.a}>
+          try the proposal tracking demo
+        </Link>{' '}
+        on yourself: read a sample proposal, then see the report your reading
+        produced.
       </p>
     </ContentPage>
   )

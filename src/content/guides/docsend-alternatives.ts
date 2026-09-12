@@ -11,7 +11,7 @@ export const guide: Guide = {
   dateModified: '2026-09-11',
   body: `The main DocSend alternatives are Papermark (free, open source), HummingDeck ($10 a month), Closewatch ($19 a month flat, built for proposals), and PandaDoc, Proposify or Qwilr if you also want an editor. DocSend itself starts at $10 per user a month, with Standard at $45. Closewatch wrote this list.
 
-Prices below were checked on each vendor's pricing page on 11 September 2026, except PandaDoc's, which come from a public pricing tracker last verified in July 2026.
+Prices below were checked on each vendor's own pricing page on 11 September 2026: [DocSend](https://www.docsend.com/pricing/), [Papermark](https://www.papermark.com/pricing), [HummingDeck](https://hummingdeck.com/pricing), [Proposify](https://www.proposify.com/pricing) and [Qwilr](https://qwilr.com/pricing/). PandaDoc's come from a public pricing tracker last verified in July 2026.
 
 ## Why people look for a DocSend alternative
 
@@ -31,7 +31,7 @@ DocSend is mature, widely recognised, and genuinely good at what it is built for
 - need a data room, NDA gating before a reader can open a document, or email verification of every viewer;
 - want one tool for every document your company shares, and already pay for Dropbox.
 
-## The alternatives
+## The DocSend alternatives, compared
 
 | Tool | Tracking from | Free plan | Best for |
 |---|---|---|---|
@@ -82,7 +82,7 @@ Per month, billed annually, in US dollars unless stated.
 
 **Choose it if:** you want to build, send, track and sign documents in one place.
 
-**Weakness:** you build documents in its editor rather than uploading a finished one, and per-seat pricing adds up. See [Closewatch vs PandaDoc](/vs/pandadoc).
+**Weakness:** you build documents in its editor rather than uploading a finished one, and per-seat pricing adds up. If tracking is all you want from it, see the [PandaDoc alternative](/vs/pandadoc) comparison.
 
 ### Proposify
 
@@ -92,7 +92,7 @@ Per month, billed annually, in US dollars unless stated.
 
 **Choose it if:** you are replacing DocSend for proposals specifically and also want a shared editor and template library.
 
-**Weakness:** tracking covers only proposals built in its editor. See [Closewatch vs Proposify](/vs/proposify).
+**Weakness:** tracking covers only proposals built in its editor. If you design proposals elsewhere, see the [Proposify alternative](/vs/proposify) comparison.
 
 ### Qwilr
 
@@ -104,11 +104,11 @@ Per month, billed annually, in US dollars unless stated.
 
 **Weakness:** the highest entry price here, and it replaces your document rather than tracking it.
 
-## What about a plain Google Drive or Dropbox link?
+## Is a Google Drive or Dropbox link a DocSend alternative?
 
-It is free, and it tells you very little. A shared cloud link can show that a file was accessed in some plans and setups, but not who read which pages or for how long, and it cannot tell a real reader from an email scanner. Dropbox's own tracking feature, Send and Track, was discontinued in March 2025. See [how to track a PDF proposal](/guides/track-pdf-proposals) for why a hosted file on its own gives you requests rather than reading.
+A shared cloud link is free, and as a DocSend alternative it tells you very little. A shared cloud link can show that a file was accessed in some plans and setups, but not who read which pages or for how long, and it cannot tell a real reader from an email scanner. Dropbox's own tracking feature, Send and Track, was discontinued in March 2025. See [how to track a PDF proposal](/guides/track-pdf-proposals) for why a hosted file on its own gives you requests rather than reading.
 
-## How to choose
+## How to choose a DocSend alternative
 
 **Investor decks or a data room:** stay with DocSend, or use Papermark if cost or self-hosting matters.
 
@@ -121,6 +121,10 @@ It is free, and it tells you very little. A shared cloud link can show that a fi
 ## Where Closewatch fits
 
 Closewatch is the alternative for people who use DocSend mainly for proposals and want a tool shaped around them: a pipeline sorted by who is actually reading, not a list of documents with view counts. It is $19 a month, flat, with two read proposals free. If you need data rooms or NDA gating, it is the wrong choice, and DocSend or Papermark will serve you better.
+
+![The Closewatch dashboard: five open proposals ranked by intent, two hot, one warm and two cold, each with the signal behind it](/images/closewatch-proposal-dashboard-ranked-by-intent.webp "A pipeline ordered by who is reading, not a list of documents. Sample data.")
+
+If you send proposals for an agency, [proposal tracking for agencies](/proposal-tracking-for-agencies) shows what that pipeline looks like with several clients in it.
 
 For the wider field, including builders, see [the best proposal tracking software in 2026](/guides/best-proposal-tracking-software).
 
@@ -145,5 +149,13 @@ Yes. HummingDeck starts at $10 a month and Closewatch at $19 a month flat, both 
 ### Which DocSend alternative has data rooms?
 
 Papermark offers data rooms from €99 per month, alongside its free document-sharing plan. PandaDoc has deal rooms on its higher plans. Closewatch and HummingDeck do not offer data rooms.
+
+### Is there a free version of DocSend?
+
+No. DocSend offers a free trial rather than a free plan, and its cheapest plan, Personal, starts at $10 per user a month billed yearly. For document tracking at no cost, Papermark's free plan covers 50 documents, HummingDeck's covers five, and Closewatch's covers two proposals being read at a time.
+
+### Is DocSend the same as Dropbox?
+
+No. DocSend is a separate product that Dropbox owns. Dropbox bought it in 2021, and it has its own plans and pricing apart from Dropbox storage. Dropbox's built-in Send and Track feature, which offered basic tracking for shared files, was discontinued in March 2025.
 `,
 }

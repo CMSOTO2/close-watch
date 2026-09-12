@@ -13,13 +13,13 @@ export const guide: Guide = {
 
 The mistake most people make is trying to change what is inside the PDF. What has to change is how the PDF is delivered.
 
-## Why an attached PDF cannot be tracked
+## Why a PDF proposal sent as an attachment cannot be tracked
 
 A PDF attachment is a copy of a file. Once it leaves your outbox, it sits on the client's computer or in their mail provider's storage, and opening it involves nobody but them and their PDF viewer. There is no server for the open to be reported to.
 
-Email open tracking does not fill the gap. A tracking pixel reports that the email was rendered, not that the attachment was opened, and Apple Mail Privacy Protection, image blocking and corporate security scanners make even that unreliable. See [proposal tracking vs email open tracking](/guides/proposal-tracking-vs-email-open-tracking) for why.
+Email open tracking does not fill the gap. A tracking pixel reports that the email was rendered, not that the attachment was opened, and [Apple Mail Privacy Protection](https://www.apple.com/legal/privacy/data/en/mail-privacy-protection/), image blocking and corporate security scanners make even that unreliable. See [proposal tracking vs email open tracking](/guides/proposal-tracking-vs-email-open-tracking) for why.
 
-## Why the tricks inside the PDF do not work
+## Why tricks inside the PDF do not track it
 
 Two techniques get suggested repeatedly. Both fail in practice.
 
@@ -39,7 +39,7 @@ Upload the PDF you already made, get a link, send the link. The tool displays th
 
 **You see:** when it opened, total time, time on each page, return visits, and on most tools a count of distinct readers. Some also record downloads and prints.
 
-**Examples:** Closewatch, DocSend, Papermark, HummingDeck.
+**Examples:** Closewatch, DocSend, Papermark, HummingDeck. [DocSend alternatives](/guides/docsend-alternatives) compares them on price.
 
 **Best for:** anyone whose proposals already live in Google Docs, Word, Figma, Canva or InDesign, and who does not want to rebuild them.
 
@@ -49,7 +49,7 @@ Build the proposal in the tool's own editor instead of exporting a PDF. Tracking
 
 **You see:** broadly the same reading data as a tracking tool, and often signing status too.
 
-**Examples:** Proposify, PandaDoc, Qwilr, Better Proposals.
+**Examples:** Proposify, PandaDoc, Qwilr, Better Proposals. The [Proposify alternative](/vs/proposify) and [PandaDoc alternative](/vs/pandadoc) comparisons cover when a tracker is the better fit.
 
 **Best for:** teams that want the editor, the templates and the signature in one place, and are willing to move their proposals into it. The catch is that last part: an existing designed PDF has to be rebuilt.
 
@@ -61,7 +61,7 @@ Put the PDF on your own website or a file host and send the URL.
 
 **Best for:** confirming that a link was clicked at all, at no cost. Google Drive and Dropbox links fall into the same bucket: they can show views or downloads in some plans and setups, not reading.
 
-## Side by side
+## Three ways to track a PDF proposal, side by side
 
 | | Tracking tool | Proposal builder | DIY hosted PDF |
 |---|---|---|---|
@@ -73,7 +73,7 @@ Put the PDF on your own website or a file host and send the URL.
 | Templates and e-signature | Rarely | Yes | No |
 | Typical cost | Free to $65/month | $13 to $49 per user/month | Free |
 
-## The trade-off of sending a link
+## The trade-off of sending a PDF proposal as a link
 
 A link is not always the easier thing to receive. For the whole trade-off, see [should you send a proposal as a PDF or a link](/guides/send-proposal-as-pdf-or-link).
 
@@ -81,13 +81,15 @@ Some procurement teams and some older clients want an attachment they can file, 
 
 Tracking also cannot see what happens off the page. A proposal printed and discussed in a meeting shows up as a print, not as the forty minutes of discussion.
 
-## How to set it up with Closewatch
+## How to track a PDF proposal with Closewatch
 
 1. Export your proposal as a PDF from whatever you made it in.
 2. Upload it to Closewatch. It guesses which page is pricing, which is the summary and so on from the text, and you correct anything it got wrong.
 3. Copy the share link and send it in place of the attachment.
 4. Get an email the first time a real person reads it.
 5. Before following up, check which pages they read and how long they spent on pricing.
+
+![The Closewatch new-proposal form, with a title, a client name, the person it is going to, a deal value and the proposal PDF](/images/closewatch-upload-proposal-pdf.webp "Uploading a PDF proposal to track it. Sample data.")
 
 Closewatch only counts a visit after three seconds of visible attention, and excludes known bots and link-preview fetchers, so a security gateway opening every link on arrival is not reported as your client. The recipient needs no account and no plugin. The viewer tells them in one line that the sender can see opens and pages read.
 

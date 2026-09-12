@@ -29,7 +29,7 @@ You upload a proposal, the tool gives you a link, and you send the link instead 
 
 That is the whole mechanism. Everything else is what the tool does with the data.
 
-Proposal tracking is a post-send tool. It has nothing to do with writing or designing the proposal. Proposal builders such as Proposify, PandaDoc and Qwilr bundle creation and tracking together. Trackers such as Closewatch, DocSend and Papermark do only the second half, and work with whatever you already make. See [how to track a PDF proposal](/guides/track-pdf-proposals) for why an emailed attachment cannot be tracked at all.
+Proposal tracking is a post-send tool. It has nothing to do with writing or designing the proposal. Proposal builders such as Proposify, PandaDoc and Qwilr bundle creation and tracking together. Trackers such as Closewatch, DocSend and Papermark do only the second half, and work with whatever you already make. The trackers are compared in [DocSend alternatives](/guides/docsend-alternatives); a tracker against a builder is the subject of the [Proposify alternative](/vs/proposify) and [PandaDoc alternative](/vs/pandadoc) comparisons. See [how to track a PDF proposal](/guides/track-pdf-proposals) for why an emailed attachment cannot be tracked at all.
 
 ## What you can see
 
@@ -47,6 +47,8 @@ Proposal tracking is a post-send tool. It has nothing to do with writing or desi
 
 Turning those into a decision about who to call is proposal analytics, a step past tracking. See [what proposal analytics is and what to measure](/guides/what-is-proposal-analytics).
 
+![Closewatch attention report for a sample proposal: five opens, three readers, and time on each page, with ten minutes on pricing](/images/closewatch-attention-report-time-per-page-pricing.webp "Proposal tracking in practice: opens, readers, and time on each page. Sample data.")
+
 ## What proposal tracking will not tell you
 
 Most pages about proposal tracking oversell it, so this section comes before the rest.
@@ -61,11 +63,11 @@ Most pages about proposal tracking oversell it, so this section comes before the
 
 ## Proposal tracking vs email open tracking
 
-Email open tracking fires a hidden image when the email renders. It tells you about the message, not the proposal, and it is unreliable: Apple Mail Privacy Protection reports opens that never happened, and image blocking hides ones that did. Proposal tracking records the document itself. See [proposal tracking vs email open tracking](/guides/proposal-tracking-vs-email-open-tracking) for the full comparison.
+Email open tracking fires a hidden image when the email renders. It tells you about the message, not the proposal, and it is unreliable: [Apple Mail Privacy Protection](https://www.apple.com/legal/privacy/data/en/mail-privacy-protection/) reports opens that never happened, and image blocking hides ones that did. Proposal tracking records the document itself. See [proposal tracking vs email open tracking](/guides/proposal-tracking-vs-email-open-tracking) for the full comparison.
 
 ## Who it is for, and who it is not
 
-**It is for** consultants and agencies sending proposals worth enough that the timing and content of a follow-up matters, typically several thousand dollars and up. It is most useful where one person owns the pipeline and the proposal is likely to be read by more than one decision maker.
+**It is for** consultants and agencies sending proposals worth enough that the timing and content of a follow-up matters, typically several thousand dollars and up. It is most useful where one person owns the pipeline and the proposal is likely to be read by more than one decision maker. See [proposal tracking for agencies](/proposal-tracking-for-agencies) and [proposal tracking for fractional executives](/proposal-tracking-for-fractional-executives).
 
 **It is not for** teams that need the proposal built, approved and signed in one system, which is a proposal management problem, or for anyone sending many small quotes where no single follow-up is worth much thought.
 
@@ -84,7 +86,9 @@ For the tools themselves, see [the best proposal tracking software in 2026](/gui
 
 Closewatch is proposal tracking for consultants and small agencies. Upload the PDF you already send, share the Closewatch link instead of the attachment, and see opens, time per page, pricing time, return visits, new readers, downloads and prints, scored cold, warm or hot with the reasons listed. It is $19 a month, flat, and free for two proposals being read at a time.
 
-It is deliberately not a proposal builder. If you want templates, an editor and e-signature in the same tool, Proposify or PandaDoc will serve you better.
+![The Closewatch dashboard: five open proposals ranked by intent, two hot, one warm and two cold, each with the signal behind it](/images/closewatch-proposal-dashboard-ranked-by-intent.webp "Every open proposal, ranked by who is reading it. Sample data.")
+
+It is deliberately not a proposal builder. If you want templates, an editor and e-signature in the same tool, Proposify or PandaDoc will serve you better. To see the report before signing up, [try the proposal tracking demo](/demo) on a sample proposal.
 
 ## Frequently asked questions
 

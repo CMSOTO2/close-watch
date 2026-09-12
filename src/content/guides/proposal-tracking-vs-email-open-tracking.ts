@@ -19,13 +19,15 @@ This page exists because the two get treated as the same product and they measur
 
 **Proposal tracking** replaces the attachment with a link. The document is served in the browser by the tracking tool, which records the session directly: when it opened, how long it stayed open, which pages were viewed, and whether the same link is opened again later. Closewatch, DocSend and Papermark work this way, as do the tracking features inside Proposify and PandaDoc.
 
+![Closewatch attention report for a sample proposal, showing time on each page, with ten minutes on pricing](/images/closewatch-attention-report-time-per-page-pricing.webp "What proposal tracking records: time on each page of the document itself. Sample data.")
+
 The first measures the envelope. The second measures the letter.
 
 ## Why email open tracking is less reliable than people think
 
 Three things break it, and all three have gotten worse over the past few years.
 
-**Apple Mail Privacy Protection.** On by default since 2021. Apple's servers pre-fetch every remote image in every message, whether or not the recipient ever opens it. Every email sent to an Apple Mail user can register as opened. These are false positives you cannot filter out from the outside.
+**Apple Mail Privacy Protection.** Introduced in 2021. In [Apple's own description](https://www.apple.com/legal/privacy/data/en/mail-privacy-protection/), Mail Privacy Protection downloads remote content in the background, regardless of whether the recipient engages with the email. That includes every tracking pixel. Every email sent to an Apple Mail user can register as opened. These are false positives you cannot filter out from the outside.
 
 **Image blocking.** Gmail and Outlook block remote images by default for many users and configurations. If the recipient never chooses to display images, a genuine open records as nothing. These are false negatives.
 
@@ -74,6 +76,8 @@ When return visits matter to you, and they should: reopening a proposal is one o
 
 When you need to know whether they looked at pricing before you decide how to respond to silence. See [how to know if a client read your proposal](/guides/how-to-know-if-client-read-proposal) for how to read that pattern.
 
+When you have several proposals out across several clients and need to know which one to chase first; see [proposal tracking for agencies](/proposal-tracking-for-agencies). Or when the proposal will be decided by someone you never pitched, which is the usual case in [proposal tracking for fractional executives](/proposal-tracking-for-fractional-executives).
+
 ## Can you use both?
 
 Yes, and it's a reasonable setup. Pixel tracking on the covering email tells you roughly whether it arrived and was seen. The tracked link tells you what happened to the document. The two answer different questions and don't conflict.
@@ -110,6 +114,6 @@ Usually not. If the deal size justifies proposal tracking, that covers the quest
 
 ### Why does Apple Mail show every email as opened?
 
-Apple Mail Privacy Protection, on by default since 2021, loads the images in every message through Apple's servers whether or not the recipient reads it. That fires the tracking pixel, so a tracker records an open that never happened. There is no reliable way to filter these out from the sender's side.
+Apple Mail Privacy Protection, introduced in 2021, downloads the remote images in a message in the background, whether or not the recipient reads it. That fires the tracking pixel, so a tracker records an open that never happened. There is no reliable way to filter these out from the sender's side.
 `,
 }

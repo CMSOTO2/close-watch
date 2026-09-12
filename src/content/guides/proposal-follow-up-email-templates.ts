@@ -13,7 +13,7 @@ export const guide: Guide = {
 
 Copy them, change the names and the specifics, and send the one that matches what you know. If you do not know which situation you are in, use the first. For how they fit into a three-week plan, see [how to follow up on a proposal](/guides/how-to-follow-up-on-a-proposal).
 
-## Three rules every template follows
+## Three rules every proposal follow-up email follows
 
 **One question, answerable in a line.** A follow-up that needs a long reply gets put off. "Is the scope in section 2 roughly right?" gets answered on a phone.
 
@@ -21,7 +21,7 @@ Copy them, change the names and the specifics, and send the one that matches wha
 
 **No mention of tracking.** If you know the client came back to the proposal, that changes when you write and what you lead with. It does not belong in the email.
 
-## The templates
+## The proposal follow-up email templates
 
 ### 1. No reply, and you do not know if it was read
 
@@ -111,7 +111,7 @@ A quiet proposal, and a real reason to write.
 >
 > Hi Dana, we spoke in the spring about the rebrand. Since then we have launched a similar project for a firm your size, and I thought of your team. Is it back on the table this year?
 
-## What not to send
+## What not to send in a proposal follow-up email
 
 **"Just checking in" or "circling back".** It gives the client nothing to answer and reads as a reminder of a debt.
 

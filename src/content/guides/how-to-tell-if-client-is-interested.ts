@@ -3,8 +3,8 @@ import type { Guide } from './types'
 export const guide: Guide = {
   slug: 'how-to-tell-if-client-is-interested',
   stage: 'silence',
-  title: 'How to Tell If a Client Is Actually Interested in Your Proposal',
-  metaTitle: 'How to Tell If a Client Is Really Interested',
+  title: 'How to Tell If a Client Is Interested in Your Proposal',
+  metaTitle: 'How to Tell If a Client Is Interested',
   description:
     'Interested clients ask specific questions, bring in other people, talk about dates and reread the proposal. Polite ones say it looks great and go quiet.',
   dek: 'Watch what clients do, not what they say. The signals that mean a deal is real, and the ones that only feel like it.',
@@ -14,7 +14,7 @@ export const guide: Guide = {
 
 "This looks great" is the most misleading sentence in sales. It costs nothing to say, it ends the conversation politely, and it is said as often before a no as before a yes.
 
-## Signals in the conversation
+## How to tell if a client is interested from what they say
 
 | Strong | Weak | Warning |
 |---|---|---|
@@ -26,7 +26,7 @@ export const guide: Guide = {
 
 The pattern in the strong column is specificity and cost. Each of those signals takes effort or exposes something, and people do not spend effort on proposals they have written off.
 
-## Signals in the document
+## How to tell if a client is interested from how they read
 
 If the proposal went as a tracked link, the reading history adds evidence the client never has to say out loud.
 
@@ -42,7 +42,9 @@ If the proposal went as a tracked link, the reading history adds evidence the cl
 
 Closewatch combines these into a single score, labelled cold, warm or hot, and lists the reasons behind it in plain words. A proposal turns hot at 65 out of 100, which in practice takes several of these together, since no one signal gets there on its own. See [how to score proposal engagement](/guides/how-to-score-proposal-engagement) for the full model.
 
-## Signals that feel good and mean little
+![The Closewatch dashboard: five open proposals ranked by intent, two hot, one warm and two cold, each with the signal behind it](/images/closewatch-proposal-dashboard-ranked-by-intent.webp "Each proposal scored cold, warm or hot, with the signal behind it. Sample data.")
+
+## Signals that look like interest and mean little
 
 **An open within minutes of sending.** Often not a person. Corporate email security scanners open links on arrival, which is why Closewatch only counts a visit after three seconds of visible attention.
 
@@ -50,7 +52,7 @@ Closewatch combines these into a single score, labelled cold, warm or hot, and l
 
 **"We will definitely be in touch."** Only a date is a commitment.
 
-## The test: ask for a small next step
+## The test of whether a client is interested: ask for a small next step
 
 When you cannot tell, ask for something small and specific: a 20-minute call on a named day, an introduction to the person who signs, a decision date. Interested clients say yes, or offer an alternative. Uninterested ones become vague.
 

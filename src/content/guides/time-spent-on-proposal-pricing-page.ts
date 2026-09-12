@@ -31,6 +31,8 @@ The time alone is ambiguous. The sequence around it is not.
 | Pricing first, then the rest of the proposal | Price was acceptable, now checking the substance | Answer the scope questions before they ask |
 | Never reached pricing | Stopped early, or the pricing page was missed | Check the proposal, then resend |
 
+![Closewatch attention report for a sample proposal, showing ten minutes on the pricing page against under a minute on most other pages](/images/closewatch-attention-report-time-per-page-pricing.webp "Time on each page of a tracked proposal, with the pricing page highlighted. Sample data.")
+
 ## How long is a long time?
 
 There is no universal benchmark, and anyone quoting one is guessing. What counts depends on how much is on the page: a single figure takes seconds to read, and a table of options with payment terms takes minutes.

@@ -3,6 +3,7 @@ import type { MarkdownComponents } from '@tanstack/markdown/react'
 import type { ComponentPropsWithoutRef } from 'react'
 import type { MarkdownInput } from '@tanstack/markdown'
 import { prose } from '#/components/content-page'
+import { headingId, sectionsOf } from '#/lib/markdown-text'
 import { cn } from '#/lib/utils'
 
 /**
@@ -25,11 +26,42 @@ function Anchor(props: ComponentPropsWithoutRef<'a'>) {
   )
 }
 
+/**
+ * A screenshot, written in a body as `![alt](/images/name.webp "caption")`.
+ *
+ * Markdown puts an image inside a paragraph, so this is built from spans: a
+ * <figure> inside a <p> is invalid HTML, and React reports it as a hydration
+ * error. Every file in public/images is exported at 1600x900 (see
+ * docs/geo:aeo/search-report-2026-09-11.md), so the size is fixed here and the
+ * page reserves the space before the image arrives rather than jumping.
+ */
+function Image({ src, alt, title }: ComponentPropsWithoutRef<'img'>) {
+  return (
+    <span className="mt-2 block">
+      <img
+        src={src}
+        alt={alt}
+        width={1600}
+        height={900}
+        loading="lazy"
+        decoding="async"
+        className="block h-auto w-full rounded-lg border border-line"
+      />
+      {title && (
+        <span className="mt-2 block text-[13px] leading-snug text-ink-3">
+          {title}
+        </span>
+      )}
+    </span>
+  )
+}
+
 const components: MarkdownComponents = {
   h2: (props) => <h2 {...props} className={prose.h2} />,
   h3: (props) => <h3 {...props} className={prose.h3} />,
   p: (props) => <p {...props} className={cn('mt-4', prose.p)} />,
   a: Anchor,
+  img: Image,
   strong: (props) => <strong {...props} className={prose.strong} />,
   ul: (props) => <ul {...props} className={cn('mt-4', prose.ul)} />,
   ol: (props) => <ol {...props} className={cn('mt-4', prose.ol)} />,
@@ -73,5 +105,52 @@ const components: MarkdownComponents = {
 }
 
 export function GuideMarkdown({ children }: { children: MarkdownInput }) {
-  return <Markdown components={components}>{children}</Markdown>
+  return (
+    <Markdown components={components} headingIds={headingId}>
+      {children}
+    </Markdown>
+  )
+}
+
+/**
+ * A guide or the pillar: the answer paragraph, then a table of contents, then
+ * the rest of the body.
+ *
+ * The answer stays first because it is the part a search result or an
+ * assistant lifts, and a contents list in front of it would push it down. The
+ * contents list is what gives Google anchors to send a searcher straight to
+ * the section that answers them.
+ */
+export function ArticleBody({ body }: { body: string }) {
+  const split = body.indexOf('\n\n')
+  const answer = body.slice(0, split)
+  const rest = body.slice(split + 2)
+  const sections = sectionsOf(rest)
+
+  return (
+    <>
+      <GuideMarkdown>{answer}</GuideMarkdown>
+      {sections.length >= 3 && (
+        <nav
+          aria-label="On this page"
+          className="mt-8 rounded-lg border border-line bg-surface px-5 py-4"
+        >
+          <p className="kicker">On this page</p>
+          <ol className="mt-3 flex list-decimal flex-col gap-1.5 pl-5 text-[14px] leading-snug text-ink-2 marker:text-ink-3">
+            {sections.map((s) => (
+              <li key={s.id}>
+                <a
+                  href={`#${s.id}`}
+                  className="transition-colors hover:text-ink"
+                >
+                  {s.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+      <GuideMarkdown>{rest}</GuideMarkdown>
+    </>
+  )
 }

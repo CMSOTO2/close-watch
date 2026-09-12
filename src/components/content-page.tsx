@@ -22,8 +22,9 @@ import { cn } from '#/lib/utils'
  * break is part of what a heading is, in either kind of page.
  */
 export const prose = {
-  h2: 'mt-12 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-[26px]',
-  h3: 'mt-8 font-display text-lg font-semibold tracking-[-0.015em]',
+  // scroll-mt clears the sticky site header when a contents link jumps here.
+  h2: 'mt-12 scroll-mt-20 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-[26px]',
+  h3: 'mt-8 scroll-mt-20 font-display text-lg font-semibold tracking-[-0.015em]',
   p: 'text-[15px] leading-relaxed text-ink-2',
   /** A run of paragraphs and lists written as JSX rather than markdown. */
   body: 'flex flex-col gap-4 text-[15px] leading-relaxed text-ink-2',

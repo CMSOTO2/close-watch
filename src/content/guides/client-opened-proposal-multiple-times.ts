@@ -14,7 +14,7 @@ export const guide: Guide = {
 
 A single open tells you the proposal arrived. Repeat opens tell you it is still on someone's mind, which is the thing you actually want to know.
 
-## What counts as a separate open
+## What counts as a client opening your proposal again
 
 Tools count differently, and the definition changes what "opened five times" means.
 
@@ -22,7 +22,7 @@ In Closewatch, a return within 30 minutes continues the same visit, so a refresh
 
 A tool without those rules can report a proposal as opened four times when one person refreshed it twice and a security gateway scanned it once.
 
-## The three kinds of repeat open
+## Three ways a client opens a proposal multiple times
 
 | Pattern | What it usually means | What to do |
 |---|---|---|
@@ -31,6 +31,8 @@ A tool without those rules can report a proposal as opened four times when one p
 | A new browser, not a new visit | Shared with someone else, or read on another device | Ask who else is involved |
 
 The return on a later day is the strongest of the three. Someone went away, the proposal stayed on their mind, and they came back to it. That rarely happens with a proposal that has been written off.
+
+![Closewatch recent visits on a sample proposal: the original reader returning on a later day, and two new readers the proposal was forwarded to](/images/closewatch-forwarded-proposal-new-readers.webp "Return visits and new readers on one proposal, each marked as it happened. Sample data.")
 
 ## How Closewatch weighs repeat opens
 
@@ -42,7 +44,7 @@ Closewatch's engagement score treats repeat opens as several separate signals, b
 
 So a client who opened the proposal three times across two days, alone, scores 30 from repeat opens: 15 for the visits and 15 for the later-day return. The same three visits in one afternoon score 23. For the whole model, see [how to score proposal engagement](/guides/how-to-score-proposal-engagement).
 
-## What to do with it
+## What to do when a client opens your proposal multiple times
 
 **After a later-day return, write sooner.** The client is thinking about it now. A short, helpful follow-up that day or the next morning lands inside the decision rather than after it.
 

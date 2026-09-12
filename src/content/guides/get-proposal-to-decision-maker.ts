@@ -4,7 +4,7 @@ export const guide: Guide = {
   slug: 'get-proposal-to-decision-maker',
   stage: 'negotiating',
   title: 'How to Get Your Proposal in Front of the Real Decision Maker',
-  metaTitle: 'Getting Your Proposal to the Decision Maker',
+  metaTitle: 'How to Get Your Proposal to the Decision Maker',
   description:
     'Ask who signs before you write the proposal. Then give them a one-page summary, their own link, and a short call. Most proposals reach the signer second-hand.',
   dek: 'The person you send a proposal to is often not the person who says yes. How to reach the one who does without going around the one who brought you in.',
@@ -12,13 +12,13 @@ export const guide: Guide = {
   dateModified: '2026-09-11',
   body: `Ask who else is involved before you write the proposal, not after you send it. Then write for the person who signs: put the outcome, price and timeline on one page they can read in two minutes, send them their own link, and offer your contact a short call with them. Otherwise it reaches them second-hand, stripped of context.
 
-## Why proposals reach the signer second-hand
+## Why a proposal reaches the decision maker second-hand
 
 Your contact is usually the person with the problem, not the person with the budget. They took the calls, they understand the scope, and they believe in it. Then they forward your proposal to a finance lead, a founder or a board with a one-line note, and the person who decides reads it cold.
 
-What survives that trip is the price. What gets lost is everything you said on the calls that made the price make sense.
+What survives that trip is the price. What gets lost is everything you said on the calls that made the price make sense. It is the normal shape of a sale for a fractional executive, who almost always pitches a founder and is decided on by a board; see [proposal tracking for fractional executives](/proposal-tracking-for-fractional-executives).
 
-## Find out who decides, early
+## Find out who the decision maker is, early
 
 On the first or second call, ask directly. Clients expect it:
 
@@ -28,7 +28,7 @@ On the first or second call, ask directly. Clients expect it:
 
 The answers change what you write. A proposal read by a founder and a proposal read by a procurement team need different first pages.
 
-## Write for two readers
+## Write the proposal for the decision maker too
 
 Most proposals have two audiences: the champion who asked for it, and the signer who has to approve it.
 
@@ -48,19 +48,21 @@ Your contact is going to present your proposal in a meeting you are not in. Make
 
 A champion who looks well prepared in front of their boss becomes a stronger champion.
 
-## Send each person their own link
+## Send the decision maker their own link
 
 If you know who the decision maker is, send them their own copy rather than relying on a forward. With a tracking tool you can then see whether they read it, what they read, and how long they spent on pricing, rather than inferring it from your contact's silence.
 
 Closewatch lets you create as many share links on a proposal as you like, each labelled with the person it is for. A link for your contact and one for the finance lead tell you exactly who has opened theirs, and who has not.
 
-## Signs it has reached them, and signs it has not
+![Closewatch showing a tracked link ready to send, named for the person it is going to](/images/closewatch-tracked-link-per-recipient.webp "One named link per person, so each read belongs to someone. Sample data.")
+
+## Signs your proposal has reached the decision maker
 
 On a tracked proposal, a new reader who goes straight to pricing and stays there is often the budget holder. So is a link you sent to the signer being opened for the first time. See [how to tell if a client forwarded your proposal](/guides/did-my-client-forward-my-proposal).
 
 If weeks pass with only your contact reading, the proposal has probably not gone upstairs yet. Ask, gently, whether there is anything you can prepare to help them take it forward.
 
-## When your contact will not introduce you
+## When your contact will not introduce you to the decision maker
 
 Do not go around them. A proposal sent directly to someone's boss without their knowledge tends to end the relationship with the one person who wanted to work with you.
 
@@ -97,5 +99,9 @@ With a tracked link, look for a new reader, especially one who goes straight to 
 ### What if my contact wants to present the proposal themselves?
 
 Let them, and equip them: a one-page summary, the likely objections with answers, and an offer to join for ten minutes if questions come up. Your contact presenting it well is often better than you presenting it at all.
+
+### What should every proposal include?
+
+The client's problem in their words, the outcome you will deliver, the scope and what is excluded, the price with payment terms, and a timeline with the first step. Put the outcome, price and timeline together on one page at the front, because that page is often all the decision maker reads.
 `,
 }

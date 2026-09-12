@@ -1,34 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ComparisonPage } from '#/components/compare/comparison-page'
-import { COMPETITORS } from '#/components/compare/competitors'
 import {
-  breadcrumbJsonLd,
-  canonical,
-  jsonLdScript,
-  socialMeta,
-} from '#/lib/seo'
+  ComparisonPage,
+  comparisonHead,
+} from '#/components/compare/comparison-page'
+import { COMPETITORS } from '#/components/compare/competitors'
 
 const c = COMPETITORS.proposify
-const PATH = '/vs/proposify'
 
 export const Route = createFileRoute('/vs/proposify')({
-  head: () => ({
-    meta: [
-      { title: c.title },
-      { name: 'description', content: c.description },
-      ...socialMeta({
-        title: c.socialTitle,
-        description: c.wedge,
-        path: PATH,
-      }),
-    ],
-    links: canonical(PATH),
-    scripts: jsonLdScript(
-      breadcrumbJsonLd([
-        { name: 'Closewatch', path: '/' },
-        { name: `Closewatch vs ${c.name}`, path: PATH },
-      ]),
-    ),
-  }),
+  head: () => comparisonHead(c),
   component: () => <ComparisonPage c={c} />,
 })

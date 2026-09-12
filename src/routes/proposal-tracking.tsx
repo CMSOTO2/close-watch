@@ -1,14 +1,18 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { ContentPage, prose } from '#/components/content-page'
-import { GuideMarkdown } from '#/components/guides/guide-markdown'
+import { ArticleBody } from '#/components/guides/guide-markdown'
 import { Button } from '#/components/ui/button'
 import { GUIDES, STAGES } from '#/content/guides'
 import { pillar } from '#/content/proposal-tracking'
 import {
+  AUTHOR_LINK,
+  AUTHOR_META,
   articleJsonLd,
   breadcrumbJsonLd,
   canonical,
+  faqJsonLd,
+  faqsFromMarkdown,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -21,13 +25,14 @@ export const Route = createFileRoute('/proposal-tracking')({
     meta: [
       { title: `${pillar.metaTitle ?? pillar.title} | Closewatch` },
       { name: 'description', content: pillar.description },
+      AUTHOR_META,
       ...socialMeta({
         title: pillar.title,
         description: pillar.dek,
         path: PATH,
       }),
     ],
-    links: canonical(PATH),
+    links: [...canonical(PATH), AUTHOR_LINK],
     scripts: [
       ...jsonLdScript(
         breadcrumbJsonLd([
@@ -44,6 +49,7 @@ export const Route = createFileRoute('/proposal-tracking')({
           dateModified: pillar.dateModified,
         }),
       ),
+      ...jsonLdScript(faqJsonLd(faqsFromMarkdown(pillar.body))),
     ],
   }),
   component: ProposalTracking,
@@ -89,7 +95,7 @@ function ProposalTracking() {
         </div>
       }
     >
-      <GuideMarkdown>{pillar.body}</GuideMarkdown>
+      <ArticleBody body={pillar.body} />
 
       <section aria-labelledby="every-guide">
         <h2 id="every-guide" className={prose.h2}>

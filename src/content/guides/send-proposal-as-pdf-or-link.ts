@@ -13,7 +13,7 @@ export const guide: Guide = {
 
 Most people send a PDF because it is what they have always done. That is a reasonable default, but it is a choice with a cost, and the cost only shows up later, when the client goes quiet and you have no idea why.
 
-## Side by side
+## Sending a proposal as a PDF or a link, side by side
 
 | | PDF attachment | Tracked link |
 |---|---|---|
@@ -26,7 +26,7 @@ Most people send a PDF because it is what they have always done. That is a reaso
 | Familiar to every client | Yes | Nearly |
 | Can trip a corporate link filter | Rarely | Occasionally |
 
-## When a PDF attachment is the right call
+## When to send the proposal as a PDF attachment
 
 **The client asked for one.** Procurement teams, legal departments and some public-sector buyers want a file they can store with the contract. Send them what they asked for.
 
@@ -36,19 +36,21 @@ Most people send a PDF because it is what they have always done. That is a reaso
 
 **The deal is small and quick.** For a low-value quote the client will accept or decline within a day, knowing whether they read it changes little.
 
-## When a link is the right call
+## When to send the proposal as a link
 
 **You want to know whether it was read.** An attachment gives you nothing once it leaves your outbox. A link tells you when it was opened, how long they spent, which pages they read, and whether they came back. See [how to know if a client read your proposal](/guides/how-to-know-if-client-read-proposal) for what that data means.
 
-**The proposal is large.** Gmail caps attachments at 25 MB, and many corporate mail servers cap lower. A designed proposal with photography exceeds that easily, and an oversized attachment either bounces or gets silently converted into a cloud link anyway.
+**The proposal is large.** [Gmail caps attachments at 25 MB](https://support.google.com/mail/answer/6584), and many corporate mail servers cap lower. A designed proposal with photography exceeds that easily, and an oversized attachment either bounces or gets silently converted into a cloud link anyway.
 
 **You may need to withdraw it.** Pricing changes, a mistake on page 9, a deal that falls through: a link can be revoked, and an attachment lives in someone's inbox indefinitely.
 
 **The proposal will circulate.** A link shows you when it reaches someone new. An attachment forwarded to three colleagues looks exactly like one that was never opened. See [how to tell if a client forwarded your proposal](/guides/did-my-client-forward-my-proposal).
 
-## The middle path: a link, with the file on request
+## The middle path: send a link, with the PDF on request
 
 You do not have to choose between tracking and giving the client a file. Send the link in the email, and let the viewer offer a download button. Most clients read it in the browser; the ones who want a copy take one.
+
+![What a client sees when they open a Closewatch link: the proposal as designed, download and print buttons, and a line saying the document is tracked](/images/closewatch-tracked-proposal-viewer-disclosure.webp "A proposal sent as a link, with the PDF one click away. Sample data.")
 
 A download is itself a useful signal: someone wanted to keep it, print it or share it. See [can you tell if someone downloaded your proposal](/guides/can-you-tell-if-someone-downloaded-a-proposal). Closewatch records downloads and prints alongside reads. After that the copy on their machine is as untracked as any attachment, which is the honest trade.
 

@@ -3,10 +3,12 @@ import { ArrowRight } from 'lucide-react'
 import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { SiteFooter } from '#/components/site-footer'
+import { GuideMarkdown } from '#/components/guides/guide-markdown'
 import { Button } from '#/components/ui/button'
 import {
   breadcrumbJsonLd,
   canonical,
+  faqJsonLd,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -26,6 +28,12 @@ const DESCRIPTION =
  * not: the shape of a pipeline with several clients in it, and the three
  * specific places an agency proposal dies. If it ever collapses back into a
  * paraphrase of the home page, delete it rather than keep both.
+ *
+ * It is also one of the five pages the 2026-09-11 search report found cut off
+ * from the guide library (docs/geo:aeo/search-report-2026-09-11.md), so the
+ * long-form half links into the guides in prose, with each guide's own phrase
+ * as the anchor, and the guides link back here as "proposal tracking for
+ * agencies".
  */
 export const Route = createFileRoute('/proposal-tracking-for-agencies')({
   head: () => ({
@@ -40,12 +48,17 @@ export const Route = createFileRoute('/proposal-tracking-for-agencies')({
       }),
     ],
     links: canonical(PATH),
-    scripts: jsonLdScript(
-      breadcrumbJsonLd([
-        { name: 'Closewatch', path: '/' },
-        { name: 'Proposal tracking for agencies', path: PATH },
-      ]),
-    ),
+    scripts: [
+      ...jsonLdScript(
+        breadcrumbJsonLd([
+          { name: 'Closewatch', path: '/' },
+          { name: 'Proposal tracking for agencies', path: PATH },
+        ]),
+      ),
+      ...jsonLdScript(
+        faqJsonLd(QUESTIONS.map(({ q, a }) => ({ question: q, answer: a }))),
+      ),
+    ],
   }),
   component: AgenciesPage,
 })
@@ -55,16 +68,31 @@ const DEATHS = [
     n: '01',
     title: 'It never reached the decision maker',
     body: 'You sent it to your day-to-day contact because that is who you talk to. They meant to pass it on. Nothing about the silence tells you which of those two things went wrong, and the fix for each is completely different.',
+    signal: 'Tracking shows it as one reader, weeks after sending.',
+    guide: {
+      href: '/guides/get-proposal-to-decision-maker',
+      label: 'Getting it to the decision maker',
+    },
   },
   {
     n: '02',
     title: 'The number landed badly',
     body: 'They opened it, went to pricing, and stopped. A proposal that dies on the pricing page is a scoping conversation you can still have. A proposal that dies on page one is not the same problem and does not want the same email.',
+    signal: 'Tracking shows a short visit that ends on the pricing page.',
+    guide: {
+      href: '/guides/time-spent-on-proposal-pricing-page',
+      label: 'What time on pricing means',
+    },
   },
   {
     n: '03',
     title: 'It got read, and then buried',
     body: 'Three opens in the first two days, then nothing for a fortnight. That is not a lost deal, it is a stalled one, and it is the single easiest kind to recover if you notice while it is still warm.',
+    signal: 'Tracking shows real reading, then a long gap.',
+    guide: {
+      href: '/guides/client-not-responding-to-proposal',
+      label: 'When a client stops responding',
+    },
   },
 ]
 
@@ -85,7 +113,57 @@ const QUESTIONS = [
     q: 'What about the rest of the team?',
     a: 'Today one account holds the pipeline, which fits an agency where one or two people send every proposal. Shared seats are still to come, so if three people need their own logins right now, this is not the tool for you yet.',
   },
+  {
+    q: 'How much does proposal tracking cost for an agency?',
+    a: 'Closewatch is $19 a month flat for unlimited proposals, and free for two proposals being read at a time. Most document trackers are priced per user; DocSend Standard, for example, is $45 per user a month. For an agency where one or two people send every proposal, a flat price is usually the cheaper shape.',
+  },
+  {
+    q: 'Will our clients know the proposal is tracked?',
+    a: 'Yes. Every Closewatch link shows one line above the first page saying the document is tracked and what the sender is told, with a link to exactly what is recorded. Being told up front costs a client nothing. Finding out later costs you their trust.',
+  },
+  {
+    q: 'Does it work with proposals over 20 pages, or with photography?',
+    a: 'Yes. Closewatch takes PDFs up to 25 MB, which is the same limit Gmail puts on an attachment, and shows them as designed. A long proposal is scored fairly: reading depth is measured per page, with the divisor capped at 12 pages, so a 40-page proposal is not punished against a 6-page one.',
+  },
 ]
+
+/**
+ * The long-form half: how the tracking works for an agency, one link per
+ * person, what to do with the data, and the honest limits. Markdown, so it can
+ * link into the guides in a sentence and carry screenshots the same way they
+ * do.
+ */
+const DETAILS = `## How proposal tracking works for an agency
+
+Closewatch tracks the proposal PDF your studio already makes. Upload it, type the name of the person it is going to, and Closewatch gives you a link to paste into your own email. Nothing about how you design proposals changes, and the client needs no account to open it.
+
+![The Closewatch new-proposal form, with a title, a client name, the person it is going to, a deal value and the proposal PDF](/images/closewatch-upload-proposal-pdf.webp "Setting up a proposal takes a title, a client and the PDF. Sample data.")
+
+When the client opens the link, Closewatch records the visit: which pages they read, how long they spent on each, whether they reached pricing, and whether they came back on a later day. A visit only counts after three seconds of visible attention. An agency pitching into companies with strict email security will not mistake a gateway's scan for a client reading. [Proposal tracking vs email open tracking](/guides/proposal-tracking-vs-email-open-tracking) explains why an open pixel on the covering email cannot make that distinction.
+
+## One tracked link per person at the client
+
+Agency proposals are rarely read by one person. The marketing lead reads it first, then the founder, then someone in finance. Closewatch lets you create as many links on a proposal as you like, each named for the person it is for, so you can see who has opened theirs and who has not.
+
+![Closewatch recent visits on a sample proposal, with two readers it was forwarded to, and the named share links and page tags below](/images/closewatch-forwarded-proposal-new-readers.webp "Named links per recipient, and the forwarded readers each one produced. Sample data.")
+
+When a link is opened by a browser that has never opened it before, Closewatch marks a new reader. For an agency, that is usually the moment a proposal goes upstairs, and the moment to offer a call with whoever is now reading it. [How to tell if a client forwarded your proposal](/guides/did-my-client-forward-my-proposal) covers how to tell a forward from your contact on their phone.
+
+## What an agency does with the reading data
+
+Proposal tracking is only useful if it changes what you do on Monday. Three patterns come up most often:
+
+- **Read closely, then quiet for a week.** A decision is in progress. Follow up with a question about the decision, not the document. [How to follow up on a proposal](/guides/how-to-follow-up-on-a-proposal) has the whole sequence.
+- **A long stay on pricing, then nothing.** The number is being tested against a budget. Offer a phased start or different terms before a discount.
+- **Never opened.** Resend with a new subject line rather than chase. It was probably buried or filtered.
+
+## What proposal tracking will not do for an agency
+
+Closewatch has one login per account today. If three account leads each need their own seat and pipeline, it is not the right tool yet. It has no CRM integration, no e-signature and no proposal editor, and it only tracks PDFs. If you need those in one place, [the best proposal tracking software](/guides/best-proposal-tracking-software) compares the builders that have them, with prices.
+
+It also cannot tell you why a client went quiet. It tells you what they did with the proposal, which narrows the reasons down to a likely few. For what [proposal tracking](/proposal-tracking) can and cannot tell you in general, the category page starts with its limits.
+
+Before you upload anything, [the demo](/demo) shows the report on a sample agency proposal, produced by your own reading of it.`
 
 function AgenciesPage() {
   return (
@@ -102,7 +180,8 @@ function AgenciesPage() {
             A freelancer with one proposal out can hold it in their head. An
             agency with nine live across six clients, each read by a different
             person for different reasons, cannot &mdash; and the deal that
-            quietly dies is rarely the one you were worried about.
+            quietly dies is rarely the one you were worried about. Closewatch is
+            proposal tracking built around that pipeline.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -124,14 +203,14 @@ function AgenciesPage() {
               Three places an agency proposal goes quiet.
             </h2>
             <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
-              They look identical from your side. All three produce the same
-              week of nothing, and the follow-up that would rescue each one is
-              different.
+              Without proposal tracking they look identical from your side. All
+              three produce the same week of nothing, and the follow-up that
+              would rescue each one is different.
             </p>
 
             <ol className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
               {DEATHS.map((d) => (
-                <li key={d.n} className="bg-surface px-5 py-6">
+                <li key={d.n} className="flex flex-col bg-surface px-5 py-6">
                   <p className="font-mono text-[11px] tracking-wider text-brand">
                     {d.n}
                   </p>
@@ -141,6 +220,15 @@ function AgenciesPage() {
                   <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
                     {d.body}
                   </p>
+                  <p className="mt-3 text-[13px] leading-relaxed text-ink">
+                    {d.signal}
+                  </p>
+                  <a
+                    href={d.guide.href}
+                    className="mt-3 text-[13px] font-medium text-brand underline decoration-1 underline-offset-[3px] hover:text-ink"
+                  >
+                    {d.guide.label}
+                  </a>
                 </li>
               ))}
             </ol>
@@ -173,6 +261,16 @@ function AgenciesPage() {
               </p>
             </div>
 
+            <img
+              src="/images/closewatch-proposal-dashboard-ranked-by-intent.webp"
+              alt="The Closewatch dashboard for a sample agency: five open proposals across five clients, ranked hot, warm and cold, each with the signal behind it"
+              width={1600}
+              height={900}
+              loading="lazy"
+              decoding="async"
+              className="mt-10 block h-auto w-full max-w-4xl rounded-lg border border-line"
+            />
+
             <dl className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
               {[
                 {
@@ -199,11 +297,19 @@ function AgenciesPage() {
           </PageContainer>
         </section>
 
-        <section className="border-y border-line bg-surface">
+        <section className="border-t border-line">
+          <PageContainer className="py-4 sm:py-8">
+            <div className="mx-auto max-w-[680px]">
+              <GuideMarkdown>{DETAILS}</GuideMarkdown>
+            </div>
+          </PageContainer>
+        </section>
+
+        <section className="mt-12 border-y border-line bg-surface">
           <PageContainer className="py-16 sm:py-20">
             <p className="kicker text-brand">Questions agencies ask</p>
             <h2 className="mt-3 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
-              The four that come up every time.
+              Proposal tracking for agencies, the questions that come up.
             </h2>
 
             <div className="mt-8 max-w-3xl border-t border-line">

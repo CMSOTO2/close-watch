@@ -2,7 +2,13 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { ContentPage, prose } from '#/components/content-page'
 import { Button } from '#/components/ui/button'
-import { FOUNDER_LINKEDIN, canonical, socialMeta } from '#/lib/seo'
+import {
+  FOUNDER_LINKEDIN,
+  canonical,
+  jsonLdScript,
+  organizationJsonLd,
+  socialMeta,
+} from '#/lib/seo'
 import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/about')({
@@ -22,6 +28,7 @@ export const Route = createFileRoute('/about')({
       }),
     ],
     links: canonical('/about'),
+    scripts: jsonLdScript(organizationJsonLd()),
   }),
   component: About,
 })

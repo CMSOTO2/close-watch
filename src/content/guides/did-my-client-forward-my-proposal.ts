@@ -11,23 +11,25 @@ export const guide: Guide = {
   dateModified: '2026-09-11',
   body: `With an emailed PDF, you cannot tell. With a tracked link, the signal is a new reader: a browser that has never opened it before. Closewatch reports it as "opened by a second reader", not as a confirmed forward, because the same person on a phone looks identical. Send each stakeholder their own link and the signal sharpens.
 
-## Why a forward matters more than an open
+## Why a forwarded proposal matters more than an open
 
 An open tells you your contact looked at the proposal. A forward tells you the decision has left their desk. In most service engagements above a few thousand dollars, the person you sent the proposal to is not the only person who has to agree to it, and often not the one who controls the budget.
 
-That makes a forward one of the most useful things you can learn after sending. It is also the moment a proposal is most exposed: it arrives in front of someone who was not on your calls, with none of the context, and gets judged on whatever survives the trip.
+That makes a forward one of the most useful things you can learn after sending. It is also the moment a proposal is most exposed: it arrives in front of someone who was not on your calls, with none of the context, and gets judged on whatever survives the trip. For a fractional executive, whose proposal nearly always travels from a founder to a board, the forward is the signal that matters most; see [proposal tracking for fractional executives](/proposal-tracking-for-fractional-executives).
 
-## What you can see with an attachment: nothing
+## Can you tell if a client forwarded a PDF attachment?
 
 A forwarded attachment is a copy of a file travelling from one inbox to another. Nothing about that journey reaches you.
 
 Email open tracking does not help much either. If your covering email carried a tracking pixel, a forwarded copy can fire that pixel again from someone else's mail app, and most email trackers report that as your original recipient opening it a second time. You learn that something happened, with the wrong name attached.
 
-## What a tracked link shows
+## How a tracked link shows a forwarded proposal
 
 A tracked link travels with the email that carries it. When anyone opens it, the tracker records the visit, so the question becomes whether that visit came from a browser that has opened the link before.
 
 Closewatch answers that with a first-party cookie set the first time a browser opens a link. A browser without it is counted as a new reader and labelled Reader 2, Reader 3 and so on, next to the name you gave the link. A second reader is one of the heaviest signals in Closewatch's intent score, and three or more is heavier still, because circulation is usually what a decision in progress looks like.
+
+![Closewatch recent visits on a sample proposal, with two readers it was forwarded to and one who printed and downloaded it](/images/closewatch-forwarded-proposal-new-readers.webp "New readers on a forwarded proposal, shown against the named link each came through. Sample data.")
 
 ## Forward or phone? Reading the pattern
 
@@ -42,13 +44,13 @@ A new reader is an observation, not a fact about who it was. Your contact on the
 
 You know who you sent the link to, and the tool does not. The inference is yours to make.
 
-## Make the signal sharper: one link per person
+## One link per person makes a forward easier to spot
 
 The cleanest fix is to stop sending one link to a group. Closewatch lets you create as many share links on a proposal as you like, each labelled with the person it is for. Send your contact their link and the finance lead theirs.
 
 Then each read belongs to a named person, and a new reader on your contact's link is much more likely to be someone they passed it to. It also tells you who has not opened theirs, which is often the more useful fact.
 
-## What to do once it has been forwarded
+## What to do once your proposal has been forwarded
 
 Do not say you saw it. "I noticed you forwarded my proposal" turns a helpful signal into an uncomfortable conversation, and it tells the client something about the link they did not know to ask about.
 
@@ -60,7 +62,7 @@ Instead, act on what a forward usually means:
 
 For the fuller playbook, see [how to get your proposal in front of the real decision maker](/guides/get-proposal-to-decision-maker).
 
-## What this cannot tell you
+## What tracking cannot tell you about a forward
 
 A new reader is never named. Closewatch does not learn a reader's name or email address from their visit, so it cannot tell you who the second reader was, only that there was one.
 

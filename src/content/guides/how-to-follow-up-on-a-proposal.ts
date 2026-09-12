@@ -74,7 +74,7 @@ A good sequence will not rescue a proposal that was wrong for the client, sent t
 
 ## Where Closewatch fits
 
-Closewatch tells you which branch of this plan you are on: whether the proposal was opened, how long they spent on pricing, whether they came back, and whether it reached someone new. It is $19 a month, flat, and on Solo it emails you when a client comes back, a new reader opens it, or it turns hot. It does not send follow-ups for you.
+Closewatch tells you which branch of this plan you are on: whether the proposal was opened, how long they spent on pricing, whether they came back, and whether it reached someone new. It is $19 a month, flat, and on Solo it emails you when a client comes back, a new reader opens it, or it turns hot. It does not send follow-ups for you. It is built for the people who send the most proposals: see [proposal tracking for agencies](/proposal-tracking-for-agencies) and [proposal tracking for fractional executives](/proposal-tracking-for-fractional-executives).
 
 ## Frequently asked questions
 
@@ -97,5 +97,13 @@ Email first, because it lets the client reply when they are ready. Call when som
 ### What should I say when following up on a proposal?
 
 Name the project, ask one specific question the client can answer in a line, and offer something new if you can, such as a phased start or different payment terms. Avoid "just checking in". The templates guide has eleven short versions, one per situation.
+
+### How do you politely follow up on a proposal's status?
+
+Ask a specific question instead of asking for a status. "Is the scope in section 2 roughly what you had in mind?" is polite and easy to answer; "any update?" is neither. Wait at least three business days after sending, keep it under 60 words, and offer something useful, such as a call or a phased option.
+
+### How do I say professionally that I will follow up?
+
+Name the day and what you will bring: "I will follow up on Thursday with the revised timeline." That sounds more professional than "I will circle back", because it commits you to something specific. Then write on that day. Keeping a date you set is the most professional follow-up there is.
 `,
 }

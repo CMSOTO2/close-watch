@@ -39,7 +39,7 @@ The tools split into two kinds, and choosing the kind matters more than choosing
 | Qwilr | Builder | $35/user/mo | 14-day trial | Interactive web proposals |
 | GetAccept | Builder + e-sign | $49/user/mo, 5-user minimum | No | Multi-stakeholder enterprise deals |
 
-Prices are the lowest plan that includes tracking, per month, billed annually, in US dollars unless stated. They were checked on each vendor's pricing page on 11 September 2026, except PandaDoc's, which are from a public pricing tracker last verified in July 2026. Check the vendor's page before you buy.
+Prices are the lowest plan that includes tracking, per month, billed annually, in US dollars unless stated. They were checked on each vendor's own pricing page on 11 September 2026: [Proposify](https://www.proposify.com/pricing), [Better Proposals](https://betterproposals.io/pricing), [DocSend](https://www.docsend.com/pricing/), [Papermark](https://www.papermark.com/pricing), [HummingDeck](https://hummingdeck.com/pricing), [Qwilr](https://qwilr.com/pricing/) and [GetAccept](https://www.getaccept.com/pricing). PandaDoc's are from a public pricing tracker last verified in July 2026. Check the vendor's page before you buy.
 
 ## The tools
 
@@ -51,7 +51,7 @@ Prices are the lowest plan that includes tracking, per month, billed annually, i
 
 **Best for:** small teams that want everyone writing proposals from the same templates.
 
-**Weakness:** tracking only covers proposals built in its editor, so designed proposals from InDesign, Figma or Canva have to be rebuilt. See [Closewatch vs Proposify](/vs/proposify).
+**Weakness:** tracking only covers proposals built in its editor, so designed proposals from InDesign, Figma or Canva have to be rebuilt. For that case, see the [Proposify alternative](/vs/proposify) comparison.
 
 ### 2. Better Proposals
 
@@ -71,7 +71,7 @@ Prices are the lowest plan that includes tracking, per month, billed annually, i
 
 **Best for:** teams that send several document types and want them signed in the same tool.
 
-**Weakness:** per-seat pricing adds up, and the detailed analytics sit on the Business plan, not the entry one. See [Closewatch vs PandaDoc](/vs/pandadoc).
+**Weakness:** per-seat pricing adds up, and the detailed analytics sit on the Business plan, not the entry one. See the [PandaDoc alternative](/vs/pandadoc) comparison for tracking without the platform.
 
 ### 4. DocSend
 
@@ -92,6 +92,10 @@ Prices are the lowest plan that includes tracking, per month, billed annually, i
 **Best for:** consultants and small agencies whose proposals are designed PDFs, who want to know who to follow up with, not a new editor.
 
 **Weakness:** no editor, no templates, no e-signature, and no CRM integrations. It tracks PDFs only. It is also a young product with far fewer users than anything else on this list.
+
+![The Closewatch dashboard: five open proposals ranked by intent, two hot, one warm and two cold, each with the signal behind it](/images/closewatch-proposal-dashboard-ranked-by-intent.webp "Closewatch ranks every open proposal by who is reading it. Sample data.")
+
+Closewatch has a page for each of its two main audiences: [proposal tracking for agencies](/proposal-tracking-for-agencies) and [proposal tracking for fractional executives](/proposal-tracking-for-fractional-executives).
 
 ### 6. Papermark
 
@@ -178,5 +182,13 @@ It works, and its tracking is mature. It is built for documents in general, espe
 ### Which proposal tools filter out email security scanners?
 
 HummingDeck and Closewatch both advertise it. Closewatch counts a visit only after three seconds of visible attention and excludes known bots and link previews. For any tool, ask how it separates an automated scan from a real read before relying on its open counts.
+
+### Which is better, Proposify or PandaDoc?
+
+For proposals alone, Proposify: it is built around them, with templates and a content library, from $19 per user a month billed annually. PandaDoc is the better choice when proposals are one of several documents you send and sign, such as contracts and quotes, though its detailed analytics start on the $49 Business plan.
+
+### What is the best software for building proposals?
+
+For most small teams, Proposify or Better Proposals. Both give you templates, an editor, e-signature and tracking, from $19 and $13 per user a month billed annually. Qwilr suits proposals that work better as a web page. If you already design proposals well somewhere else, you may not need a builder at all, only a tracker.
 `,
 }

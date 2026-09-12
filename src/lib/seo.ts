@@ -96,10 +96,12 @@ export function socialMeta({
 /**
  * Structured data for the product itself.
  *
- * Deliberately not a FAQPage. Google stopped showing FAQ rich results for
- * ordinary sites in 2023, and the markup would need a plain-text copy of every
- * answer in faq.tsx, which is a second version of the same words waiting to
- * drift from the first.
+ * The landing page's FAQ is deliberately not marked up as a FAQPage. Its
+ * answers are JSX in faq.tsx, so the markup would need a plain-text copy of
+ * every answer, a second version of the same words waiting to drift from the
+ * first. The guides, the pillar and the comparison pages do carry FAQPage,
+ * because theirs is read out of the markdown that renders it (faqJsonLd
+ * below), so there is only ever one copy.
  *
  * No aggregateRating either. There are no reviews, and inventing them is both
  * a manual-action risk and a lie.
@@ -214,6 +216,65 @@ export function articleJsonLd({
       logo: `${origin}/android-chrome-512x512.png`,
       founder: FOUNDER,
     },
+  }
+}
+
+/** The Product Hunt listing: the one company profile that exists besides this site. */
+export const PRODUCT_HUNT = 'https://www.producthunt.com/products/closewatch'
+
+/**
+ * The company, as one entity a search engine can hang mentions on.
+ *
+ * On / and /about. "Closewatch" alone is also a farm-camera company and a
+ * police tip app, so this is the record that says which Closewatch the proposal
+ * tracker is: the founder, and every profile that really exists. Add a profile
+ * to `sameAs` only once it is live. A sameAs pointing at a 404 is worse than a
+ * short list.
+ */
+export function organizationJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${origin}/#organization`,
+    name: 'Closewatch',
+    url: `${origin}/`,
+    logo: `${origin}/android-chrome-512x512.png`,
+    description:
+      'Closewatch is proposal tracking software. It turns the proposal PDF you already send into a tracked link and shows who opened it, how long they spent on pricing, and whether it was forwarded.',
+    email: 'hello@getclosewatch.com',
+    founder: FOUNDER,
+    sameAs: [PRODUCT_HUNT],
+  }
+}
+
+/**
+ * The byline, in the two forms a crawler looks for. Every guide and the pillar
+ * already show "By Carlos Soto" and name him as Article.author; a crawler that
+ * only reads <meta name="author"> or rel="author" missed both.
+ */
+export const AUTHOR_META = { name: 'author', content: FOUNDER.name }
+export const AUTHOR_LINK = { rel: 'author', href: FOUNDER.url }
+
+/** Re-exported so every page takes its SEO helpers from one place. */
+export { faqsFromMarkdown } from '#/lib/markdown-text'
+
+/**
+ * FAQPage for questions that are visible on the page.
+ *
+ * Google stopped showing FAQ rich results for ordinary sites in 2023, so this
+ * earns nothing visible there. It is here for Bing, which says schema helps its
+ * models, and for assistants that read structured data to find the answer to a
+ * question. It must only ever describe questions the page actually shows.
+ */
+export function faqJsonLd(faqs: Array<{ question: string; answer: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
   }
 }
 

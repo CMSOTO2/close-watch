@@ -13,7 +13,7 @@ export const guide: Guide = {
 
 The number matters less than the reason behind it. A follow-up works when it lands while the proposal is still on the client's mind, and fails when it lands before they have read it or after they have moved on.
 
-## The short answer, by situation
+## How long to wait after sending a proposal, by situation
 
 | What you know | When to follow up | What to lead with |
 |---|---|---|
@@ -27,13 +27,13 @@ The number matters less than the reason behind it. A follow-up works when it lan
 
 Business days, not calendar days. A proposal sent on Thursday afternoon has had one working day by Monday, not four.
 
-## Why three to five days is the default
+## Why three to five business days is the default wait
 
 Following up the next day tells the client you are anxious, and most clients have not read a proposal within a day of receiving it anyway. Waiting two weeks lets the proposal slide under whatever landed in their inbox since, and it hands time to any competitor who followed up sooner.
 
 Three to five business days is long enough for one real read and one internal conversation, which is what most proposals above a few thousand dollars need before anyone can reply with something useful. It is short enough that the proposal is still the most recent thing you sent them.
 
-## How tracking changes the timing
+## How tracking changes how long to wait
 
 The default exists because an emailed PDF tells you nothing. Once the proposal is a tracked link, the timing can follow what the client actually did instead of a rule of thumb.
 
@@ -45,7 +45,7 @@ The default exists because an emailed PDF tells you nothing. Once the proposal i
 
 **Minutes on the pricing page means the price is being tested.** They are working out whether it fits a budget or comparing it against another quote. That is the moment to talk about terms and scope, not to restate the case for hiring you.
 
-## What to say
+## What to say when the wait is over
 
 Short beats thorough. Each of these is under 60 words, and each asks one question the client can answer in a line.
 

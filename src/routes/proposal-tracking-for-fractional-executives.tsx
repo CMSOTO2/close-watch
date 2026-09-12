@@ -3,10 +3,12 @@ import { ArrowRight } from 'lucide-react'
 import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { SiteFooter } from '#/components/site-footer'
+import { GuideMarkdown } from '#/components/guides/guide-markdown'
 import { Button } from '#/components/ui/button'
 import {
   breadcrumbJsonLd,
   canonical,
+  faqJsonLd,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -26,6 +28,12 @@ const DESCRIPTION =
  * detects best. Which makes this the one audience whose central problem is the
  * feature rather than a use of it, and the reason this page leads on forwarding
  * where the agency page leads on volume.
+ *
+ * The H1 is the phrase, not the hook. SEO.md's rule is that the H1 sells and
+ * the title answers the search, but this was the only one of the five
+ * commercial pages whose H1 did not carry its own phrase, and the 2026-09-11
+ * search report scored it 0/10 for saying what it is about. The hook opens the
+ * paragraph under it instead.
  */
 export const Route = createFileRoute(
   '/proposal-tracking-for-fractional-executives',
@@ -42,12 +50,17 @@ export const Route = createFileRoute(
       }),
     ],
     links: canonical(PATH),
-    scripts: jsonLdScript(
-      breadcrumbJsonLd([
-        { name: 'Closewatch', path: '/' },
-        { name: 'Proposal tracking for fractional executives', path: PATH },
-      ]),
-    ),
+    scripts: [
+      ...jsonLdScript(
+        breadcrumbJsonLd([
+          { name: 'Closewatch', path: '/' },
+          { name: 'Proposal tracking for fractional executives', path: PATH },
+        ]),
+      ),
+      ...jsonLdScript(
+        faqJsonLd(QUESTIONS.map(({ q, a }) => ({ question: q, answer: a }))),
+      ),
+    ],
   }),
   component: FractionalPage,
 })
@@ -84,7 +97,49 @@ const QUESTIONS = [
     q: 'What if they print it for a board meeting?',
     a: 'A print is recorded as its own event and scores. It is one of the better signals there is — nobody prints a proposal they are not about to discuss with somebody else in a room.',
   },
+  {
+    q: 'Can it tell me who the second reader was?',
+    a: 'Not by name. Closewatch sees that a browser which has never opened the link before has opened it, when, and what it read. It does not ask readers for an email address, because that step costs replies. If you know who else is deciding, send them their own named link.',
+  },
+  {
+    q: 'Does it work for engagement letters and SOWs as well as proposals?',
+    a: 'Any PDF can be tracked the same way. The pricing signal works best when the document has a page that reads as pricing or fees, which Closewatch finds from the text on upload. If it guesses wrong, you tag the page by hand in a second.',
+  },
+  {
+    q: 'How much does proposal tracking cost?',
+    a: 'Closewatch is $19 a month flat for unlimited proposals, and free for two proposals being read at a time, with all the tracking switched on. There are no per-seat charges and no annual commitment.',
+  },
 ]
+
+/**
+ * The long-form half, in markdown so it can link into the guides in a
+ * sentence and carry screenshots the way they do.
+ */
+const DETAILS = `## How proposal tracking works for a fractional engagement
+
+A fractional proposal is short, and it travels. It goes to the founder, who sends it to a co-founder or a board member, who reads it on a phone between meetings. Closewatch's proposal tracking is built around that trip.
+
+Upload the proposal or engagement letter as a PDF and name the person it is going to. Closewatch gives you a link for them. If you already know who else will read it, the co-founder or the CFO, create a link for each of them too. Every link is named, so every read belongs to someone.
+
+![Closewatch showing a tracked link ready to send, named for the person it is going to](/images/closewatch-tracked-link-per-recipient.webp "Each tracked link is named for the person it is going to. Sample data.")
+
+## What a forwarded proposal looks like in Closewatch
+
+When the link you sent the founder is opened in a browser that has never opened it, Closewatch marks a new reader, Reader 2, next to the founder's name. On the Solo plan it emails you when it happens. Closewatch will not claim a forward it cannot prove, because the founder on their phone looks the same as a board member. Timing usually tells you which: a new reader the next business day who goes straight to your rate is rarely the founder. [How to tell if a client forwarded your proposal](/guides/did-my-client-forward-my-proposal) has the patterns.
+
+![Closewatch recent visits on a sample proposal, with two readers it was forwarded to and one who printed and downloaded it](/images/closewatch-forwarded-proposal-new-readers.webp "Forwarded readers on a sample proposal, and the named link each came through. Sample data.")
+
+## What to do once your proposal has travelled
+
+Once a proposal has been forwarded, your contact is selling you internally. Give them something to pass on: a one-page summary with the outcome, the rate and the start date, and the answer to the objection a CFO will raise. [How to get your proposal in front of the real decision maker](/guides/get-proposal-to-decision-maker) covers what to send, and how to ask for ten minutes with the person who signs.
+
+If a week passes with only the founder reading, the proposal has not gone upstairs yet. [How to follow up on a proposal](/guides/how-to-follow-up-on-a-proposal) has the sequence for that case too.
+
+## What proposal tracking cannot tell a fractional executive
+
+It cannot name the second reader. Closewatch never learns a reader's name or email address from their visit. It cannot see the board meeting where your proposal was discussed, beyond the print that came before it. And it cannot tell you that the founder likes you but the budget is not there. Tracking narrows the reasons down. It does not hand you the answer.
+
+Closewatch is also deliberately small: no e-signature, no editor, PDFs only. If you want a builder, [the best proposal tracking software](/guides/best-proposal-tracking-software) compares the tools with editors and signatures, and [proposal tracking vs email open tracking](/guides/proposal-tracking-vs-email-open-tracking) explains why a pixel on your email is no substitute. For the category itself, start with [what proposal tracking is](/proposal-tracking), or [try the demo](/demo) and read a sample proposal the way your client would.`
 
 function FractionalPage() {
   return (
@@ -95,13 +150,14 @@ function FractionalPage() {
         <PageContainer className="pt-12 pb-14 sm:pt-16">
           <p className="kicker text-brand">For fractional executives</p>
           <h1 className="mt-3 max-w-[22ch] font-display text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
-            You pitch one person. Someone else decides.
+            Proposal tracking for fractional executives.
           </h1>
           <p className="mt-5 max-w-[58ch] text-[17px] leading-relaxed text-ink-2">
-            A fractional CMO, CFO or COO almost never sells to the person who
-            signs. You talk to a founder or an operator, they forward your
-            proposal to a co-founder, a partner or the board, and the
-            conversation that decides it happens in a room you are not in.
+            You pitch one person. Someone else decides. A fractional CMO, CFO or
+            COO almost never sells to the person who signs. You talk to a
+            founder or an operator, they forward your proposal to a co-founder,
+            a partner or the board, and the conversation that decides it happens
+            in a room you are not in.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -125,17 +181,18 @@ function FractionalPage() {
                   The forward is the whole signal.
                 </h2>
                 <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
-                  Closewatch gives every recipient their own link. That is the
-                  entire mechanism, and for this kind of sale it is worth more
-                  than any other number on the page: when the link you sent to
-                  one founder is opened by two more readers, your proposal is
-                  being circulated to people with authority.
+                  Closewatch&rsquo;s proposal tracking gives every recipient
+                  their own link. That is the entire mechanism, and for this
+                  kind of sale it is worth more than any other number on the
+                  page: when the link you sent to one founder is opened by two
+                  more readers, your proposal is being circulated to people with
+                  authority.
                 </p>
                 <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
-                  It is also the one thing you would never learn otherwise. A
-                  founder rarely writes back to say &ldquo;I have sent this to
-                  my co-founder.&rdquo; They go quiet while it happens, and
-                  quiet is exactly what a lost deal feels like too.
+                  A forward is also the one thing you would never learn
+                  otherwise. A founder rarely writes back to say &ldquo;I have
+                  sent this to my co-founder.&rdquo; They go quiet while it
+                  happens, and quiet is exactly what a lost deal feels like too.
                 </p>
               </div>
 
@@ -162,11 +219,11 @@ function FractionalPage() {
 
             <div className="mt-6 flex max-w-[64ch] flex-col gap-4">
               <p className="text-[15px] leading-relaxed text-ink-2">
-                Without the signal you write the same message every time, a week
-                later, hedged: checking in, no pressure, let me know. It is
-                addressed to somebody who may not have read it, may have loved
-                it, or may have sent it upstairs three days ago. It cannot be
-                good, because it is written for all three at once.
+                Without proposal tracking you write the same message every time,
+                a week later, hedged: checking in, no pressure, let me know. It
+                is addressed to somebody who may not have read it, may have
+                loved it, or may have sent it upstairs three days ago. It cannot
+                be good, because it is written for all three at once.
               </p>
               <p className="text-[15px] leading-relaxed text-ink-2">
                 When you can see it was forwarded and that the second reader
@@ -186,11 +243,19 @@ function FractionalPage() {
           </PageContainer>
         </section>
 
-        <section className="border-y border-line bg-surface">
+        <section className="border-t border-line">
+          <PageContainer className="py-4 sm:py-8">
+            <div className="mx-auto max-w-[680px]">
+              <GuideMarkdown>{DETAILS}</GuideMarkdown>
+            </div>
+          </PageContainer>
+        </section>
+
+        <section className="mt-12 border-y border-line bg-surface">
           <PageContainer className="py-16 sm:py-20">
             <p className="kicker text-brand">Questions</p>
             <h2 className="mt-3 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
-              What fractional operators ask first.
+              What fractional operators ask about proposal tracking.
             </h2>
 
             <div className="mt-8 max-w-3xl border-t border-line">

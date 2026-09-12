@@ -4,8 +4,43 @@ import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { Button } from '#/components/ui/button'
 import { SiteFooter } from '#/components/site-footer'
+import { GuideMarkdown } from '#/components/guides/guide-markdown'
 import { PRICES_CHECKED } from '#/components/compare/competitors'
 import type { Competitor } from '#/components/compare/competitors'
+import {
+  breadcrumbJsonLd,
+  canonical,
+  faqJsonLd,
+  faqsFromMarkdown,
+  jsonLdScript,
+  socialMeta,
+} from '#/lib/seo'
+
+/** The head for a /vs/… route. Shared so the three routes cannot drift. */
+export function comparisonHead(c: Competitor) {
+  const path = `/vs/${c.slug}`
+  return {
+    meta: [
+      { title: c.title },
+      { name: 'description', content: c.description },
+      ...socialMeta({
+        title: c.socialTitle,
+        description: c.wedge,
+        path,
+      }),
+    ],
+    links: canonical(path),
+    scripts: [
+      ...jsonLdScript(
+        breadcrumbJsonLd([
+          { name: 'Closewatch', path: '/' },
+          { name: `Closewatch vs ${c.name}`, path },
+        ]),
+      ),
+      ...jsonLdScript(faqJsonLd(faqsFromMarkdown(c.faqs))),
+    ],
+  }
+}
 
 /**
  * The page behind every /vs/… route.
@@ -20,6 +55,11 @@ import type { Competitor } from '#/components/compare/competitors'
  * their choice was stupid is a page they close. Conceding the cases where the
  * other tool genuinely wins is what buys the right to make the case where it
  * does not.
+ *
+ * After the table come the details and the FAQ, in markdown in the same
+ * 680px reading column as the guides: how it works with screenshots, price,
+ * switching, and the questions people type about the other product. These are
+ * what took the page from 600 words to something that answers the search.
  */
 export function ComparisonPage({ c }: { c: Competitor }) {
   return (
@@ -28,9 +68,9 @@ export function ComparisonPage({ c }: { c: Competitor }) {
 
       <main>
         <PageContainer className="pt-12 pb-14 sm:pt-16">
-          <p className="kicker text-brand">Honest comparison</p>
-          <h1 className="mt-3 max-w-[20ch] font-display text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
-            Closewatch vs {c.name}
+          <p className="kicker text-brand">{c.kicker}</p>
+          <h1 className="mt-3 max-w-[22ch] font-display text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
+            {c.h1}
           </h1>
           <p className="mt-5 max-w-[56ch] text-[17px] leading-relaxed text-ink-2">
             {c.wedge}
@@ -53,17 +93,10 @@ export function ComparisonPage({ c }: { c: Competitor }) {
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-14 sm:py-16">
             <h2 className="max-w-[26ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
-              What {c.name} is, and what this is instead
+              What {c.name} is, and what Closewatch is instead
             </h2>
-            <div className="mt-6 flex max-w-[64ch] flex-col gap-4">
-              {c.body.map((para) => (
-                <p
-                  key={para}
-                  className="text-[15px] leading-relaxed text-ink-2"
-                >
-                  {para}
-                </p>
-              ))}
+            <div className="mt-2 max-w-[64ch]">
+              <GuideMarkdown>{c.intro}</GuideMarkdown>
             </div>
           </PageContainer>
         </section>
@@ -97,7 +130,8 @@ export function ComparisonPage({ c }: { c: Competitor }) {
           <PageContainer className="py-16 sm:py-20">
             <p className="kicker text-brand">Side by side</p>
             <h2 className="mt-3 max-w-[26ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
-              The differences that do not change next quarter.
+              {c.name} vs Closewatch: the differences that do not change next
+              quarter.
             </h2>
 
             {/* Its own scroller: three readable columns will not fit on a
@@ -176,6 +210,16 @@ export function ComparisonPage({ c }: { c: Competitor }) {
               being read at a time, with unlimited sending, and $19 a month for
               unlimited, whoever sends them.
             </p>
+          </PageContainer>
+        </section>
+
+        {/* How it works, price, switching, and the questions people ask. */}
+        <section>
+          <PageContainer className="py-4 sm:py-8">
+            <div className="mx-auto max-w-[680px]">
+              <GuideMarkdown>{c.details}</GuideMarkdown>
+              <GuideMarkdown>{c.faqs}</GuideMarkdown>
+            </div>
           </PageContainer>
         </section>
 

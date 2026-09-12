@@ -18,11 +18,11 @@ export const guide: Guide = {
 
 The point of a score is not the number. It is sorting your proposals by which one needs you today, with the reasons attached so you know what to say. A score you cannot see inside is a horoscope. So here is the whole model.
 
-## Only real reads count
+## Only real reads count toward a proposal engagement score
 
 Before anything is scored, the input is cleaned. A visit counts only after three seconds of visible attention. Known bots and link-preview fetchers are excluded. Time accrues only while the page is visible, the window has focus, and there has been activity in the last minute. A return within 30 minutes continues the same visit. A proposal with no qualifying visit scores 0.
 
-## The model
+## The proposal engagement scoring model
 
 | Signal | Threshold | Points |
 |---|---|---|
@@ -46,13 +46,13 @@ Add the points and cap the total at 100. **Cold** is under 30, **warm** is 30 to
 
 **A return is measured by the gap, not the count.** Several visits in one sitting are covered by the visit count. A return after hours, or on another day, means someone went away and came back, and earns its own points.
 
-## Two worked examples
+## Two proposal engagement scores, worked through
 
 **A proposal running hot.** A 12-page proposal, opened three times (15), by a second reader (18), with 70 seconds on pricing (18), six minutes of reading in all, which is 30 seconds per page (12), and a return the next day (15). Total 78: hot.
 
 **A proposal that is not.** The same proposal, opened once for 40 seconds. That is about 3 seconds per page, under the 8-second threshold, and nowhere near 15 seconds on pricing. Total 0: cold, with the reason "opened" and nothing else. The next step is a resend or a question, not a closing call.
 
-## Building your own
+## Building your own proposal engagement score
 
 You can run the same model in a spreadsheet. One row per proposal, one column per signal from the table above, a points formula for each, and a total capped at 100. The hard part is not the arithmetic; it is getting clean inputs. Opens that include email scanners, or time that counts a background tab, will score every proposal warm and make the whole exercise useless.
 
@@ -67,6 +67,8 @@ It also knows nothing outside the document: the budget, the politics, the compet
 ## Where Closewatch fits
 
 Closewatch scores every proposal with this model, shows the reasons next to the number, and sorts your dashboard by it so the proposal that needs you is at the top. On Solo, $19 a month flat, it emails you once when a proposal turns hot. Two read proposals are free.
+
+![The Closewatch dashboard: five open proposals sorted by engagement score, two hot, one warm and two cold, each with the signal behind it](/images/closewatch-proposal-dashboard-ranked-by-intent.webp "The dashboard, sorted by this score. Sample data.")
 
 For the individual signals, see [what proposal analytics is and what to measure](/guides/what-is-proposal-analytics) and [what repeat opens mean](/guides/client-opened-proposal-multiple-times).
 
@@ -91,5 +93,9 @@ Yes. List your proposals as rows, give each signal a column and a points rule, a
 ### Does an engagement score predict whether I will win the deal?
 
 Not reliably, and be wary of any tool that says it does. Closewatch's weights reflect what tends to come before a decision but have not yet been tested against a large set of outcomes. Use the score to decide who to call first, not to forecast revenue.
+
+### How do you score an RFP?
+
+That is the buyer's side of the table, and a different job. An RFP is usually scored against weighted criteria set before responses arrive, such as approach, experience, price and risk, with several evaluators rating each on a fixed scale and the totals compared. Proposal engagement scoring is the sender's side: measuring how a proposal was read.
 `,
 }

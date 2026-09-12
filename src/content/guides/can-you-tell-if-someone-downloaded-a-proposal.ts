@@ -3,8 +3,7 @@ import type { Guide } from './types'
 export const guide: Guide = {
   slug: 'can-you-tell-if-someone-downloaded-a-proposal',
   stage: 'reading',
-  title: 'Can You Tell If Someone Downloaded Your Proposal?',
-  metaTitle: 'Can You Tell If Someone Downloaded a Proposal?',
+  title: 'Can You Tell If Someone Downloaded a Proposal?',
   description:
     'You cannot see downloads of an emailed attachment. A tracked link can record them. What a download means, what it hides, and whether you can stop one.',
   dek: 'Only if you sent a link. What a download tells you, and what it stops telling you once the copy leaves the browser.',
@@ -27,6 +26,8 @@ Dropbox did offer file tracking through a feature called Send and Track, and dis
 When a proposal is sent as a tracked link, the document is shown in the browser by the tool, and saving a copy goes through the tool too, so it can be recorded.
 
 Closewatch shows a download button and a print button on its viewer and records every use of either. It also records printing from the browser's own print command, not only from its button. Both appear on the proposal's activity, and both feed its engagement score: a download adds 15 points, a print 18, and both together 20.
+
+![What a client sees when they open a Closewatch link: the proposal as designed, download and print buttons, and a line saying the document is tracked](/images/closewatch-tracked-proposal-viewer-disclosure.webp "The download and print buttons on a tracked proposal. Using either is recorded. Sample data.")
 
 ## What a download usually means
 
@@ -83,5 +84,13 @@ Some tools let you, and Google Drive can stop viewers downloading, printing and 
 ### Does printing a proposal count as a download?
 
 In Closewatch they are recorded separately, and both count. A print is weighed slightly higher than a download in the engagement score, because printing to mark up or bring to a meeting is usually the more committed of the two.
+
+### Can something be downloaded without you knowing?
+
+Yes, almost always. An emailed attachment, a file on a shared drive, or a PDF opened straight from a website can be saved with no signal to the sender. A tracked link is the exception: Closewatch records downloads and prints from its viewer, including the browser's own print command. A screenshot is invisible to every tool.
+
+### Can you tell if someone downloads a Google Doc?
+
+Not as the sender, in most cases. Google's [Activity dashboard](https://support.google.com/a/answer/7573825) shows who viewed a Docs, Sheets or Slides file, on Google Workspace accounts and depending on the admin's settings. It does not report downloads. A Workspace admin can see downloads in the Drive audit log, which a sender outside the client's organisation cannot reach.
 `,
 }

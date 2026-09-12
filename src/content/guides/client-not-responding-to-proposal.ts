@@ -14,7 +14,7 @@ export const guide: Guide = {
 
 Most advice about client silence treats it as one situation and prescribes one polite email. That is why it so often fails: the same "just checking in" is the wrong message for three of the four reasons a client goes quiet.
 
-## Why clients go quiet after a proposal
+## Why a client stops responding to a proposal
 
 Silence is rarely a considered no. People who have decided against you usually say so, or at least reply briefly. Silence is far more often one of these:
 
@@ -25,7 +25,7 @@ Silence is rarely a considered no. People who have decided against you usually s
 
 Each has a different fix, and the fix for one actively hurts another. Chasing someone who never saw the proposal makes them feel caught out. Resending a proposal to someone who has read it three times makes you look as if you are not paying attention.
 
-## Diagnose it first
+## Diagnose why the client is not responding
 
 If the proposal went out as a tracked link, the reading history tells you which situation you are in. If it went as an attachment, you are guessing, and the default in the last section is the best you can do.
 
@@ -61,7 +61,7 @@ If the proposal went out as a tracked link, the reading history tells you which 
 
 **What to do:** get in front of the people now reading it. Offer a short call with the wider group, or ask your contact what the other readers care about. Proposals that circulate without their author tend to get judged on price alone, because price is the only thing that survives being summarised in a forwarded email. See [how to tell if a client forwarded your proposal](/guides/did-my-client-forward-my-proposal) for how to read the signal.
 
-## When you cannot see which one it is
+## When you cannot see why the client is not responding
 
 With an emailed PDF there is no reading history, so work through the scenarios in order of how common they are:
 
@@ -71,7 +71,7 @@ With an emailed PDF there is no reading history, so work through the scenarios i
 
 That sequence covers the four scenarios in the order they are most likely. It is slower than a targeted follow-up, because you spend the first two messages finding out what you could have seen.
 
-## What tracking cannot tell you
+## What tracking cannot tell you about a silent client
 
 A reading history shows behaviour, not reasons. It can show that someone spent four minutes on pricing. It cannot tell you whether they were impressed or appalled. It cannot see a budget freeze, a reorganisation, or a competitor who was already the favourite before your proposal arrived.
 
@@ -83,7 +83,7 @@ And sometimes silence really is the answer. If three follow-ups over three weeks
 
 Closewatch tells you which of the four situations you are in. Upload the proposal PDF you already have, send the link instead of the attachment, and see whether it was opened, for how long, which pages were read, whether a new reader opened it, and whether it was downloaded or printed. Visits count only after three seconds of visible attention, so a corporate security scanner that opens every link is not reported as your client.
 
-It is $19 a month, flat, with two read proposals live at once on the free plan. It does not build proposals or chase clients for you. For timing, see [how long to wait after sending a proposal](/guides/how-long-to-wait-after-sending-proposal); for what each signal means, see [how to know if a client read your proposal](/guides/how-to-know-if-client-read-proposal).
+It is $19 a month, flat, with two read proposals live at once on the free plan. It does not build proposals or chase clients for you. For an agency with several proposals out at once, see [proposal tracking for agencies](/proposal-tracking-for-agencies). For timing, see [how long to wait after sending a proposal](/guides/how-long-to-wait-after-sending-proposal); for what each signal means, see [how to know if a client read your proposal](/guides/how-to-know-if-client-read-proposal).
 
 ## Frequently asked questions
 

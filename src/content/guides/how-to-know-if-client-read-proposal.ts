@@ -13,7 +13,7 @@ export const guide: Guide = {
 
 Everything else is guesswork, and most of it is worse guesswork than people realize.
 
-## The four options, ranked
+## Four ways to know if a client read your proposal, ranked
 
 ### 1. Tracked proposal links
 
@@ -25,13 +25,15 @@ What you do not get: certainty about who is behind the click if the link circula
 
 This is the only method that tells you what was actually read rather than what was received.
 
+![Closewatch attention report for a sample proposal: five opens, three readers, and ten minutes on the pricing page](/images/closewatch-attention-report-time-per-page-pricing.webp "A tracked link shows what was read, page by page. Sample data.")
+
 ### 2. Email open tracking
 
 A pixel embedded in the email fires when the message renders. Mailtrack, Streak, HubSpot and Yesware all work this way.
 
 The problem is that it tracks the email, not the proposal. A client can open your message, see the attachment, and never open it. You get a green tick and learn nothing about the document itself.
 
-It also breaks constantly. Apple Mail Privacy Protection pre-loads every remote image whether or not the message is ever opened, so it reports opens that never happened. Gmail and Outlook block remote images by default for many users, so real opens go unrecorded. Corporate security scanners open every message on arrival, hours before a person does.
+It also breaks constantly. [Apple Mail Privacy Protection](https://www.apple.com/legal/privacy/data/en/mail-privacy-protection/) downloads remote content in the background whether or not the message is ever read, so it reports opens that never happened. Gmail and Outlook block remote images by default for many users, so real opens go unrecorded. Corporate security scanners open every message on arrival, hours before a person does.
 
 Useful as a rough signal that your email did not bounce. Not a read receipt for a proposal. See [proposal tracking vs email open tracking](/guides/proposal-tracking-vs-email-open-tracking) for the full case.
 
@@ -43,7 +45,7 @@ Most people decline. Many mail clients suppress the prompt before the recipient 
 
 ### 4. Analytics built into a proposal builder
 
-If you build the proposal inside Proposify, PandaDoc or Qwilr, tracking comes with it. This works well, and it is the right answer if you also want templates, an editor and e-signatures in one place. See [Closewatch vs Proposify](/vs/proposify) for that trade-off in full.
+If you build the proposal inside Proposify, PandaDoc or Qwilr, tracking comes with it. This works well, and it is the right answer if you also want templates, an editor and e-signatures in one place. The [Proposify alternative](/vs/proposify) comparison covers that trade-off in full.
 
 The catch is that you have to build the proposal in their editor. If your proposals live in Figma, Canva, Google Docs or a designed InDesign PDF, moving them is real work for a small answer.
 
@@ -53,7 +55,7 @@ No. Once a PDF leaves your outbox as an attachment, it is a file on someone else
 
 If you need to know whether a PDF was read, you have to change how you deliver it, not what is inside it: serve it as a link rather than an attachment.
 
-## What the signals actually mean
+## What the signals mean once a client has read your proposal
 
 Knowing it was opened is the boring part. The useful information is in the pattern.
 
@@ -71,7 +73,7 @@ Knowing it was opened is the boring part. The useful information is in the patte
 
 **Opened repeatedly but no reply.** Interest without authority, usually. Your contact likes it and cannot approve it alone.
 
-## Should you tell the client?
+## Should you tell the client you can see they read it?
 
 Closewatch's answer is yes, and it does this for you by default: the viewer carries one quiet line above the first page saying the sender is told when the document is opened, which pages were read, and whether it was downloaded or printed, with a link to exactly what is recorded. It is a disclosure, not a banner, and it is on by default rather than something you have to remember to add.
 
@@ -114,5 +116,9 @@ Closewatch counts distinct readers on each link: a browser that has not opened i
 ### Is it worth paying for proposal tracking if I only send a few proposals a month?
 
 If a single proposal is worth more than a few hundred dollars, knowing whether it was read changes when and how you follow up, and that changes close rates. Below that value, and at high volume with small deal sizes, the honest answer is probably not.
+
+### How do I ask a client about a proposal's status?
+
+Ask a specific question instead of asking for a status. "Is the scope in section 2 roughly what you had in mind?" gets an answer, and "any update?" gets put off. If you know they have read it, ask about the decision instead: who else needs to see it, or when they expect to decide.
 `,
 }

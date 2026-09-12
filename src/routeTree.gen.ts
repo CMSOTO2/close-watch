@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as DpaRouteImport } from './routes/dpa'
 import { Route as GuidesRouteImport } from './routes/guides'
+import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProposalTrackingRouteImport } from './routes/proposal-tracking'
@@ -65,6 +66,11 @@ const DpaRoute = DpaRouteImport.update({
 const GuidesRoute = GuidesRouteImport.update({
   id: '/guides',
   path: '/guides',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
+  id: '/llms.txt',
+  path: '/llms.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/demo': typeof DemoRoute
   '/dpa': typeof DpaRoute
   '/guides': typeof GuidesRouteWithChildren
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/proposal-tracking': typeof ProposalTrackingRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/demo': typeof DemoRoute
   '/dpa': typeof DpaRoute
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/proposal-tracking': typeof ProposalTrackingRoute
@@ -245,6 +253,7 @@ export interface FileRoutesById {
   '/demo': typeof DemoRoute
   '/dpa': typeof DpaRoute
   '/guides': typeof GuidesRouteWithChildren
+  '/llms.txt': typeof LlmsDottxtRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/proposal-tracking': typeof ProposalTrackingRoute
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/dpa'
     | '/guides'
+    | '/llms.txt'
     | '/login'
     | '/privacy'
     | '/proposal-tracking'
@@ -304,6 +314,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/demo'
     | '/dpa'
+    | '/llms.txt'
     | '/login'
     | '/privacy'
     | '/proposal-tracking'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/dpa'
     | '/guides'
+    | '/llms.txt'
     | '/login'
     | '/privacy'
     | '/proposal-tracking'
@@ -365,6 +377,7 @@ export interface RootRouteChildren {
   DemoRoute: typeof DemoRoute
   DpaRoute: typeof DpaRoute
   GuidesRoute: typeof GuidesRouteWithChildren
+  LlmsDottxtRoute: typeof LlmsDottxtRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProposalTrackingRoute: typeof ProposalTrackingRoute
@@ -425,6 +438,13 @@ declare module '@tanstack/react-router' {
       path: '/guides'
       fullPath: '/guides'
       preLoaderRoute: typeof GuidesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.txt': {
+      id: '/llms.txt'
+      path: '/llms.txt'
+      fullPath: '/llms.txt'
+      preLoaderRoute: typeof LlmsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -621,6 +641,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRoute: DemoRoute,
   DpaRoute: DpaRoute,
   GuidesRoute: GuidesRouteWithChildren,
+  LlmsDottxtRoute: LlmsDottxtRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ProposalTrackingRoute: ProposalTrackingRoute,

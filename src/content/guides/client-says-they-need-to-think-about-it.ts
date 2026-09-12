@@ -14,7 +14,7 @@ export const guide: Guide = {
 
 The instinct is either to press ("what is there to think about?") or to retreat ("of course, take your time") and hope. The first makes the client defensive. The second hands them a silence that is easy to extend forever.
 
-## The four things it usually means
+## What it means when a client says they need to think about it
 
 | What they said | What they often mean | What helps |
 |---|---|---|
@@ -41,7 +41,7 @@ A pause with no end date becomes a no by default. Before the conversation ends:
 
 Then follow up on Thursday, not before and not a week after. Keeping a date you agreed reads as professional. Chasing before it reads as pressure.
 
-## What to send while they think
+## What to send while the client thinks about it
 
 Something that makes the decision easier, not a restatement of the proposal:
 
@@ -62,7 +62,7 @@ If the proposal went as a tracked link, the days after "we need to think about i
 
 **Nothing at all.** Nobody has opened it since the conversation. The polite-no explanation is gaining weight, and the agreed date is when you find out.
 
-## When it means no
+## When "we need to think about it" means no
 
 If the agreed date passes with no reply, send one more message, then a last one saying you will close the file unless the timing changes. That last email tends to get an answer when the others did not, because it asks for nothing but a yes or a no.
 

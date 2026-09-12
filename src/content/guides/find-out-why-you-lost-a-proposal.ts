@@ -46,13 +46,13 @@ If they are open to a longer answer, or a short call:
 
 **Do not ask for a call unless they offer one.** An email is easy to answer. A meeting request is easy to ignore.
 
-## Losses nobody explains
+## Proposals you lost without being told why
 
 Many proposals are not lost with a no. They simply go quiet. For those, send a final email saying you will close the file unless the timing changes, and mark the proposal lost only if they confirm it. Otherwise file it without an outcome, so your record of real losses stays accurate.
 
 For silent losses, the reading history is often the only explanation you will get: it was never opened, it was opened once and abandoned at the pricing page, or it was read closely and then stalled with no new reader. Each points at a different cause.
 
-## Look for the pattern, not the story
+## Find the pattern across the proposals you lost
 
 One loss teaches you little. Twenty teach you a lot. Record every outcome, and look at what the lost proposals have in common:
 
