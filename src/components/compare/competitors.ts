@@ -22,9 +22,9 @@
  *
  * `intro`, `details` and `faqs` are markdown, rendered by the same component
  * as the guides, so they can link into the guide library in a sentence rather
- * than in a list of related links. `faqs` starts with the
- * "## Frequently asked questions" heading and uses ### for each question, the
- * same as the guides.
+ * than in a list of related links. `faqs` is a "## Frequently asked
+ * questions" heading followed by one ### per question, the same as the
+ * guides; the page renders it as a question list.
  */
 
 export const PRICES_CHECKED = 'September 2026'

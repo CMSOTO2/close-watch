@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { SiteFooter } from '#/components/site-footer'
-import { GuideMarkdown } from '#/components/guides/guide-markdown'
+import { LongFormSections, QuestionList } from '#/components/long-form'
 import { ProductShot } from '#/components/product-shot'
 import { Button } from '#/components/ui/button'
 import {
@@ -288,33 +288,16 @@ function AgenciesPage() {
           </PageContainer>
         </section>
 
-        <section className="border-t border-line">
-          <PageContainer className="py-4 sm:py-8">
-            <div className="mx-auto max-w-[680px]">
-              <GuideMarkdown>{DETAILS}</GuideMarkdown>
-            </div>
-          </PageContainer>
-        </section>
+        <LongFormSections markdown={DETAILS} className="border-t border-line" />
 
-        <section className="mt-12 border-y border-line bg-surface">
+        <section className="border-y border-line bg-surface">
           <PageContainer className="py-16 sm:py-20">
             <p className="kicker text-brand">Questions agencies ask</p>
             <h2 className="mt-3 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
               Proposal tracking for agencies, the questions that come up.
             </h2>
 
-            <div className="mt-8 max-w-3xl border-t border-line">
-              {QUESTIONS.map(({ q, a }) => (
-                <div key={q} className="border-b border-line py-5">
-                  <h3 className="text-[15px] font-medium tracking-[-0.008em]">
-                    {q}
-                  </h3>
-                  <p className="mt-2 max-w-[68ch] text-[14px] leading-relaxed text-ink-2">
-                    {a}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <QuestionList items={QUESTIONS} />
           </PageContainer>
         </section>
 

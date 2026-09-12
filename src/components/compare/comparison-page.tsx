@@ -5,6 +5,8 @@ import { SiteHeader } from '#/components/landing/site-header'
 import { Button } from '#/components/ui/button'
 import { SiteFooter } from '#/components/site-footer'
 import { GuideMarkdown } from '#/components/guides/guide-markdown'
+import { LongFormSections, QuestionList } from '#/components/long-form'
+import { splitAtHeadings } from '#/lib/markdown-text'
 import { PRICES_CHECKED } from '#/components/compare/competitors'
 import type { Competitor } from '#/components/compare/competitors'
 import {
@@ -51,10 +53,11 @@ export function comparisonHead(c: Competitor) {
  * other tool genuinely wins is what buys the right to make the case where it
  * does not.
  *
- * After the table come the details and the FAQ, in markdown in the same
- * 680px reading column as the guides: how it works with screenshots, price,
- * switching, and the questions people type about the other product. These are
- * what took the page from 600 words to something that answers the search.
+ * After the table come the details and the FAQ: how it works with
+ * screenshots, price, switching, and the questions people type about the
+ * other product. They are markdown so they can link into the guides, but
+ * LongFormSections and QuestionList lay them out in this page's own style,
+ * not as a guide's reading column.
  */
 export function ComparisonPage({ c }: { c: Competitor }) {
   return (
@@ -208,13 +211,22 @@ export function ComparisonPage({ c }: { c: Competitor }) {
           </PageContainer>
         </section>
 
-        {/* How it works, price, switching, and the questions people ask. */}
-        <section>
-          <PageContainer className="py-4 sm:py-8">
-            <div className="mx-auto max-w-[680px]">
-              <GuideMarkdown>{c.details}</GuideMarkdown>
-              <GuideMarkdown>{c.faqs}</GuideMarkdown>
-            </div>
+        {/* How it works, price and switching. */}
+        <LongFormSections markdown={c.details} />
+
+        {/* The questions people type about the other product. */}
+        <section className="border-y border-line bg-surface">
+          <PageContainer className="py-16 sm:py-20">
+            <p className="kicker text-brand">Questions</p>
+            <h2 className="mt-3 max-w-[28ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+              What people ask about {c.name} and Closewatch.
+            </h2>
+            <QuestionList
+              items={splitAtHeadings(c.faqs, 3).sections.map((s) => ({
+                q: s.title,
+                a: s.body,
+              }))}
+            />
           </PageContainer>
         </section>
 

@@ -4,7 +4,12 @@ import { describe, expect, it } from 'vitest'
 import { COMPETITORS } from '#/components/compare/competitors'
 import { GUIDES } from '#/content/guides'
 import { pillar } from '#/content/proposal-tracking'
-import { headingId, plainText, sectionsOf } from '#/lib/markdown-text'
+import {
+  headingId,
+  plainText,
+  sectionsOf,
+  splitAtHeadings,
+} from '#/lib/markdown-text'
 
 const BODIES = [
   ...GUIDES.map((g) => ({ name: g.slug, body: g.body })),
@@ -30,6 +35,31 @@ describe('headingId', () => {
       const html = renderHtml(body, { headingIds: headingId })
       for (const s of sectionsOf(body)) {
         expect(html).toContain(`id="${s.id}"`)
+      }
+    }
+  })
+})
+
+describe('splitAtHeadings', () => {
+  it('cuts at one heading level and keeps deeper ones in the body', () => {
+    const { lead, sections } = splitAtHeadings(
+      'Intro.\n\n## One\n\nText.\n\n### Deeper\n\nMore.\n\n## Two\n\nLast.',
+      2,
+    )
+    expect(lead).toBe('Intro.')
+    expect(sections).toEqual([
+      { title: 'One', body: 'Text.\n\n### Deeper\n\nMore.' },
+      { title: 'Two', body: 'Last.' },
+    ])
+  })
+
+  it('reads every comparison page FAQ as a list of questions', () => {
+    for (const c of Object.values(COMPETITORS)) {
+      const { sections } = splitAtHeadings(c.faqs, 3)
+      expect(sections.length, c.slug).toBeGreaterThanOrEqual(5)
+      for (const s of sections) {
+        expect(s.title.endsWith('?'), s.title).toBe(true)
+        expect(s.body.length, s.title).toBeGreaterThan(0)
       }
     }
   })
