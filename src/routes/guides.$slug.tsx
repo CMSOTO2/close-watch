@@ -10,8 +10,6 @@ import {
   articleJsonLd,
   breadcrumbJsonLd,
   canonical,
-  faqJsonLd,
-  faqsFromMarkdown,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -25,7 +23,6 @@ export const Route = createFileRoute('/guides/$slug')({
   head: ({ loaderData }) => {
     if (!loaderData) return {}
     const path = `/guides/${loaderData.slug}`
-    const faqs = faqsFromMarkdown(loaderData.body)
     return {
       meta: [
         {
@@ -57,7 +54,6 @@ export const Route = createFileRoute('/guides/$slug')({
             dateModified: loaderData.dateModified,
           }),
         ),
-        ...(faqs.length ? jsonLdScript(faqJsonLd(faqs)) : []),
       ],
     }
   },

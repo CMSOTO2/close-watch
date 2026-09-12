@@ -4,12 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { COMPETITORS } from '#/components/compare/competitors'
 import { GUIDES } from '#/content/guides'
 import { pillar } from '#/content/proposal-tracking'
-import {
-  faqsFromMarkdown,
-  headingId,
-  plainText,
-  sectionsOf,
-} from '#/lib/markdown-text'
+import { headingId, plainText, sectionsOf } from '#/lib/markdown-text'
 
 const BODIES = [
   ...GUIDES.map((g) => ({ name: g.slug, body: g.body })),
@@ -37,23 +32,6 @@ describe('headingId', () => {
         expect(html).toContain(`id="${s.id}"`)
       }
     }
-  })
-})
-
-describe('faqsFromMarkdown', () => {
-  it('reads every FAQ as plain text, with no markdown left in it', () => {
-    for (const { name, body } of BODIES) {
-      const faqs = faqsFromMarkdown(body)
-      expect(faqs.length, name).toBeGreaterThanOrEqual(5)
-      for (const f of faqs) {
-        expect(f.question.endsWith('?'), `${name}: ${f.question}`).toBe(true)
-        expect(f.answer, name).not.toMatch(/\]\(|\*\*|^#/)
-      }
-    }
-  })
-
-  it('returns nothing for a body without an FAQ', () => {
-    expect(faqsFromMarkdown('## A heading\n\nA paragraph.')).toEqual([])
   })
 })
 

@@ -10,8 +10,6 @@ import type { Competitor } from '#/components/compare/competitors'
 import {
   breadcrumbJsonLd,
   canonical,
-  faqJsonLd,
-  faqsFromMarkdown,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -30,15 +28,12 @@ export function comparisonHead(c: Competitor) {
       }),
     ],
     links: canonical(path),
-    scripts: [
-      ...jsonLdScript(
-        breadcrumbJsonLd([
-          { name: 'Closewatch', path: '/' },
-          { name: `Closewatch vs ${c.name}`, path },
-        ]),
-      ),
-      ...jsonLdScript(faqJsonLd(faqsFromMarkdown(c.faqs))),
-    ],
+    scripts: jsonLdScript(
+      breadcrumbJsonLd([
+        { name: 'Closewatch', path: '/' },
+        { name: `Closewatch vs ${c.name}`, path },
+      ]),
+    ),
   }
 }
 

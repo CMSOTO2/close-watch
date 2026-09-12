@@ -96,12 +96,10 @@ export function socialMeta({
 /**
  * Structured data for the product itself.
  *
- * The landing page's FAQ is deliberately not marked up as a FAQPage. Its
- * answers are JSX in faq.tsx, so the markup would need a plain-text copy of
- * every answer, a second version of the same words waiting to drift from the
- * first. The guides, the pillar and the comparison pages do carry FAQPage,
- * because theirs is read out of the markdown that renders it (faqJsonLd
- * below), so there is only ever one copy.
+ * Deliberately not a FAQPage. Google stopped showing FAQ rich results for
+ * ordinary sites in 2023, and the markup would need a plain-text copy of every
+ * answer in faq.tsx, which is a second version of the same words waiting to
+ * drift from the first.
  *
  * No aggregateRating either. There are no reviews, and inventing them is both
  * a manual-action risk and a lie.
@@ -254,29 +252,6 @@ export function organizationJsonLd() {
  */
 export const AUTHOR_META = { name: 'author', content: FOUNDER.name }
 export const AUTHOR_LINK = { rel: 'author', href: FOUNDER.url }
-
-/** Re-exported so every page takes its SEO helpers from one place. */
-export { faqsFromMarkdown } from '#/lib/markdown-text'
-
-/**
- * FAQPage for questions that are visible on the page.
- *
- * Google stopped showing FAQ rich results for ordinary sites in 2023, so this
- * earns nothing visible there. It is here for Bing, which says schema helps its
- * models, and for assistants that read structured data to find the answer to a
- * question. It must only ever describe questions the page actually shows.
- */
-export function faqJsonLd(faqs: Array<{ question: string; answer: string }>) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((f) => ({
-      '@type': 'Question',
-      name: f.question,
-      acceptedAnswer: { '@type': 'Answer', text: f.answer },
-    })),
-  }
-}
 
 /** The JSON-LD block as a head script. */
 export function jsonLdScript(data: unknown) {

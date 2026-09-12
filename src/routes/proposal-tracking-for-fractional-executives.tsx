@@ -8,7 +8,6 @@ import { Button } from '#/components/ui/button'
 import {
   breadcrumbJsonLd,
   canonical,
-  faqJsonLd,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -28,12 +27,6 @@ const DESCRIPTION =
  * detects best. Which makes this the one audience whose central problem is the
  * feature rather than a use of it, and the reason this page leads on forwarding
  * where the agency page leads on volume.
- *
- * The H1 is the phrase, not the hook. SEO.md's rule is that the H1 sells and
- * the title answers the search, but this was the only one of the five
- * commercial pages whose H1 did not carry its own phrase, and the 2026-09-11
- * search report scored it 0/10 for saying what it is about. The hook opens the
- * paragraph under it instead.
  */
 export const Route = createFileRoute(
   '/proposal-tracking-for-fractional-executives',
@@ -50,17 +43,12 @@ export const Route = createFileRoute(
       }),
     ],
     links: canonical(PATH),
-    scripts: [
-      ...jsonLdScript(
-        breadcrumbJsonLd([
-          { name: 'Closewatch', path: '/' },
-          { name: 'Proposal tracking for fractional executives', path: PATH },
-        ]),
-      ),
-      ...jsonLdScript(
-        faqJsonLd(QUESTIONS.map(({ q, a }) => ({ question: q, answer: a }))),
-      ),
-    ],
+    scripts: jsonLdScript(
+      breadcrumbJsonLd([
+        { name: 'Closewatch', path: '/' },
+        { name: 'Proposal tracking for fractional executives', path: PATH },
+      ]),
+    ),
   }),
   component: FractionalPage,
 })
@@ -150,14 +138,13 @@ function FractionalPage() {
         <PageContainer className="pt-12 pb-14 sm:pt-16">
           <p className="kicker text-brand">For fractional executives</p>
           <h1 className="mt-3 max-w-[22ch] font-display text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
-            Proposal tracking for fractional executives.
+            You pitch one person. Someone else decides.
           </h1>
           <p className="mt-5 max-w-[58ch] text-[17px] leading-relaxed text-ink-2">
-            You pitch one person. Someone else decides. A fractional CMO, CFO or
-            COO almost never sells to the person who signs. You talk to a
-            founder or an operator, they forward your proposal to a co-founder,
-            a partner or the board, and the conversation that decides it happens
-            in a room you are not in.
+            A fractional CMO, CFO or COO almost never sells to the person who
+            signs. You talk to a founder or an operator, they forward your
+            proposal to a co-founder, a partner or the board, and the
+            conversation that decides it happens in a room you are not in.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">

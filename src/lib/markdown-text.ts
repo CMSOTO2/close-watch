@@ -4,8 +4,7 @@
  *
  * Kept apart from lib/seo.ts and the renderer because both of those import
  * things that need the app's environment, and these need to run in a unit
- * test: they are what keep the table of contents pointing at real headings and
- * the FAQPage markup matching the visible FAQ.
+ * test: they are what keep the table of contents pointing at real headings.
  */
 
 /** Markdown reduced to the words a reader sees. */
@@ -38,26 +37,4 @@ export function sectionsOf(body: string) {
     const text = plainText(m[1])
     return { id: headingId(text), text }
   })
-}
-
-/**
- * The questions under a body's "Frequently asked questions" heading, read out
- * of the same markdown that renders them. That is what makes FAQPage markup
- * safe to carry: there is one copy of every answer, so the markup cannot drift
- * from the page.
- */
-export function faqsFromMarkdown(body: string) {
-  const section = body.split('## Frequently asked questions')[1]
-  if (!section) return []
-  return section
-    .split(/^### /m)
-    .slice(1)
-    .map((chunk) => {
-      const [question, ...answer] = chunk.split('\n')
-      return {
-        question: plainText(question),
-        answer: plainText(answer.join('\n')),
-      }
-    })
-    .filter((f) => f.answer)
 }

@@ -9,7 +9,6 @@ import { Button } from '#/components/ui/button'
 import {
   breadcrumbJsonLd,
   canonical,
-  faqJsonLd,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -49,17 +48,12 @@ export const Route = createFileRoute('/proposal-tracking-for-agencies')({
       }),
     ],
     links: canonical(PATH),
-    scripts: [
-      ...jsonLdScript(
-        breadcrumbJsonLd([
-          { name: 'Closewatch', path: '/' },
-          { name: 'Proposal tracking for agencies', path: PATH },
-        ]),
-      ),
-      ...jsonLdScript(
-        faqJsonLd(QUESTIONS.map(({ q, a }) => ({ question: q, answer: a }))),
-      ),
-    ],
+    scripts: jsonLdScript(
+      breadcrumbJsonLd([
+        { name: 'Closewatch', path: '/' },
+        { name: 'Proposal tracking for agencies', path: PATH },
+      ]),
+    ),
   }),
   component: AgenciesPage,
 })

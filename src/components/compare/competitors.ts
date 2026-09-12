@@ -22,9 +22,9 @@
  *
  * `intro`, `details` and `faqs` are markdown, rendered by the same component
  * as the guides, so they can link into the guide library in a sentence rather
- * than in a list of related links. `faqs` also feeds the page's FAQPage markup
- * (faqsFromMarkdown in lib/seo.ts), so it must start with the
- * "## Frequently asked questions" heading and use ### for each question.
+ * than in a list of related links. `faqs` starts with the
+ * "## Frequently asked questions" heading and uses ### for each question, the
+ * same as the guides.
  */
 
 export const PRICES_CHECKED = 'September 2026'
@@ -38,12 +38,7 @@ export type Competitor = {
   pricingUrl: string
   /** Stated as a floor. Never as "they cost X". */
   price: string
-  /**
-   * The <title>. Carries "alternative" where this page is the one meant to
-   * rank for "<product> alternative". DocSend's does not: that query belongs to
-   * /guides/docsend-alternatives, a roundup, which is the shape Google and its
-   * AI answers cite for it. Two pages aimed at one query split the signal.
-   */
+  /** The <title>. Carries "alternative", which is what gets typed. */
   title: string
   description: string
   socialTitle: string
@@ -149,7 +144,7 @@ What you give up is Proposify's: the template library, e-signature and approvals
 
 ## Proposify, PandaDoc or DocSend?
 
-They answer the same question three ways. Proposify and PandaDoc are builders: you write the proposal in them, and tracking comes with it. Closewatch is also a [PandaDoc alternative](/vs/pandadoc) for people who want the tracking without the contracts and signatures. DocSend is a tracker like Closewatch, built for every kind of document; [DocSend alternatives](/guides/docsend-alternatives) compares the trackers on price. For nine tools side by side, including where Closewatch loses, see [the best proposal tracking software in 2026](/guides/best-proposal-tracking-software).
+They answer the same question three ways. Proposify and PandaDoc are builders: you write the proposal in them, and tracking comes with it. Closewatch is also a [PandaDoc alternative](/vs/pandadoc) for people who want the tracking without the contracts and signatures. DocSend is a tracker like Closewatch, built for every kind of document, and Closewatch is the [DocSend alternative](/vs/docsend) for people who only send proposals; [DocSend alternatives](/guides/docsend-alternatives) compares the trackers on price. For nine tools side by side, including where Closewatch loses, see [the best proposal tracking software in 2026](/guides/best-proposal-tracking-software).
 
 To see Closewatch's proposal tracking before uploading anything, [try the demo](/demo). It runs on you: read a sample proposal, then open the report your reading produced.`,
     faqs: `## Frequently asked questions
@@ -256,7 +251,7 @@ The part of PandaDoc people are most reluctant to give up is e-signature, and Cl
 
 ## PandaDoc, Proposify or DocSend?
 
-PandaDoc and Proposify are both builders, and Proposify is the narrower of the two: proposals rather than every document type. If a builder is what you want, the [Proposify alternative](/vs/proposify) page explains when Proposify is the better buy, and when Closewatch is. DocSend is a tracker, like Closewatch; the trackers are compared in [DocSend alternatives](/guides/docsend-alternatives). For the whole field, see [the best proposal tracking software in 2026](/guides/best-proposal-tracking-software).
+PandaDoc and Proposify are both builders, and Proposify is the narrower of the two: proposals rather than every document type. If a builder is what you want, the [Proposify alternative](/vs/proposify) page explains when Proposify is the better buy, and when Closewatch is. DocSend is a tracker, like Closewatch, and Closewatch is the cheaper [DocSend alternative](/vs/docsend) for proposals; the trackers are compared in [DocSend alternatives](/guides/docsend-alternatives). For the whole field, see [the best proposal tracking software in 2026](/guides/best-proposal-tracking-software).
 
 If you run an agency, [proposal tracking for agencies](/proposal-tracking-for-agencies) covers what changes when there are nine proposals out across six clients. Or [try the demo](/demo) and see the tracking report before you sign up.`,
     faqs: `## Frequently asked questions
@@ -288,9 +283,9 @@ A few minutes. Upload the proposal PDF, type the name of the person it is going 
     category: 'a document sharing and tracking tool',
     pricingUrl: 'https://www.docsend.com/pricing/',
     price: 'from around $10/user/mo',
-    title: 'Closewatch vs DocSend: Pricing, Tracking and Fit',
+    title: 'Closewatch vs DocSend: a cheaper DocSend alternative',
     description:
-      'Closewatch vs DocSend: DocSend does more and costs more, per user with no free plan. Closewatch is narrower, built for proposals, and starts free.',
+      'DocSend is the brand in document tracking, priced per user with no free plan. Closewatch is narrower, scores intent, and starts free.',
     socialTitle: 'Closewatch vs DocSend',
     kicker: 'Honest comparison',
     h1: 'Closewatch vs DocSend',

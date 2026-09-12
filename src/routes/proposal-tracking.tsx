@@ -11,8 +11,6 @@ import {
   articleJsonLd,
   breadcrumbJsonLd,
   canonical,
-  faqJsonLd,
-  faqsFromMarkdown,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
@@ -49,7 +47,6 @@ export const Route = createFileRoute('/proposal-tracking')({
           dateModified: pillar.dateModified,
         }),
       ),
-      ...jsonLdScript(faqJsonLd(faqsFromMarkdown(pillar.body))),
     ],
   }),
   component: ProposalTracking,
