@@ -79,6 +79,7 @@ function GuidePage() {
 
   return (
     <ContentPage
+      readingProgress
       back={{ to: '/guides', label: 'Guides' }}
       title={guide.title}
       dek={guide.dek}

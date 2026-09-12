@@ -1,7 +1,9 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
+import { useRef } from 'react'
 import type { ReactNode } from 'react'
 import { PageContainer } from '#/components/page-container'
+import { ReadingProgress } from '#/components/reading-progress'
 import { SiteHeader } from '#/components/landing/site-header'
 import { SiteFooter } from '#/components/site-footer'
 import { cn } from '#/lib/utils'
@@ -47,6 +49,7 @@ export function ContentPage({
   meta,
   children,
   after,
+  readingProgress = false,
 }: {
   /** A way up to the listing this page belongs to, above the title. */
   back?: { to: string; label: string }
@@ -60,9 +63,14 @@ export function ContentPage({
   children: ReactNode
   /** Below the article, outside it: a call to action, a contact line. */
   after?: ReactNode
+  /** A bar across the top that fills as the article is read. For articles. */
+  readingProgress?: boolean
 }) {
+  const article = useRef<HTMLElement | null>(null)
+
   return (
     <div className="min-h-screen bg-canvas">
+      {readingProgress && <ReadingProgress target={article} />}
       <SiteHeader />
 
       <main>
@@ -87,7 +95,7 @@ export function ContentPage({
               </Link>
             )}
 
-            <article className={cn(back && 'mt-6')}>
+            <article ref={article} className={cn(back && 'mt-6')}>
               {kicker && <p className="kicker text-brand">{kicker}</p>}
               <h1
                 className={cn(

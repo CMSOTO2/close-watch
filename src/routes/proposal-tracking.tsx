@@ -61,6 +61,7 @@ export const Route = createFileRoute('/proposal-tracking')({
 function ProposalTracking() {
   return (
     <ContentPage
+      readingProgress
       kicker="Proposal tracking"
       title={pillar.title}
       dek={pillar.dek}
