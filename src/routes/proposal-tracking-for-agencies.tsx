@@ -4,6 +4,7 @@ import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { SiteFooter } from '#/components/site-footer'
 import { GuideMarkdown } from '#/components/guides/guide-markdown'
+import { ProductShot } from '#/components/product-shot'
 import { Button } from '#/components/ui/button'
 import {
   breadcrumbJsonLd,
@@ -261,14 +262,10 @@ function AgenciesPage() {
               </p>
             </div>
 
-            <img
+            <ProductShot
               src="/images/closewatch-proposal-dashboard-ranked-by-intent.webp"
               alt="The Closewatch dashboard for a sample agency: five open proposals across five clients, ranked hot, warm and cold, each with the signal behind it"
-              width={1600}
-              height={900}
-              loading="lazy"
-              decoding="async"
-              className="mt-10 block h-auto w-full max-w-4xl rounded-lg border border-line"
+              className="mt-10 max-w-4xl"
             />
 
             <dl className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">

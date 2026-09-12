@@ -3,6 +3,7 @@ import type { MarkdownComponents } from '@tanstack/markdown/react'
 import type { ComponentPropsWithoutRef } from 'react'
 import type { MarkdownInput } from '@tanstack/markdown'
 import { prose } from '#/components/content-page'
+import { ProductShot } from '#/components/product-shot'
 import { headingId, sectionsOf } from '#/lib/markdown-text'
 import { cn } from '#/lib/utils'
 
@@ -27,26 +28,18 @@ function Anchor(props: ComponentPropsWithoutRef<'a'>) {
 }
 
 /**
- * A screenshot, written in a body as `![alt](/images/name.webp "caption")`.
+ * A screenshot, written in a body as `![alt](/images/name.webp "caption")`,
+ * shown in the reader's theme by ProductShot.
  *
  * Markdown puts an image inside a paragraph, so this is built from spans: a
  * <figure> inside a <p> is invalid HTML, and React reports it as a hydration
- * error. Every file in public/images is exported at 1600x900 (see
- * docs/geo:aeo/search-report-2026-09-11.md), so the size is fixed here and the
- * page reserves the space before the image arrives rather than jumping.
+ * error.
  */
 function Image({ src, alt, title }: ComponentPropsWithoutRef<'img'>) {
+  if (typeof src !== 'string') return null
   return (
     <span className="mt-2 block">
-      <img
-        src={src}
-        alt={alt}
-        width={1600}
-        height={900}
-        loading="lazy"
-        decoding="async"
-        className="block h-auto w-full rounded-lg border border-line"
-      />
+      <ProductShot src={src} alt={alt ?? ''} />
       {title && (
         <span className="mt-2 block text-[13px] leading-snug text-ink-3">
           {title}

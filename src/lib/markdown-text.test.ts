@@ -72,7 +72,7 @@ describe('images', () => {
     'src/routes/proposal-tracking-for-fractional-executives.tsx',
   ].map((path) => readFileSync(path, 'utf8'))
 
-  it('every /images/ path a page uses exists in public/', () => {
+  it('every /images/ path a page uses exists in public/, with a dark twin', () => {
     const text = [...BODIES.map((b) => b.body), ...routes].join('\n')
     const paths = new Set(
       [...text.matchAll(/\/images\/[a-z0-9-]+\.webp/g)].map((m) => m[0]),
@@ -80,6 +80,9 @@ describe('images', () => {
     expect(paths.size).toBeGreaterThan(0)
     for (const path of paths) {
       expect(existsSync(`public${path}`), path).toBe(true)
+      // ProductShot swaps to this in the dark theme.
+      const dark = path.replace(/\.webp$/, '-dark.webp')
+      expect(existsSync(`public${dark}`), dark).toBe(true)
     }
   })
 })
