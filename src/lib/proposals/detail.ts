@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
-import { PROPOSALS_BUCKET, shareUrl } from '#/constants'
+import { PROPOSALS_BUCKET, senderName, shareUrl } from '#/constants'
 import type { PageSection, ProposalStatus } from '#/lib/supabase/types'
 
 export type ProposalPage = {
@@ -83,6 +83,8 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
           .order('created_at', { ascending: false }),
       ])
 
+    const name = owner ? senderName(owner) : null
+
     return {
       id: proposal.id,
       title: proposal.title,
@@ -94,7 +96,7 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
       createdAt: proposal.created_at,
       outcomeAt: proposal.outcome_at,
       owner: {
-        name: owner?.company_name ?? owner?.full_name ?? null,
+        name,
         email: owner?.email ?? null,
       },
       pages: (pages ?? []).map((p) => ({
@@ -106,7 +108,7 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
       shareLinks: (links ?? []).map((l) => ({
         id: l.id,
         token: l.token,
-        url: shareUrl(l.token),
+        url: shareUrl(l.token, name),
         recipientName: l.recipient_name,
         recipientEmail: l.recipient_email,
         expiresAt: l.expires_at,

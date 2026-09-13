@@ -127,9 +127,57 @@ export function isProposalId(id: string): boolean {
   return PROPOSAL_ID.test(id)
 }
 
-/** Full public viewer URL for a share token. */
-export function shareUrl(token: string): string {
-  return `${publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')}/p/${token}`
+/**
+ * The name a client sees for the sender: the company when one is set,
+ * otherwise the person. One rule for the viewer's "from" line, "Sent by" on
+ * the detail page and the name in a share link, so the three cannot disagree.
+ */
+export function senderName(profile: {
+  company_name: string | null
+  full_name: string | null
+}): string | null {
+  return profile.company_name ?? profile.full_name ?? null
+}
+
+const SLUG_MAX = 40
+
+/**
+ * The sender's name as a URL segment: "25 Dials" becomes "25-dials".
+ *
+ * Accents are folded ("Café Noir" becomes "cafe-noir") and everything else
+ * that is not a letter or digit becomes a hyphen. A name with nothing left to
+ * spell, such as one written entirely in another script, has no slug, and its
+ * links keep the plain /p/{token} form rather than a made-up one.
+ */
+export function senderSlug(name: string | null): string | null {
+  if (!name) return null
+  const slug = name
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, SLUG_MAX)
+    .replace(/-+$/, '')
+  return slug || null
+}
+
+/** The path a share link opens at, with the sender's name in it when there is one. */
+export function sharePath(token: string, name: string | null): string {
+  const slug = senderSlug(name)
+  return slug ? `/p/${slug}/${token}` : `/p/${token}`
+}
+
+/**
+ * Full public viewer URL for a share token.
+ *
+ * The name is for the client's benefit, not access: the token alone opens the
+ * document. The viewer sends any other name to the sender's real one before it
+ * records anything (see beginVisit), so a rename cannot break a link that has
+ * already gone out, and nobody can put another company's name on theirs.
+ */
+export function shareUrl(token: string, name: string | null): string {
+  return `${publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')}${sharePath(token, name)}`
 }
 
 // --- React Query keys -------------------------------------------------------

@@ -46,6 +46,16 @@ export async function createTestOwner(): Promise<TestOwner> {
     email_confirm: true,
   })
   if (error) throw new Error(`could not create test owner: ${error.message}`)
+
+  // The app sends anyone without the name clients see to /welcome before
+  // anything else, so a test owner needs one to land where the tests expect.
+  const { error: nameError } = await admin()
+    .from('profiles')
+    .update({ company_name: 'E2E Test Studio' })
+    .eq('id', data.user.id)
+  if (nameError)
+    throw new Error(`could not name test owner: ${nameError.message}`)
+
   return { id: data.user.id, email }
 }
 

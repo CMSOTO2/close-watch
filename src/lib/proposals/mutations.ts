@@ -7,6 +7,7 @@ import {
   PAGE_SECTIONS,
   PROPOSALS_BUCKET,
   SHARE_LINK_TTL_DAYS,
+  senderName,
   shareUrl,
 } from '#/constants'
 
@@ -71,10 +72,16 @@ export const createShareLink = createServerFn({ method: 'POST' })
         .eq('id', data.proposalId)
         .eq('status', 'draft')
 
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, company_name')
+        .eq('id', auth.user.id)
+        .maybeSingle()
+
       return {
         id: link.id,
         token: link.token,
-        url: shareUrl(link.token),
+        url: shareUrl(link.token, profile ? senderName(profile) : null),
       }
     },
   )

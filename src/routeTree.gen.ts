@@ -26,6 +26,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthedDashboardRouteImport } from './routes/_authed.dashboard'
 import { Route as AuthedSettingsRouteImport } from './routes/_authed.settings'
+import { Route as AuthedWelcomeRouteImport } from './routes/_authed.welcome'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as GuidesIndexRouteImport } from './routes/guides.index'
 import { Route as GuidesSlugRouteImport } from './routes/guides.$slug'
@@ -38,6 +39,7 @@ import { Route as AuthedProposalsIdRouteImport } from './routes/_authed.proposal
 import { Route as AuthedProposalsNewRouteImport } from './routes/_authed.proposals.new'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
 import { Route as ApiTrackVisitIdRouteImport } from './routes/api/track.$visitId'
+import { Route as PSlugTokenRouteImport } from './routes/p.$slug.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -125,6 +127,11 @@ const AuthedSettingsRoute = AuthedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthedRoute,
 } as any)
+const AuthedWelcomeRoute = AuthedWelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => AuthedRoute,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -185,6 +192,11 @@ const ApiTrackVisitIdRoute = ApiTrackVisitIdRouteImport.update({
   path: '/api/track/$visitId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PSlugTokenRoute = PSlugTokenRouteImport.update({
+  id: '/p/$slug/$token',
+  path: '/p/$slug/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -203,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/settings': typeof AuthedSettingsRoute
+  '/welcome': typeof AuthedWelcomeRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/p/$token': typeof PTokenRoute
@@ -215,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
+  '/p/$slug/$token': typeof PSlugTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -232,6 +246,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/dashboard': typeof AuthedDashboardRoute
   '/settings': typeof AuthedSettingsRoute
+  '/welcome': typeof AuthedWelcomeRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/p/$token': typeof PTokenRoute
@@ -244,6 +259,7 @@ export interface FileRoutesByTo {
   '/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
+  '/p/$slug/$token': typeof PSlugTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -264,6 +280,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authed/dashboard': typeof AuthedDashboardRoute
   '/_authed/settings': typeof AuthedSettingsRoute
+  '/_authed/welcome': typeof AuthedWelcomeRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/guides/$slug': typeof GuidesSlugRoute
   '/p/$token': typeof PTokenRoute
@@ -276,6 +293,7 @@ export interface FileRoutesById {
   '/_authed/proposals/new': typeof AuthedProposalsNewRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/api/track/$visitId': typeof ApiTrackVisitIdRoute
+  '/p/$slug/$token': typeof PSlugTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -296,6 +314,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/dashboard'
     | '/settings'
+    | '/welcome'
     | '/auth/callback'
     | '/guides/$slug'
     | '/p/$token'
@@ -308,6 +327,7 @@ export interface FileRouteTypes {
     | '/proposals/new'
     | '/api/stripe/webhook'
     | '/api/track/$visitId'
+    | '/p/$slug/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -325,6 +345,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/dashboard'
     | '/settings'
+    | '/welcome'
     | '/auth/callback'
     | '/guides/$slug'
     | '/p/$token'
@@ -337,6 +358,7 @@ export interface FileRouteTypes {
     | '/proposals/new'
     | '/api/stripe/webhook'
     | '/api/track/$visitId'
+    | '/p/$slug/$token'
   id:
     | '__root__'
     | '/'
@@ -356,6 +378,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authed/dashboard'
     | '/_authed/settings'
+    | '/_authed/welcome'
     | '/auth/callback'
     | '/guides/$slug'
     | '/p/$token'
@@ -368,6 +391,7 @@ export interface FileRouteTypes {
     | '/_authed/proposals/new'
     | '/api/stripe/webhook'
     | '/api/track/$visitId'
+    | '/p/$slug/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -394,6 +418,7 @@ export interface RootRouteChildren {
   VsProposifyRoute: typeof VsProposifyRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
   ApiTrackVisitIdRoute: typeof ApiTrackVisitIdRoute
+  PSlugTokenRoute: typeof PSlugTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -517,6 +542,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedSettingsRouteImport
       parentRoute: typeof AuthedRoute
     }
+    '/_authed/welcome': {
+      id: '/_authed/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof AuthedWelcomeRouteImport
+      parentRoute: typeof AuthedRoute
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -601,12 +633,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiTrackVisitIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p/$slug/$token': {
+      id: '/p/$slug/$token'
+      path: '/p/$slug/$token'
+      fullPath: '/p/$slug/$token'
+      preLoaderRoute: typeof PSlugTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AuthedRouteChildren {
   AuthedDashboardRoute: typeof AuthedDashboardRoute
   AuthedSettingsRoute: typeof AuthedSettingsRoute
+  AuthedWelcomeRoute: typeof AuthedWelcomeRoute
   AuthedProposalsIdRoute: typeof AuthedProposalsIdRoute
   AuthedProposalsNewRoute: typeof AuthedProposalsNewRoute
 }
@@ -614,6 +654,7 @@ interface AuthedRouteChildren {
 const AuthedRouteChildren: AuthedRouteChildren = {
   AuthedDashboardRoute: AuthedDashboardRoute,
   AuthedSettingsRoute: AuthedSettingsRoute,
+  AuthedWelcomeRoute: AuthedWelcomeRoute,
   AuthedProposalsIdRoute: AuthedProposalsIdRoute,
   AuthedProposalsNewRoute: AuthedProposalsNewRoute,
 }
@@ -659,6 +700,7 @@ const rootRouteChildren: RootRouteChildren = {
   VsProposifyRoute: VsProposifyRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
   ApiTrackVisitIdRoute: ApiTrackVisitIdRoute,
+  PSlugTokenRoute: PSlugTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -7,12 +7,13 @@ import {
 } from '#/components/share-viewer'
 
 /**
- * A share link without the sender's name in it. Every link sent before names
- * went into links has this shape, and loadShare sends it on to the named form.
- * It stays the final address only for a sender whose name has no slug.
+ * A share link with the sender's name in it: /p/25-dials/{token}. The name is
+ * for the client, so they can tell who a link is from before opening it; the
+ * token is what opens it. A name that is not the sender's is redirected to
+ * the one that is, in loadShare.
  */
-export const Route = createFileRoute('/p/$token')({
-  loader: ({ params }) => loadShare(params.token, undefined),
+export const Route = createFileRoute('/p/$slug/$token')({
+  loader: ({ params }) => loadShare(params.token, params.slug),
   head: ({ loaderData }) => shareHead(loaderData?.title),
   component: ViewerPage,
   notFoundComponent: ShareLinkGone,

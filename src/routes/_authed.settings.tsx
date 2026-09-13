@@ -7,7 +7,8 @@ import {
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form-start'
 import { z } from 'zod'
-import { getProfile, updateProfile } from '#/lib/profile'
+import { displayNameSchema, getProfile, updateProfile } from '#/lib/profile'
+import { fieldError } from '#/components/auth/validation'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
 import { discountQuery } from '#/lib/billing/discount'
 import { BillingSection } from '#/components/billing/billing-section'
@@ -77,10 +78,9 @@ function SettingsPage() {
           Your profile
         </h1>
         <p className="mt-1.5 text-[13px] leading-relaxed text-ink-2">
-          This is the name recipients see on your proposals — the
-          &ldquo;from&rdquo; line in the viewer and &ldquo;Sent by&rdquo; on
-          each proposal. Your company name is shown when set, otherwise your
-          name.
+          The name your clients see goes at the top of every proposal and into
+          each share link. Change it and your links change with it; ones you
+          have already sent keep working.
         </p>
 
         <form
@@ -105,17 +105,26 @@ function SettingsPage() {
             )}
           </form.Field>
 
-          <form.Field name="companyName">
+          <form.Field
+            name="companyName"
+            validators={{ onChange: displayNameSchema }}
+          >
             {(field) => (
               <label className="block">
-                <span className="kicker">Company name</span>
+                <span className="kicker">Name your clients see</span>
                 <input
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   placeholder="Acme Studio"
+                  maxLength={80}
                   className="mt-1.5 w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
                 />
+                {field.state.meta.errors.length > 0 && (
+                  <span className="mt-1.5 block text-[13px] text-danger">
+                    {fieldError(field.state.meta.errors)}
+                  </span>
+                )}
               </label>
             )}
           </form.Field>

@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import { scoreIntent } from './intent'
 import { intentInputFor } from './intent-input'
-import { shareUrl } from '#/constants'
+import { senderName, shareUrl } from '#/constants'
 import type { IntentResult } from './intent'
 import type { ProposalStatus } from '#/lib/supabase/types'
 
@@ -102,6 +102,7 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
       { data: pageViews },
       { data: pages },
       { data: links },
+      { data: profile },
     ] = await Promise.all([
       supabase
         .from('visits')
@@ -125,7 +126,12 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
         .in('proposal_id', ids)
         .is('revoked_at', null)
         .order('created_at', { ascending: false }),
+      // The owner's own row, for the name their links carry. RLS's "own
+      // profile" policy means this can only ever return the one row.
+      supabase.from('profiles').select('full_name, company_name').maybeSingle(),
     ])
+
+    const name = profile ? senderName(profile) : null
 
     // Newest live link per proposal. Ordered newest-first above, so the first
     // unexpired one seen for an id wins.
@@ -134,7 +140,7 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
     for (const l of links ?? []) {
       if (liveLink.has(l.proposal_id)) continue
       if (l.expires_at && new Date(l.expires_at).getTime() < now) continue
-      liveLink.set(l.proposal_id, shareUrl(l.token))
+      liveLink.set(l.proposal_id, shareUrl(l.token, name))
     }
 
     const pricingPages = new Map<string, Set<number>>()

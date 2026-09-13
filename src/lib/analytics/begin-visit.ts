@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-start/server'
 import { createHash, randomUUID } from 'node:crypto'
 import { z } from 'zod'
-import { isShareToken } from '#/constants'
+import { isShareToken, senderName, senderSlug } from '#/constants'
 import { serverEnv } from '#/env'
 import {
   getSupabaseAdminClient,
@@ -31,6 +31,14 @@ export type VisitContext = {
   /** The owner is reading their own link; nothing here counts as a client read. */
   ownerPreview: boolean
 }
+
+/**
+ * What opening a share link comes to: a visit to render, or the address the
+ * link should be at. `slug` null is the plain /p/{token} form.
+ */
+export type ShareResolution =
+  | { kind: 'visit'; visit: VisitContext }
+  | { kind: 'redirect'; slug: string | null }
 
 /**
  * Whether the person opening the link is signed in as the proposal's owner.
@@ -61,8 +69,8 @@ export const beginVisit = createServerFn({ method: 'GET' })
   // used to get. The shape is checked in the handler instead, where failing it
   // returns null and the route renders the same "no longer available" page as
   // a revoked link.
-  .validator(z.object({ token: z.string() }))
-  .handler(async ({ data }): Promise<VisitContext | null> => {
+  .validator(z.object({ token: z.string(), slug: z.string().optional() }))
+  .handler(async ({ data }): Promise<ShareResolution | null> => {
     if (!isShareToken(data.token)) return null
 
     const supabase = getSupabaseAdminClient()
@@ -79,6 +87,17 @@ export const beginVisit = createServerFn({ method: 'GET' })
     if (link.expires_at && new Date(link.expires_at) < new Date()) return null
 
     const proposal = link.proposals
+    const sender = senderName(proposal.profiles)
+
+    // The name in the URL is the sender's, not the reader's to choose. Any
+    // other name, including none at all on a link sent before names were in
+    // links, goes to the real one before a visit is recorded. So a rename
+    // never breaks a link already sent, and nobody can dress their own link up
+    // as another company's.
+    const canonical = senderSlug(sender)
+    if ((data.slug ?? null) !== canonical) {
+      return { kind: 'redirect', slug: canonical }
+    }
 
     // Trying the product on yourself is the first thing a new account should
     // do, and it used to cost them: their own read spent one of the free
@@ -176,14 +195,15 @@ export const beginVisit = createServerFn({ method: 'GET' })
 
     if (!signed) return null
 
-    const sender = proposal.profiles
-
     return {
-      visitId,
-      pdfUrl: signed.signedUrl,
-      pageCount: proposal.page_count,
-      title: proposal.title,
-      senderName: sender.company_name ?? sender.full_name,
-      ownerPreview,
+      kind: 'visit',
+      visit: {
+        visitId,
+        pdfUrl: signed.signedUrl,
+        pageCount: proposal.page_count,
+        title: proposal.title,
+        senderName: sender,
+        ownerPreview,
+      },
     }
   })

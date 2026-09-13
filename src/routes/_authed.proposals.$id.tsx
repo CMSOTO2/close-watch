@@ -37,7 +37,7 @@ import { BackLink } from '#/components/back-link'
 import { cn, formatMoney } from '#/lib/utils'
 import { formatDay, useTimeZone } from '#/lib/local-date'
 import { deadLinkLabel, partitionLinks } from '#/lib/proposals/link-status'
-import { SECTION_LABELS, isProposalId, queryKeys, shareUrl } from '#/constants'
+import { SECTION_LABELS, isProposalId, queryKeys } from '#/constants'
 import type { PageSection } from '#/lib/supabase/types'
 
 const detailQuery = (id: string) =>
@@ -275,7 +275,7 @@ function ProposalDetail() {
 
       {justSent && (
         <SendHandoff
-          url={shareUrl(justSent.token)}
+          url={justSent.url}
           recipient={recipientOf(justSent)}
           client={proposal.clientName}
         />

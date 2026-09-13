@@ -26,14 +26,39 @@ export const getProfile = createServerFn({ method: 'GET' }).handler(
 )
 
 /**
- * Updates the display name recipients see on shared proposals — the "from …"
- * line in the viewer and "Sent by …" on the detail page both read this.
+ * The name clients see: at the top of the viewer, in every share link, and as
+ * "Sent by" on the detail page. Required, because every link carries it. The
+ * column is still `company_name`, and a person working under their own name
+ * puts that here.
  */
+export const displayNameSchema = z
+  .string()
+  .trim()
+  .min(2, 'At least 2 characters')
+  .max(80, 'Keep it under 80 characters')
+
+/** The welcome step's one write. */
+export const setCompanyName = createServerFn({ method: 'POST' })
+  .validator(z.object({ companyName: displayNameSchema }))
+  .handler(async ({ data }): Promise<void> => {
+    const supabase = getSupabaseServerClient()
+
+    const { data: auth } = await supabase.auth.getUser()
+    if (!auth.user) throw new Error('Not signed in')
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ company_name: data.companyName })
+      .eq('id', auth.user.id)
+    if (error) throw new Error(error.message)
+  })
+
+/** Saves the profile from Settings. The name clients see cannot be cleared. */
 export const updateProfile = createServerFn({ method: 'POST' })
   .validator(
     z.object({
       fullName: z.string().trim().max(120),
-      companyName: z.string().trim().max(120),
+      companyName: displayNameSchema,
     }),
   )
   .handler(async ({ data }): Promise<Profile> => {
@@ -46,7 +71,7 @@ export const updateProfile = createServerFn({ method: 'POST' })
       .from('profiles')
       .update({
         full_name: data.fullName || null,
-        company_name: data.companyName || null,
+        company_name: data.companyName,
       })
       .eq('id', auth.user.id)
       .select('full_name, company_name, email')

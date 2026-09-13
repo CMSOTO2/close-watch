@@ -24,6 +24,13 @@ export const Route = createFileRoute('/_authed')({
     if (!user) {
       throw redirect({ to: '/login', search: { next: location.href } })
     }
+    // Every proposal carries the sender's name, at the top of the viewer and
+    // in the link itself, so there is no using the app without one. Asked
+    // once, straight after sign-up; accounts from before the step meet it on
+    // their next visit, and it carries them on to wherever they were going.
+    if (!user.companyName && location.pathname !== '/welcome') {
+      throw redirect({ to: '/welcome', search: { next: location.href } })
+    }
     return { user }
   },
   component: AuthedLayout,
