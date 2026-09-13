@@ -92,38 +92,22 @@ function ViewerPage() {
         </PageContainer>
       </header>
 
-      {/* Said at the top of the document, not in a footer under it. Recording
-          starts when this page loads, so the notice has to be where the reader
-          is at that moment rather than nine pages further down. It scrolls
-          away with the rest — it is a disclosure, not a nag. */}
-      <div className="border-b border-line-soft bg-surface-2">
-        <PageContainer className="flex items-start gap-1.5 py-2 text-xs leading-relaxed text-ink-3">
-          <Eye aria-hidden className="mt-0.5 size-3.5 shrink-0" />
-          {ownerPreview ? (
-            // The sender, signed in, looking at their own link. Said so, or
-            // they reasonably wonder whether they just spent a free slot.
+      {/* Only the sender, signed in and looking at their own link, sees a line
+          here. Said so, or they reasonably wonder whether they just spent a
+          free slot. Clients see the document and nothing above it: the notice
+          that told them it was tracked was removed on 2026-09-13, and whether
+          to tell a client is the sender's call, as /privacy and /terms say. */}
+      {ownerPreview && (
+        <div className="border-b border-line-soft bg-surface-2">
+          <PageContainer className="flex items-start gap-1.5 py-2 text-xs leading-relaxed text-ink-3">
+            <Eye aria-hidden className="mt-0.5 size-3.5 shrink-0" />
             <p>
               This is your preview. You are signed in as the sender, so this
               read shows up as yours and never counts as a client opening it.
-              Your client sees a line here saying the document is tracked.
             </p>
-          ) : (
-            <p>
-              This document is tracked. The sender is told when it is opened,
-              which pages are read, and whether it is downloaded or printed.{' '}
-              {/* New tab, so reading the policy does not abandon the document. */}
-              <a
-                href="/privacy"
-                target="_blank"
-                rel="noopener"
-                className="whitespace-nowrap underline underline-offset-2 transition-colors hover:text-ink-2"
-              >
-                What is recorded
-              </a>
-            </p>
-          )}
-        </PageContainer>
-      </div>
+          </PageContainer>
+        </div>
+      )}
 
       <PdfViewer
         pdfUrl={pdfUrl}
