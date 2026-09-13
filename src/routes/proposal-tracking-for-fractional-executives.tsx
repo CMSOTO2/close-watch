@@ -149,7 +149,7 @@ function FractionalPage() {
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
-              <Link to="/login">
+              <Link to="/login" search={{ mode: 'signup' }}>
                 Start free
                 <ArrowRight aria-hidden className="size-4" />
               </Link>
@@ -254,7 +254,7 @@ function FractionalPage() {
               it travels.
             </p>
             <Button asChild size="lg" className="mt-8">
-              <Link to="/login">
+              <Link to="/login" search={{ mode: 'signup' }}>
                 Start free
                 <ArrowRight aria-hidden className="size-4" />
               </Link>

@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
+import { OWNER_PREVIEW } from '#/lib/analytics/bots'
 import { locationLabel } from '#/lib/analytics/geo'
 import type { PageSection } from '#/lib/supabase/types'
 
@@ -39,6 +40,14 @@ export type ProposalAnalytics = {
   }
   pages: Array<PageAttention>
   visits: Array<VisitActivity>
+  /** The owner's own reads of the link, kept apart from every client number. */
+  ownerPreview: OwnerPreview | null
+}
+
+export type OwnerPreview = {
+  engagedMs: number
+  lastSeenAt: string
+  pages: Array<PageAttention>
 }
 
 const EVENT_LABELS: Record<string, string> = {
@@ -83,7 +92,7 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
         supabase
           .from('visits')
           .select(
-            'id, share_link_id, visitor_id, visit_seq, started_at, last_seen_at, engaged_ms, browser, os, country, city, is_bot, is_qualified',
+            'id, share_link_id, visitor_id, visit_seq, started_at, last_seen_at, engaged_ms, browser, os, country, city, is_bot, bot_reason, is_qualified',
           )
           .eq('proposal_id', data.id)
           .order('started_at', { ascending: false }),
@@ -92,6 +101,8 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
     const visits = allVisits ?? []
     const humanQualified = visits.filter((v) => !v.is_bot && v.is_qualified)
     const qualifiedIds = new Set(humanQualified.map((v) => v.id))
+    const previews = visits.filter((v) => v.bot_reason === OWNER_PREVIEW)
+    const previewIds = new Set(previews.map((v) => v.id))
 
     const [{ data: pageViews }, { data: events }] = await Promise.all([
       supabase
@@ -152,7 +163,15 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
     // Per-page attention, restricted to qualified human reads.
     const engagedByPage = new Map<number, number>()
     const viewsByPage = new Map<number, number>()
+    const previewByPage = new Map<number, number>()
     for (const pv of pageViews ?? []) {
+      if (previewIds.has(pv.visit_id)) {
+        previewByPage.set(
+          pv.page_number,
+          (previewByPage.get(pv.page_number) ?? 0) + pv.engaged_ms,
+        )
+        continue
+      }
       if (!qualifiedIds.has(pv.visit_id)) continue
       engagedByPage.set(
         pv.page_number,
@@ -210,11 +229,30 @@ export const getProposalAnalytics = createServerFn({ method: 'GET' })
         lastOpenedAt: seenAll.length
           ? new Date(Math.max(...seenAll)).toISOString()
           : null,
-        botVisits: visits.filter((v) => v.is_bot).length,
+        // The owner's previews are stored as bots but are not "automated
+        // fetches", which is what the page calls this number.
+        botVisits: visits.filter((v) => v.is_bot && !previewIds.has(v.id))
+          .length,
         downloads,
         prints,
       },
       pages: pageAttention,
       visits: visitActivity,
+      ownerPreview: previews.length
+        ? {
+            engagedMs: previews.reduce((sum, v) => sum + v.engaged_ms, 0),
+            lastSeenAt: new Date(
+              Math.max(
+                ...previews.map((v) => new Date(v.last_seen_at).getTime()),
+              ),
+            ).toISOString(),
+            pages: (pages ?? []).map((p) => ({
+              pageNumber: p.page_number,
+              section: p.section,
+              engagedMs: previewByPage.get(p.page_number) ?? 0,
+              viewCount: 0,
+            })),
+          }
+        : null,
     }
   })

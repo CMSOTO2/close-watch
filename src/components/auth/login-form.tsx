@@ -13,10 +13,17 @@ import {
 } from './validation'
 import type { Mode } from './validation'
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({
+  next,
+  initialMode = 'signin',
+}: {
+  next?: string
+  /** Every "Start free" button opens on sign-up; the header's Sign in does not. */
+  initialMode?: Mode
+}) {
   const router = useRouter()
   const destination = next ?? AFTER_SIGN_IN
-  const [mode, setMode] = useState<Mode>('signin')
+  const [mode, setMode] = useState<Mode>(initialMode)
   // Set while an email link (magic link or signup confirmation) is pending.
   const [notice, setNotice] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -97,6 +104,14 @@ export function LoginForm({ next }: { next?: string }) {
           ? 'Create your Closewatch account'
           : 'Sign in to Closewatch'}
       </h1>
+      {/* The promises the button that brought them here made, carried onto
+          the screen where they decide whether to believe them. */}
+      {mode === 'signup' && !notice && (
+        <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
+          Free to start · Your client installs nothing · Revoke any link at any
+          time
+        </p>
+      )}
 
       {notice ? (
         <p className="mt-4 rounded-md border border-good-line bg-good-soft px-3 py-2.5 text-[13px] text-good">

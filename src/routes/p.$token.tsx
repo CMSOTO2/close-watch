@@ -36,7 +36,8 @@ export const Route = createFileRoute('/p/$token')({
 })
 
 function ViewerPage() {
-  const { pdfUrl, visitId, title, senderName } = Route.useLoaderData()
+  const { pdfUrl, visitId, title, senderName, ownerPreview } =
+    Route.useLoaderData()
   const { token } = Route.useParams()
   const pageRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
@@ -98,19 +99,29 @@ function ViewerPage() {
       <div className="border-b border-line-soft bg-surface-2">
         <PageContainer className="flex items-start gap-1.5 py-2 text-xs leading-relaxed text-ink-3">
           <Eye aria-hidden className="mt-0.5 size-3.5 shrink-0" />
-          <p>
-            This document is tracked. The sender is told when it is opened,
-            which pages are read, and whether it is downloaded or printed.{' '}
-            {/* New tab, so reading the policy does not abandon the document. */}
-            <a
-              href="/privacy"
-              target="_blank"
-              rel="noopener"
-              className="whitespace-nowrap underline underline-offset-2 transition-colors hover:text-ink-2"
-            >
-              What is recorded
-            </a>
-          </p>
+          {ownerPreview ? (
+            // The sender, signed in, looking at their own link. Said so, or
+            // they reasonably wonder whether they just spent a free slot.
+            <p>
+              This is your preview. You are signed in as the sender, so this
+              read shows up as yours and never counts as a client opening it.
+              Your client sees a line here saying the document is tracked.
+            </p>
+          ) : (
+            <p>
+              This document is tracked. The sender is told when it is opened,
+              which pages are read, and whether it is downloaded or printed.{' '}
+              {/* New tab, so reading the policy does not abandon the document. */}
+              <a
+                href="/privacy"
+                target="_blank"
+                rel="noopener"
+                className="whitespace-nowrap underline underline-offset-2 transition-colors hover:text-ink-2"
+              >
+                What is recorded
+              </a>
+            </p>
+          )}
         </PageContainer>
       </div>
 

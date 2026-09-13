@@ -10,8 +10,11 @@ import { createHash, randomUUID } from 'node:crypto'
 import { z } from 'zod'
 import { isShareToken } from '#/constants'
 import { serverEnv } from '#/env'
-import { getSupabaseAdminClient } from '#/lib/supabase/server'
-import { detectBot, parseUserAgent } from './bots'
+import {
+  getSupabaseAdminClient,
+  getSupabaseServerClient,
+} from '#/lib/supabase/server'
+import { OWNER_PREVIEW, detectBot, parseUserAgent } from './bots'
 import { requestGeo } from './geo'
 import type { Geo } from './geo'
 
@@ -25,6 +28,25 @@ export type VisitContext = {
   pageCount: number
   title: string
   senderName: string | null
+  /** The owner is reading their own link; nothing here counts as a client read. */
+  ownerPreview: boolean
+}
+
+/**
+ * Whether the person opening the link is signed in as the proposal's owner.
+ *
+ * getUser rather than getSession, for the reason lib/auth gives: the cookie
+ * alone is not proof, and a forged one must not be able to turn a client's
+ * read into an uncounted preview. Any failure answers no, which is the old
+ * behaviour of treating the owner as a reader.
+ */
+async function viewerOwns(ownerId: string): Promise<boolean> {
+  try {
+    const { data } = await getSupabaseServerClient().auth.getUser()
+    return data.user?.id === ownerId
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -48,7 +70,7 @@ export const beginVisit = createServerFn({ method: 'GET' })
     const { data: link } = await supabase
       .from('share_links')
       .select(
-        'id, revoked_at, expires_at, proposals!inner(id, title, page_count, storage_path, profiles!inner(full_name, company_name))',
+        'id, revoked_at, expires_at, proposals!inner(id, owner_id, title, page_count, storage_path, profiles!inner(full_name, company_name))',
       )
       .eq('token', data.token)
       .maybeSingle()
@@ -58,8 +80,16 @@ export const beginVisit = createServerFn({ method: 'GET' })
 
     const proposal = link.proposals
 
+    // Trying the product on yourself is the first thing a new account should
+    // do, and it used to cost them: their own read spent one of the free
+    // plan's two slots and claimed the first-open email the client's real
+    // open should have sent. See OWNER_PREVIEW.
+    const ownerPreview = await viewerOwns(proposal.owner_id)
+
     const userAgent = getRequestHeader('user-agent')
-    const { isBot, reason } = detectBot(userAgent)
+    const { isBot, reason } = ownerPreview
+      ? { isBot: true, reason: OWNER_PREVIEW }
+      : detectBot(userAgent)
     const device = parseUserAgent(userAgent)
 
     // First-party, httpOnly. It only ever needs to be read on the server, and
@@ -154,5 +184,6 @@ export const beginVisit = createServerFn({ method: 'GET' })
       pageCount: proposal.page_count,
       title: proposal.title,
       senderName: sender.company_name ?? sender.full_name,
+      ownerPreview,
     }
   })

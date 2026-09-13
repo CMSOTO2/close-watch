@@ -258,7 +258,15 @@ export function Pricing() {
 
             {plan.to ? (
               <Button asChild variant={plan.featured ? 'brand' : 'outline'}>
-                <Link to={plan.to}>{plan.cta}</Link>
+                {/* Free's button is for someone new, so it opens on sign-up,
+                    like every other "Start free" on the site. */}
+                {plan.to === '/login' ? (
+                  <Link to="/login" search={{ mode: 'signup' }}>
+                    {plan.cta}
+                  </Link>
+                ) : (
+                  <Link to={plan.to}>{plan.cta}</Link>
+                )}
               </Button>
             ) : (
               <StudioWaitlist cta={plan.cta} />

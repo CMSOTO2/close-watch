@@ -9,9 +9,18 @@ export const Route = createFileRoute('/login')({
   // so safeNext is the boundary rather than a formality. Dropped from the
   // parsed search when it is missing or unusable, which keeps a bare /login
   // out of the business of carrying an empty parameter around.
-  validateSearch: (search: Record<string, unknown>): { next?: string } => {
+  //
+  // `mode=signup` is what every "Start free" button sends. Those buttons are
+  // for people who have never been here, and they used to land on a form
+  // headed "Sign in", with account creation as a small link under it.
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { next?: string; mode?: 'signup' } => {
     const next = safeNext(search.next)
-    return next ? { next } : {}
+    return {
+      ...(next ? { next } : {}),
+      ...(search.mode === 'signup' ? { mode: 'signup' as const } : {}),
+    }
   },
   // Someone already signed in has nothing to do here. The public header's
   // Sign in button used to land a signed-in owner on this form, which read as
@@ -35,7 +44,7 @@ export const Route = createFileRoute('/login')({
 })
 
 function LoginPage() {
-  const { next } = Route.useSearch()
+  const { next, mode } = Route.useSearch()
 
   return (
     <div className="grid min-h-screen place-items-center bg-canvas px-6 py-12">
@@ -44,7 +53,7 @@ function LoginPage() {
           <Wordmark />
         </Link>
         <div className="rounded-lg border border-line bg-surface px-6 py-7 shadow-md">
-          <LoginForm next={next} />
+          <LoginForm next={next} initialMode={mode} />
         </div>
         {/* Google's consent screen links these too, but someone creating an
             account should be able to reach them from the page where they do

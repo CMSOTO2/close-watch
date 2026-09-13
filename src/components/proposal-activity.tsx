@@ -8,6 +8,7 @@ import { sinceLabel } from '#/components/dashboard/since-last-visit'
 import { useSinceLastCheck } from '#/components/proposal-activity-delta'
 import type { ActivityDelta } from '#/components/proposal-activity-delta'
 import type {
+  OwnerPreview,
   PageAttention,
   ProposalAnalytics,
   VisitActivity,
@@ -78,7 +79,33 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
           <RecentVisits visits={data.visits} since={since} />
         </>
       )}
+
+      {data.ownerPreview && <OwnerPreviewPanel preview={data.ownerPreview} />}
     </section>
+  )
+}
+
+/**
+ * The owner's own reads, shown as what they are.
+ *
+ * This is the first-run win: a new account can see the report work on their
+ * own proposal before any client is involved. It sits under the client numbers
+ * and never inside them.
+ */
+function OwnerPreviewPanel({ preview }: { preview: OwnerPreview }) {
+  const timeZone = useTimeZone()
+  return (
+    <div className="mt-8 rounded-lg border border-line bg-surface-2 px-4 py-4">
+      <h3 className="kicker">Your preview</h3>
+      <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
+        You read it for {formatDuration(preview.engagedMs / 1000)}, last{' '}
+        {formatRelative(preview.lastSeenAt, timeZone)}. When your client opens
+        the link, their read turns into a report like this one. Your own opens
+        stay separate: they never count as a client open, never use a free slot,
+        and never email you.
+      </p>
+      <PageAttentionChart pages={preview.pages} />
+    </div>
   )
 }
 

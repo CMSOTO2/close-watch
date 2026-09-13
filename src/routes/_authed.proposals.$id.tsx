@@ -157,6 +157,23 @@ function SendHandoff({
           {copied ? 'Copied' : 'Copy link'}
         </Button>
       </div>
+
+      {/* The first result a new account can get without involving a client.
+          Their own read is recorded as a preview (see OWNER_PREVIEW), so it
+          shows up under Activity and costs them nothing. */}
+      <p className="mt-3 text-[13px] leading-relaxed text-ink-2">
+        Want to see what you get back first?{' '}
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener"
+          className="font-medium text-brand underline underline-offset-2 hover:text-ink"
+        >
+          Open it yourself
+        </a>
+        . While you are signed in, your read shows up below as your preview and
+        never counts as {recipient} opening it.
+      </p>
     </div>
   )
 }

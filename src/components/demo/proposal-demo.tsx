@@ -443,7 +443,9 @@ function SenderPanel({
       </div>
 
       <Button asChild size="lg">
-        <Link to="/login">Track a real one</Link>
+        <Link to="/login" search={{ mode: 'signup' }}>
+          Track a real one
+        </Link>
       </Button>
     </div>
   )

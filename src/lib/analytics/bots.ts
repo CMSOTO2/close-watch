@@ -43,6 +43,18 @@ const BOT_PATTERNS: Array<[RegExp, string]> = [
   [/bot\b|crawler|spider|scraper|monitor|preview|fetcher/i, 'generic'],
 ]
 
+/**
+ * Not a bot: the proposal's owner opening their own link while signed in.
+ *
+ * Stored with is_bot set, and that is deliberate. Every count of client reads
+ * already filters bots — the free plan's cap, the activity emails, the score,
+ * the dashboard — so a preview is left out of all of them without any of them
+ * learning a new rule. record_engagement does not look at is_bot, so the
+ * preview's time and pages are still recorded, and the proposal page shows
+ * them back to the owner as their own preview.
+ */
+export const OWNER_PREVIEW = 'owner-preview'
+
 export function detectBot(userAgent: string | undefined) {
   if (!userAgent || userAgent.trim().length < 10) {
     return { isBot: true, reason: 'missing-ua' }

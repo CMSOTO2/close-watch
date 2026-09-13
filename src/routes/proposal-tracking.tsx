@@ -85,7 +85,7 @@ function ProposalTracking() {
             alerts.
           </p>
           <Button asChild size="lg" className="mt-5">
-            <Link to="/login">
+            <Link to="/login" search={{ mode: 'signup' }}>
               Start free
               <ArrowRight aria-hidden className="size-4" />
             </Link>
