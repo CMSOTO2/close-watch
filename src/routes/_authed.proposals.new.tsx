@@ -20,6 +20,7 @@ import { BackLink } from '#/components/back-link'
 import { useToast } from '#/components/toast'
 import { Button } from '#/components/ui/button'
 import { cn } from '#/lib/utils'
+import { formatDealValue } from '#/lib/deal-value'
 import { AtLimitPanel, DraftLimitPanel } from '#/components/billing/at-limit'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
 import { OPEN_FOLDER_KEY, foldersQuery } from '#/lib/folders'
@@ -274,7 +275,8 @@ function NewProposal() {
         const data = new FormData()
         data.set('title', value.title)
         data.set('clientName', value.clientName)
-        data.set('dealValue', value.dealValue)
+        // Shown as "12,000" while typing; the server parses a plain number.
+        data.set('dealValue', value.dealValue.replace(/,/g, ''))
         data.set('folderId', value.folderId)
         data.set('file', file)
         data.set('pageCount', String(pageCount))
@@ -542,7 +544,7 @@ function NewProposal() {
                   name="dealValue"
                   validators={{
                     onChange: ({ value }) =>
-                      !value || Number(value) >= 0
+                      !value || Number(value.replace(/,/g, '')) >= 0
                         ? undefined
                         : 'Deal value must be a positive number',
                   }}
@@ -555,14 +557,19 @@ function NewProposal() {
                     >
                       <div className="flex items-center rounded-md border border-line-strong bg-surface px-3 transition-colors focus-within:border-brand-2 hover:border-ink-3">
                         <span className="text-sm text-ink-3">$</span>
+                        {/* Text with a decimal keypad rather than type=number,
+                            which cannot show "12,000". The commas are added as
+                            they type and stripped again on submit. */}
                         <input
-                          type="number"
-                          min="0"
-                          step="0.01"
+                          type="text"
+                          inputMode="decimal"
+                          autoComplete="off"
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="12000"
+                          onChange={(e) =>
+                            field.handleChange(formatDealValueInput(e.target))
+                          }
+                          placeholder="12,000"
                           className="w-full bg-transparent px-2 py-2 text-sm tnum text-ink outline-none placeholder:text-ink-3"
                         />
                       </div>
@@ -669,6 +676,27 @@ function NewProposal() {
 
 const INPUT =
   'w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring'
+
+/**
+ * Formats the input's value (see formatDealValue) and puts the caret back where the person was
+ * typing. Adding a comma shifts everything after it, so without this the caret
+ * jumps to the end whenever they edit the middle of a number.
+ */
+function formatDealValueInput(input: HTMLInputElement): string {
+  const caret = input.selectionStart ?? input.value.length
+  const kept = input.value.slice(0, caret).replace(/[^\d.]/g, '').length
+  const next = formatDealValue(input.value)
+  requestAnimationFrame(() => {
+    let seen = 0
+    let pos = 0
+    while (pos < next.length && seen < kept) {
+      if (/[\d.]/.test(next[pos])) seen++
+      pos++
+    }
+    input.setSelectionRange(pos, pos)
+  })
+  return next
+}
 
 /** The file input's id, shared by the drop zone and its Replace button. */
 const PDF_INPUT_ID = 'proposal-pdf'
