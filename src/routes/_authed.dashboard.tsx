@@ -200,11 +200,8 @@ function Dashboard() {
               which is a big ask of a tool you have not seen work. Now it is a
               step that involves nobody else. */}
           <p className="mx-auto mt-1 max-w-sm text-[13px] leading-relaxed text-ink-2">
-            Start with any proposal PDF, even an old one. Open its link yourself
-            and you get the report your read produces: time on each page, and
-            how long you spent on pricing. Your own reads never count as a
-            client&rsquo;s, and nothing reaches a client until you send the
-            link.
+            Upload any proposal PDF and open its link yourself to see the report
+            a client&rsquo;s read produces.
           </p>
           <Button asChild className="mt-5">
             <Link to="/proposals/new">Upload a proposal</Link>
