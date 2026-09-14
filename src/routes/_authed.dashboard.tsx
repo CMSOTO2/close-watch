@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { foldersQuery } from '#/lib/folders'
+import { FolderBar } from '#/components/dashboard/folder-bar'
 import {
   getProposalSummaries,
   getSecuredTotals,
@@ -57,6 +59,7 @@ export const Route = createFileRoute('/_authed/dashboard')({
       context.queryClient.query(summariesQuery),
       context.queryClient.query(securedQuery),
       context.queryClient.query(entitlementsQuery),
+      context.queryClient.query(foldersQuery),
     ]),
   component: Dashboard,
 })
@@ -87,6 +90,28 @@ function Dashboard() {
     GROUP_KEYS,
   )
   const grouped = grouping === 'on'
+
+  // The open folder: 'all', 'none' for proposals in no folder, or a folder
+  // id. Applied before everything else, so the tabs, the counts and the
+  // summary all describe the one folder being looked at.
+  const { data: folders } = useSuspenseQuery(foldersQuery)
+  const folderKeys = useMemo(
+    () => ['all', 'none', ...folders.map((f) => f.id)],
+    [folders],
+  )
+  const [storedFolder, setFolder] = usePersistedChoice<string>(
+    'cw.dashboard.folder',
+    'all',
+    folderKeys,
+  )
+  // A remembered folder that has since been removed falls back to everything.
+  const folder = folderKeys.includes(storedFolder) ? storedFolder : 'all'
+  const scoped =
+    folder === 'all'
+      ? data
+      : data.filter((p) =>
+          folder === 'none' ? p.folderId === null : p.folderId === folder,
+        )
   // Collapsed rather than expanded, so a group never silently hides rows the
   // owner has not chosen to fold away. Session-only: which groups are shut is
   // a scratch decision, not a preference worth restoring weeks later.
@@ -106,9 +131,9 @@ function Dashboard() {
   //
   // Search narrows both tabs, so the tab counts report matches and a query that
   // only hits the other tab can say so rather than looking like no results.
-  const activeAll = data.filter((p) => !isClosed(p))
+  const activeAll = scoped.filter((p) => !isClosed(p))
   const activeMatched = filterByQuery(activeAll, query)
-  const closedMatched = filterByQuery(data.filter(isClosed), query)
+  const closedMatched = filterByQuery(scoped.filter(isClosed), query)
 
   const active = activeMatched
     .filter((p) => heat === 'all' || p.intent.band === heat)
@@ -187,6 +212,13 @@ function Dashboard() {
         </div>
       ) : (
         <>
+          <FolderBar
+            folders={folders}
+            proposals={data}
+            selected={folder}
+            onSelect={setFolder}
+          />
+
           <SummaryStrip secured={secured} active={activeAll} />
 
           <ListControls

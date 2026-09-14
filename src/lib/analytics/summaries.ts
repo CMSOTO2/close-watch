@@ -68,6 +68,8 @@ export type ProposalSummary = {
   lastViewedAt: string | null
   /** Newest link that is still live, so the list can offer a one-click copy. */
   shareUrl: string | null
+  /** The folder it is filed in, if any. */
+  folderId: string | null
   intent: IntentResult
 }
 
@@ -89,7 +91,7 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
     const { data: proposals } = await supabase
       .from('proposals')
       .select(
-        'id, title, client_name, status, page_count, created_at, deal_value_cents, currency, outcome_at',
+        'id, title, client_name, status, page_count, created_at, deal_value_cents, currency, outcome_at, folder_id, folders(sender_name)',
       )
       .order('created_at', { ascending: false })
 
@@ -132,6 +134,10 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
     ])
 
     const name = profile ? senderName(profile) : null
+    // A proposal in a folder with its own name for clients sends as that.
+    const senderFor = new Map(
+      proposals.map((p) => [p.id, p.folders?.sender_name ?? name]),
+    )
 
     // Newest live link per proposal. Ordered newest-first above, so the first
     // unexpired one seen for an id wins.
@@ -140,7 +146,10 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
     for (const l of links ?? []) {
       if (liveLink.has(l.proposal_id)) continue
       if (l.expires_at && new Date(l.expires_at).getTime() < now) continue
-      liveLink.set(l.proposal_id, shareUrl(l.token, name))
+      liveLink.set(
+        l.proposal_id,
+        shareUrl(l.token, senderFor.get(l.proposal_id) ?? name),
+      )
     }
 
     const pricingPages = new Map<string, Set<number>>()
@@ -190,6 +199,7 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
           ? new Date(Math.max(...seenTimes)).toISOString()
           : null,
         shareUrl: liveLink.get(p.id) ?? null,
+        folderId: p.folder_id,
         intent: scoreIntent(input),
       }
     })

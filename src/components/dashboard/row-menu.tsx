@@ -1,10 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useQueryClient } from '@tanstack/react-query'
-import { CircleCheck, Link2, MoreHorizontal, Trash2 } from 'lucide-react'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import {
+  CircleCheck,
+  FolderInput,
+  Link2,
+  MoreHorizontal,
+  Trash2,
+} from 'lucide-react'
 import { ConfirmDialog } from '#/components/confirm-dialog'
 import { useToast } from '#/components/toast'
 import { queryKeys } from '#/constants'
+import { foldersQuery, moveProposal } from '#/lib/folders'
 import { deleteProposal, markProposalWon } from '#/lib/proposals/mutations'
 import { cn } from '#/lib/utils'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
@@ -25,6 +32,8 @@ import type { ProposalSummary } from '#/lib/analytics/summaries'
 export function RowMenu({ proposal }: { proposal: ProposalSummary }) {
   const notify = useToast()
   const queryClient = useQueryClient()
+  // Loaded by the dashboard's loader, so this reads the cache.
+  const { data: folders } = useSuspenseQuery(foldersQuery)
   const [open, setOpen] = useState(false)
   const [place, setPlace] = useState<{ top: number; right: number } | null>(
     null,
@@ -116,6 +125,24 @@ export function RowMenu({ proposal }: { proposal: ProposalSummary }) {
     }
   }
 
+  // Filing can change the name the client sees, and with it the link, so the
+  // proposal's own page is refreshed along with the list.
+  async function moveTo(folderId: string | null, label: string) {
+    setOpen(false)
+    setBusy(true)
+    try {
+      await moveProposal({ data: { proposalId: proposal.id, folderId } })
+      notify(folderId ? `Moved to ${label}` : 'Taken out of its folder')
+    } catch {
+      notify('Could not move that proposal', 'danger')
+    } finally {
+      setBusy(false)
+      await refresh()
+    }
+  }
+
+  const destinations = folders.filter((f) => f.id !== proposal.folderId)
+
   async function runDelete() {
     setBusy(true)
     try {
@@ -171,6 +198,45 @@ export function RowMenu({ proposal }: { proposal: ProposalSummary }) {
               <CircleCheck aria-hidden className="size-3.5 text-good" />
               Mark as paid
             </button>
+            {(destinations.length > 0 || proposal.folderId) && (
+              <>
+                <div className="my-1 border-t border-line-soft" />
+                <p className="px-3 pt-1 pb-0.5 font-mono text-[10px] tracking-wider text-ink-3 uppercase">
+                  Move to
+                </p>
+                {/* Scrolls rather than growing past the screen for someone
+                    with a long list of folders. */}
+                <div className="max-h-48 overflow-y-auto">
+                  {destinations.map((f) => (
+                    <button
+                      key={f.id}
+                      type="button"
+                      onClick={() => void moveTo(f.id, f.name)}
+                      className={item}
+                    >
+                      <FolderInput
+                        aria-hidden
+                        className="size-3.5 shrink-0 text-ink-3"
+                      />
+                      <span className="truncate">{f.name}</span>
+                    </button>
+                  ))}
+                  {proposal.folderId && (
+                    <button
+                      type="button"
+                      onClick={() => void moveTo(null, 'No folder')}
+                      className={cn(item, 'text-ink-2')}
+                    >
+                      <FolderInput
+                        aria-hidden
+                        className="size-3.5 shrink-0 text-ink-3"
+                      />
+                      No folder
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
             <div className="my-1 border-t border-line-soft" />
             <button
               type="button"

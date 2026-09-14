@@ -183,6 +183,7 @@ export function shareUrl(token: string, name: string | null): string {
 // --- React Query keys -------------------------------------------------------
 export const queryKeys = {
   profile: ['profile'] as const,
+  folders: ['folders'] as const,
   securedTotals: ['secured-totals'] as const,
   proposalSummaries: ['proposal-summaries'] as const,
   entitlements: ['entitlements'] as const,

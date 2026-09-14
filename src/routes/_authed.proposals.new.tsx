@@ -13,11 +13,15 @@ import { BackLink } from '#/components/back-link'
 import { useToast } from '#/components/toast'
 import { AtLimitPanel, DraftLimitPanel } from '#/components/billing/at-limit'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
+import { foldersQuery } from '#/lib/folders'
 import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, queryKeys } from '#/constants'
 
 export const Route = createFileRoute('/_authed/proposals/new')({
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(entitlementsQuery),
+    Promise.all([
+      context.queryClient.ensureQueryData(entitlementsQuery),
+      context.queryClient.ensureQueryData(foldersQuery),
+    ]),
   component: NewProposal,
 })
 
@@ -191,9 +195,13 @@ function NewProposal() {
   const [phase, setPhase] = useState<'reading' | 'uploading'>('reading')
   const isWebkit = useIsWebkit()
   const { data: entitlements } = useSuspenseQuery(entitlementsQuery)
+  const { data: folders } = useSuspenseQuery(foldersQuery)
+  const { user } = Route.useRouteContext()
 
   const form = useForm({
     defaultValues: {
+      // Blank is no folder; otherwise a folder id.
+      folderId: '',
       title: '',
       clientName: '',
       recipientName: '',
@@ -222,6 +230,7 @@ function NewProposal() {
         data.set('title', value.title)
         data.set('clientName', value.clientName)
         data.set('dealValue', value.dealValue)
+        data.set('folderId', value.folderId)
         data.set('file', file)
         data.set('pageCount', String(pageCount))
         data.set('sections', JSON.stringify(sections))
@@ -339,6 +348,39 @@ function NewProposal() {
             }}
             className="mt-8 space-y-5"
           >
+            {/* Only once there is a folder to choose. The hint says which name
+                the client will see, since a folder can change it. */}
+            {folders.length > 0 && (
+              <form.Field name="folderId">
+                {(field) => {
+                  const chosen = folders.find((f) => f.id === field.state.value)
+                  const sees =
+                    chosen?.senderName ?? user.companyName ?? 'your main name'
+                  return (
+                    <Field
+                      label="Folder"
+                      hint={`Optional. Your client sees this proposal from ${sees}.`}
+                      field={field}
+                    >
+                      <select
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className="w-full cursor-pointer rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink transition-colors hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+                      >
+                        <option value="">No folder</option>
+                        {folders.map((folder) => (
+                          <option key={folder.id} value={folder.id}>
+                            {folder.name}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                  )
+                }}
+              </form.Field>
+            )}
+
             <form.Field
               name="title"
               validators={{

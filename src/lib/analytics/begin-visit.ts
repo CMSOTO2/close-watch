@@ -78,7 +78,7 @@ export const beginVisit = createServerFn({ method: 'GET' })
     const { data: link } = await supabase
       .from('share_links')
       .select(
-        'id, revoked_at, expires_at, proposals!inner(id, owner_id, title, page_count, storage_path, profiles!inner(full_name, company_name))',
+        'id, revoked_at, expires_at, proposals!inner(id, owner_id, title, page_count, storage_path, folders(sender_name), profiles!inner(full_name, company_name))',
       )
       .eq('token', data.token)
       .maybeSingle()
@@ -87,7 +87,10 @@ export const beginVisit = createServerFn({ method: 'GET' })
     if (link.expires_at && new Date(link.expires_at) < new Date()) return null
 
     const proposal = link.proposals
-    const sender = senderName(proposal.profiles)
+    // The name its folder sends as, when it is in one that has a name for
+    // clients; otherwise the account's own.
+    const sender =
+      proposal.folders?.sender_name ?? senderName(proposal.profiles)
 
     // The name in the URL is the sender's, not the reader's to choose. Any
     // other name, including none at all on a link sent before names were in

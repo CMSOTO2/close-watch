@@ -23,6 +23,7 @@ function proposal(
     pricingEngagedMs: 0,
     lastViewedAt: null,
     shareUrl: null,
+    folderId: null,
     intent: {
       score,
       band: score >= 65 ? 'hot' : score >= 30 ? 'warm' : 'cold',

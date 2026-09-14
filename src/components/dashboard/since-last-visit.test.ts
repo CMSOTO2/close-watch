@@ -24,6 +24,7 @@ function proposal(
     pricingEngagedMs: 0,
     lastViewedAt: null,
     shareUrl: null,
+    folderId: null,
     intent: { score: 0, band: 'cold', signals: [] },
   }
 }

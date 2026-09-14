@@ -20,6 +20,8 @@ type ParsedInput = {
   clientName: string
   dealValueCents: number | null
   pageCount: number
+  /** The owner's folder to file it in, or null for none. */
+  folderId: string | null
   /** Classifier guesses, one per page. Empty when the PDF had no text. */
   sections: Array<PageSection>
   bytes: ArrayBuffer
@@ -46,6 +48,17 @@ export const createProposal = createServerFn({ method: 'POST' })
     const clientName = String(data.get('clientName') ?? '').trim()
     if (!title) throw new Error('Title is required')
     if (!clientName) throw new Error('Client name is required')
+
+    // The folder to file it in, which can also decide the name the client
+    // sees. Blank is none; anything else must be an id, and the "proposal
+    // folder is the owner's" policy checks it is one of theirs.
+    const rawFolder = String(data.get('folderId') ?? '').trim()
+    let folderId: string | null = null
+    if (rawFolder) {
+      const parsed = z.uuid().safeParse(rawFolder)
+      if (!parsed.success) throw new Error('Unknown folder')
+      folderId = parsed.data
+    }
 
     const pageCount = Number(data.get('pageCount'))
     if (
@@ -83,6 +96,7 @@ export const createProposal = createServerFn({ method: 'POST' })
       title,
       clientName,
       dealValueCents,
+      folderId,
       pageCount,
       sections,
       bytes: await file.arrayBuffer(),
@@ -137,6 +151,7 @@ export const createProposal = createServerFn({ method: 'POST' })
       title: data.title,
       client_name: data.clientName,
       deal_value_cents: data.dealValueCents,
+      folder_id: data.folderId,
       storage_path: storagePath,
       page_count: data.pageCount,
     })

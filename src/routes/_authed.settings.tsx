@@ -12,6 +12,8 @@ import { fieldError } from '#/components/auth/validation'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
 import { discountQuery } from '#/lib/billing/discount'
 import { BillingSection } from '#/components/billing/billing-section'
+import { FoldersSection } from '#/components/folders-section'
+import { foldersQuery } from '#/lib/folders'
 import { PageContainer } from '#/components/page-container'
 import { BackLink } from '#/components/back-link'
 import { queryKeys } from '#/constants'
@@ -32,6 +34,7 @@ export const Route = createFileRoute('/_authed/settings')({
       context.queryClient.query(profileQuery),
       context.queryClient.query(entitlementsQuery),
       context.queryClient.query(discountQuery),
+      context.queryClient.query(foldersQuery),
     ]),
   component: SettingsPage,
 })
@@ -149,6 +152,8 @@ function SettingsPage() {
             {error && <span className="text-[13px] text-danger">{error}</span>}
           </div>
         </form>
+
+        <FoldersSection mainName={profile?.companyName ?? null} />
 
         <BillingSection
           justPaid={billing === 'done'}

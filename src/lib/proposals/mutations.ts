@@ -72,16 +72,21 @@ export const createShareLink = createServerFn({ method: 'POST' })
         .eq('id', data.proposalId)
         .eq('status', 'draft')
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, company_name')
-        .eq('id', auth.user.id)
+      // The name this proposal is sent as: its folder's name for clients if it
+      // has one, otherwise the account's own.
+      const { data: sender } = await supabase
+        .from('proposals')
+        .select('folders(sender_name), profiles(full_name, company_name)')
+        .eq('id', data.proposalId)
         .maybeSingle()
+      const name =
+        sender?.folders?.sender_name ??
+        (sender?.profiles ? senderName(sender.profiles) : null)
 
       return {
         id: link.id,
         token: link.token,
-        url: shareUrl(link.token, profile ? senderName(profile) : null),
+        url: shareUrl(link.token, name),
       }
     },
   )

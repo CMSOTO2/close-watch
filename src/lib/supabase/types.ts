@@ -81,9 +81,19 @@ type OnboardingEventRow = {
   created_at: string
 }
 
+type FolderRow = {
+  id: string
+  owner_id: string
+  name: string
+  /** The name clients see for this folder's proposals; null is the account's. */
+  sender_name: string | null
+  created_at: string
+}
+
 type ProposalRow = {
   id: string
   owner_id: string
+  folder_id: string | null
   title: string
   client_name: string
   deal_value_cents: number | null
@@ -194,6 +204,27 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'proposals_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'proposals_folder_id_fkey'
+            columns: ['folder_id']
+            isOneToOne: false
+            referencedRelation: 'folders'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      folders: {
+        Row: FolderRow
+        Insert: Partial<FolderRow> & Pick<FolderRow, 'owner_id' | 'name'>
+        Update: Partial<FolderRow>
+        Relationships: [
+          {
+            foreignKeyName: 'folders_owner_id_fkey'
             columns: ['owner_id']
             isOneToOne: false
             referencedRelation: 'profiles'
@@ -367,6 +398,10 @@ export type Database = {
       revoke_comp: {
         Args: { user_email: string }
         Returns: boolean
+      }
+      move_proposal_to_folder: {
+        Args: { p_proposal_id: string; p_folder_id: string | null }
+        Returns: undefined
       }
     }
     Enums: {

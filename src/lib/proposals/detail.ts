@@ -53,7 +53,7 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
     const { data: proposal } = await supabase
       .from('proposals')
       .select(
-        'id, title, client_name, status, page_count, deal_value_cents, currency, created_at, outcome_at, owner_id',
+        'id, title, client_name, status, page_count, deal_value_cents, currency, created_at, outcome_at, owner_id, folders(sender_name)',
       )
       .eq('id', data.id)
       .maybeSingle()
@@ -83,7 +83,9 @@ export const getProposalDetail = createServerFn({ method: 'GET' })
           .order('created_at', { ascending: false }),
       ])
 
-    const name = owner ? senderName(owner) : null
+    // Its folder's name for clients, when it has one; otherwise the account's.
+    const name =
+      proposal.folders?.sender_name ?? (owner ? senderName(owner) : null)
 
     return {
       id: proposal.id,
