@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { foldersQuery } from '#/lib/folders'
+import { OPEN_FOLDER_KEY, foldersQuery } from '#/lib/folders'
 import { FolderBar } from '#/components/dashboard/folder-bar'
 import {
   getProposalSummaries,
@@ -91,7 +91,7 @@ function Dashboard() {
     [folders],
   )
   const [storedFolder, setFolder] = usePersistedChoice<string>(
-    'cw.dashboard.folder',
+    OPEN_FOLDER_KEY,
     'all',
     folderKeys,
   )

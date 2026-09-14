@@ -13,7 +13,7 @@ import { BackLink } from '#/components/back-link'
 import { useToast } from '#/components/toast'
 import { AtLimitPanel, DraftLimitPanel } from '#/components/billing/at-limit'
 import { entitlementsQuery } from '#/lib/billing/entitlements'
-import { foldersQuery } from '#/lib/folders'
+import { OPEN_FOLDER_KEY, foldersQuery } from '#/lib/folders'
 import { PDF_MAX_BYTES, PDF_MAX_MB, PDF_MIME, queryKeys } from '#/constants'
 
 export const Route = createFileRoute('/_authed/proposals/new')({
@@ -322,6 +322,25 @@ function NewProposal() {
       }
     },
   })
+
+  // Start in the folder that is open on the dashboard, so a proposal begun
+  // from inside Photography is filed in Photography. Read after mount because
+  // the choice lives in localStorage, which the server render cannot see, and
+  // only when the owner has not already picked one. They can still change it.
+  useEffect(() => {
+    try {
+      const open = window.localStorage.getItem(OPEN_FOLDER_KEY)
+      if (
+        open &&
+        folders.some((f) => f.id === open) &&
+        !form.getFieldValue('folderId')
+      ) {
+        form.setFieldValue('folderId', open)
+      }
+    } catch {
+      // Storage blocked: the form starts with no folder, as before.
+    }
+  }, [folders, form])
 
   return (
     <PageContainer className="py-8 sm:py-9">

@@ -51,6 +51,13 @@ export const foldersQuery = queryOptions({
   queryFn: () => listFolders(),
 })
 
+/**
+ * Where the dashboard remembers its open folder ('all', 'none' or a folder
+ * id). The new-proposal form reads it too, so a proposal started from inside
+ * a folder begins filed in that folder.
+ */
+export const OPEN_FOLDER_KEY = 'cw.dashboard.folder'
+
 /** 23505 is the unique index on (owner, name), which deserves a sentence. */
 function saveError(error: { code?: string; message: string }): Error {
   return new Error(
