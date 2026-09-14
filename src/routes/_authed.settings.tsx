@@ -16,7 +16,7 @@ import { FoldersSection } from '#/components/folders-section'
 import { foldersQuery } from '#/lib/folders'
 import { PageContainer } from '#/components/page-container'
 import { BackLink } from '#/components/back-link'
-import { queryKeys } from '#/constants'
+import { queryKeys, shareLinkPreview } from '#/constants'
 
 const profileQuery = queryOptions({
   queryKey: queryKeys.profile,
@@ -128,6 +128,11 @@ function SettingsPage() {
                     {fieldError(field.state.meta.errors)}
                   </span>
                 )}
+                {/* The name is in every link, so show the link it makes. */}
+                <span className="mt-1.5 block truncate font-mono text-[12px] text-ink-3">
+                  Your links look like{' '}
+                  {shareLinkPreview(field.state.value.trim() || null)}
+                </span>
               </label>
             )}
           </form.Field>

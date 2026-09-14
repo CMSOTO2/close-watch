@@ -1,11 +1,9 @@
 import { Link } from '@tanstack/react-router'
-import { useQueryClient } from '@tanstack/react-query'
 import { FolderPlus } from 'lucide-react'
 import { useState } from 'react'
-import { createFolder, folderNameSchema } from '#/lib/folders'
+import { NewFolderDialog } from './new-folder-dialog'
 import type { Folder } from '#/lib/folders'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
-import { queryKeys } from '#/constants'
 import { cn } from '#/lib/utils'
 
 /**
@@ -14,13 +12,15 @@ import { cn } from '#/lib/utils'
  *
  * Creating a folder is here rather than only in Settings because the moment
  * someone wants one is the moment they are looking at the list that is too
- * mixed. Proposals go into folders from each row's menu.
+ * mixed. It opens NewFolderDialog, and the new folder is opened on creation.
+ * Proposals go into folders from each row's menu.
  */
 export function FolderBar({
   folders,
   proposals,
   selected,
   onSelect,
+  mainName,
 }: {
   folders: Array<Folder>
   /** Every proposal, so each folder's count is its whole contents. */
@@ -28,45 +28,16 @@ export function FolderBar({
   /** 'all', 'none', or a folder id. */
   selected: string
   onSelect: (key: string) => void
+  /** The account's own name, for the new-folder dialog's link preview. */
+  mainName: string | null
 }) {
-  const queryClient = useQueryClient()
-  const [adding, setAdding] = useState(false)
-  const [name, setName] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
+  const [creating, setCreating] = useState(false)
 
   const counts = new Map<string, number>()
   let unfiled = 0
   for (const p of proposals) {
     if (p.folderId) counts.set(p.folderId, (counts.get(p.folderId) ?? 0) + 1)
     else unfiled++
-  }
-
-  function close() {
-    setAdding(false)
-    setName('')
-    setError(null)
-  }
-
-  async function create(e: React.FormEvent) {
-    e.preventDefault()
-    const parsed = folderNameSchema.safeParse(name)
-    if (!parsed.success) {
-      return setError(parsed.error.issues[0]?.message ?? 'Invalid name')
-    }
-    setBusy(true)
-    try {
-      const folder = await createFolder({
-        data: { name: parsed.data, senderName: '' },
-      })
-      await queryClient.invalidateQueries({ queryKey: queryKeys.folders })
-      close()
-      onSelect(folder.id)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not create it')
-    } finally {
-      setBusy(false)
-    }
   }
 
   return (
@@ -109,47 +80,16 @@ export function FolderBar({
           </>
         )}
 
-        {adding ? (
-          <form onSubmit={create} className="flex items-center gap-1.5">
-            <input
-              autoFocus
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') close()
-              }}
-              placeholder="Folder name"
-              maxLength={60}
-              aria-label="New folder name"
-              className="w-40 rounded-md border border-line-strong bg-surface px-2.5 py-1 text-[13px] text-ink placeholder:text-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
-            />
-            <button
-              type="submit"
-              disabled={busy || !name.trim()}
-              className="rounded-md bg-primary px-2.5 py-1 text-[13px] font-medium text-primary-foreground disabled:opacity-50"
-            >
-              Create
-            </button>
-            <button
-              type="button"
-              onClick={close}
-              className="px-1.5 py-1 text-[13px] text-ink-2 hover:text-ink"
-            >
-              Cancel
-            </button>
-          </form>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setAdding(true)}
-            className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            <FolderPlus aria-hidden className="size-3.5" />
-            New folder
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          <FolderPlus aria-hidden className="size-3.5" />
+          New folder
+        </button>
 
-        {folders.length > 0 && !adding && (
+        {folders.length > 0 && (
           <Link
             to="/settings"
             hash="folders"
@@ -159,7 +99,17 @@ export function FolderBar({
           </Link>
         )}
       </div>
-      {error && <p className="mt-1.5 text-[13px] text-danger">{error}</p>}
+
+      {creating && (
+        <NewFolderDialog
+          mainName={mainName}
+          onClose={() => setCreating(false)}
+          onCreated={(folder) => {
+            setCreating(false)
+            onSelect(folder.id)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -1,9 +1,10 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { FolderPlus } from 'lucide-react'
 import { useState } from 'react'
 import { ConfirmDialog } from '#/components/confirm-dialog'
+import { NewFolderDialog } from '#/components/dashboard/new-folder-dialog'
 import { useToast } from '#/components/toast'
 import {
-  createFolder,
   deleteFolder,
   folderNameSchema,
   folderSenderSchema,
@@ -11,7 +12,7 @@ import {
   updateFolder,
 } from '#/lib/folders'
 import type { Folder } from '#/lib/folders'
-import { queryKeys } from '#/constants'
+import { queryKeys, shareLinkPreview } from '#/constants'
 
 const INPUT =
   'w-full rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink transition-colors placeholder:text-ink-3 hover:border-ink-3 focus-visible:border-brand-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring'
@@ -29,17 +30,19 @@ function folderProblem(name: string, senderName: string): string | null {
 }
 
 /**
- * Settings' folder list: rename a folder, give it a name clients see, or
- * remove it. Folders are created and filled from the dashboard; this is where
- * the one setting that reaches clients lives, next to the account's own name.
+ * Settings' folder list: create a folder, rename one, give it a name clients
+ * see, or remove it.
+ *
+ * Every folder shows the link its proposals go out on, and the edit form shows
+ * it changing as you type, because the name clients see is the one setting
+ * here that reaches them. New folders open the same dialog as the dashboard's
+ * "New folder", with its link preview.
  */
 export function FoldersSection({ mainName }: { mainName: string | null }) {
   const queryClient = useQueryClient()
   const { data: folders } = useSuspenseQuery(foldersQuery)
   const notify = useToast()
-  const [name, setName] = useState('')
-  const [senderName, setSenderName] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [creating, setCreating] = useState(false)
   const [busy, setBusy] = useState(false)
   const [removing, setRemoving] = useState<Folder | null>(null)
   const main = mainName ?? 'your main name'
@@ -52,25 +55,6 @@ export function FoldersSection({ mainName }: { mainName: string | null }) {
       queryClient.invalidateQueries({ queryKey: queryKeys.proposalSummaries }),
       queryClient.invalidateQueries({ queryKey: ['proposal'] }),
     ])
-
-  async function add(e: React.FormEvent) {
-    e.preventDefault()
-    const problem = folderProblem(name, senderName)
-    if (problem) return setError(problem)
-    setError(null)
-    setBusy(true)
-    try {
-      const folder = await createFolder({ data: { name, senderName } })
-      setName('')
-      setSenderName('')
-      await refresh()
-      notify(`Folder ${folder.name} created`, 'good')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not create it')
-    } finally {
-      setBusy(false)
-    }
-  }
 
   async function remove() {
     if (!removing) return
@@ -108,7 +92,7 @@ export function FoldersSection({ mainName }: { mainName: string | null }) {
             <FolderItem
               key={folder.id}
               folder={folder}
-              main={main}
+              mainName={mainName}
               onSaved={refresh}
               onRemove={() => setRemoving(folder)}
             />
@@ -116,34 +100,26 @@ export function FoldersSection({ mainName }: { mainName: string | null }) {
         </ul>
       )}
 
-      <form onSubmit={add} className="mt-3 space-y-2">
-        <div className="grid gap-2 sm:grid-cols-2">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Folder, e.g. Photography"
-            maxLength={60}
-            aria-label="New folder name"
-            className={INPUT}
-          />
-          <input
-            value={senderName}
-            onChange={(e) => setSenderName(e.target.value)}
-            placeholder="Name clients see (optional)"
-            maxLength={80}
-            aria-label="Name clients see for this folder, optional"
-            className={INPUT}
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={busy || !name.trim()}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50"
-        >
-          Add folder
-        </button>
-      </form>
-      {error && <p className="mt-2 text-[13px] text-danger">{error}</p>}
+      <button
+        type="button"
+        onClick={() => setCreating(true)}
+        className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-line-strong bg-surface px-3 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:border-ink-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <FolderPlus aria-hidden className="size-4" />
+        New folder
+      </button>
+
+      {creating && (
+        <NewFolderDialog
+          mainName={mainName}
+          onClose={() => setCreating(false)}
+          onCreated={(folder) => {
+            setCreating(false)
+            void refresh()
+            notify(`Folder ${folder.name} created`, 'good')
+          }}
+        />
+      )}
 
       <ConfirmDialog
         open={removing !== null}
@@ -162,12 +138,12 @@ export function FoldersSection({ mainName }: { mainName: string | null }) {
 
 function FolderItem({
   folder,
-  main,
+  mainName,
   onSaved,
   onRemove,
 }: {
   folder: Folder
-  main: string
+  mainName: string | null
   onSaved: () => Promise<unknown>
   onRemove: () => void
 }) {
@@ -176,6 +152,7 @@ function FolderItem({
   const [senderName, setSenderName] = useState(folder.senderName ?? '')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const main = mainName ?? 'your main name'
 
   function cancel() {
     setEditing(false)
@@ -202,6 +179,7 @@ function FolderItem({
   }
 
   if (editing) {
+    const sender = senderName.trim()
     return (
       <li className="px-3 py-3">
         <form onSubmit={save} className="space-y-2">
@@ -223,6 +201,10 @@ function FolderItem({
               className={INPUT}
             />
           </div>
+          <p className="truncate font-mono text-[12px] text-ink-3">
+            Links look like {shareLinkPreview(sender || mainName)}
+            {!sender && ` (sends as ${main})`}
+          </p>
           <div className="flex items-center gap-3">
             <button type="submit" disabled={busy} className={QUIET_BUTTON}>
               {busy ? 'Saving…' : 'Save'}
@@ -243,6 +225,9 @@ function FolderItem({
         <span className="block truncate text-sm text-ink">{folder.name}</span>
         <span className="block truncate text-xs text-ink-3">
           Clients see {folder.senderName ?? main}
+        </span>
+        <span className="block truncate font-mono text-[11px] text-ink-3">
+          {shareLinkPreview(folder.senderName ?? mainName)}
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-3">

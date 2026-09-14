@@ -180,6 +180,15 @@ export function shareUrl(token: string, name: string | null): string {
   return `${publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')}${sharePath(token, name)}`
 }
 
+/**
+ * A share link as it will read for a given name, host included and scheme
+ * dropped, with "…" for the token. Shown under every field whose value ends up
+ * in a link, so the name is chosen looking at the link it makes.
+ */
+export function shareLinkPreview(name: string | null): string {
+  return shareUrl('…', name).replace(/^https?:\/\//, '')
+}
+
 // --- React Query keys -------------------------------------------------------
 export const queryKeys = {
   profile: ['profile'] as const,

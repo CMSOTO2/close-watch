@@ -5,7 +5,7 @@ import { PageContainer } from '#/components/page-container'
 import { fieldError } from '#/components/auth/validation'
 import { AFTER_SIGN_IN, safeNext } from '#/lib/auth-redirect'
 import { displayNameSchema, setCompanyName } from '#/lib/profile'
-import { shareUrl } from '#/constants'
+import { shareLinkPreview } from '#/constants'
 
 /**
  * The one onboarding question: the name clients see.
@@ -28,11 +28,6 @@ export const Route = createFileRoute('/_authed/welcome')({
   },
   component: WelcomePage,
 })
-
-/** What the link will look like, as they type. The token is a placeholder. */
-function previewLink(name: string): string {
-  return shareUrl('…', name.trim() || null).replace(/^https?:\/\//, '')
-}
 
 function WelcomePage() {
   const { next } = Route.useSearch()
@@ -97,7 +92,7 @@ function WelcomePage() {
                     </span>
                   )}
                 <span className="mt-2 block truncate font-mono text-[12px] text-ink-3">
-                  {previewLink(field.state.value)}
+                  {shareLinkPreview(field.state.value.trim() || null)}
                 </span>
               </label>
             )}

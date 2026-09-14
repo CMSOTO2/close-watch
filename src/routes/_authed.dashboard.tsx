@@ -84,6 +84,8 @@ function Dashboard() {
   // id. Applied before everything else, so the tabs, the counts and the
   // summary all describe the one folder being looked at.
   const { data: folders } = useSuspenseQuery(foldersQuery)
+  // The account's own name, which a folder without its own sends as.
+  const { user } = Route.useRouteContext()
   const folderKeys = useMemo(
     () => ['all', 'none', ...folders.map((f) => f.id)],
     [folders],
@@ -195,6 +197,7 @@ function Dashboard() {
             proposals={data}
             selected={folder}
             onSelect={setFolder}
+            mainName={user.companyName}
           />
 
           <SummaryStrip secured={secured} active={activeAll} />
