@@ -773,7 +773,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
         >
           {(field) => (
             <label className="min-w-[12rem] flex-1">
-              <span className="kicker">Email (optional)</span>
+              <span className="kicker">Their email (for your records)</span>
               <input
                 type="email"
                 value={field.state.value}
@@ -805,6 +805,12 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
           )}
         </form.Subscribe>
       </form>
+      {/* An email field beside a "New link" button reads as "we will send it
+          to this address", and nothing here sends anything. */}
+      <p className="mt-2 text-xs text-ink-3">
+        Closewatch never emails anyone. You send each link yourself; the name
+        and email only help you remember who it is for.
+      </p>
       {error && <p className="mt-2 text-[13px] text-danger">{error}</p>}
     </section>
   )
