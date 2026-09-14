@@ -46,8 +46,14 @@ test('an uploaded proposal is stored, tagged and shareable', async ({
   await page.locator('input[type="file"]').setInputFiles(PDF)
   await page.getByRole('button', { name: 'Create proposal' }).click()
 
-  // Upload finishes by landing back on the dashboard.
-  await expect(page).toHaveURL(/\/dashboard$/, { timeout: 30_000 })
+  // Send to was left blank, and the upload still comes back with a link,
+  // named for the client, on the proposal's own page.
+  await expect(page).toHaveURL(/\/proposals\/[0-9a-f-]{36}\?sent=true$/, {
+    timeout: 30_000,
+  })
+  await expect(
+    page.getByText('Now send this link to Northwind Studio'),
+  ).toBeVisible()
   await expect(page.getByText('Website redesign')).toBeVisible()
 
   const db = admin()
@@ -59,6 +65,12 @@ test('an uploaded proposal is stored, tagged and shareable', async ({
 
   expect(proposal?.page_count).toBe(5)
   expect(proposal?.storage_path).toContain(owner.id)
+
+  const { data: links } = await db
+    .from('share_links')
+    .select('recipient_name')
+    .eq('proposal_id', proposal!.id)
+  expect(links).toEqual([{ recipient_name: 'Northwind Studio' }])
 
   const { data: pages } = await db
     .from('proposal_pages')

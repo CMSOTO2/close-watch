@@ -96,9 +96,15 @@ test('a proposal uploads from a phone', async ({ context, page }) => {
   await page.locator('input[type="file"]').setInputFiles(PDF)
   await page.getByRole('button', { name: 'Create proposal' }).click()
 
-  // No recipient was named, so this lands on the dashboard rather than the
-  // proposal — the same branch the desktop test takes.
-  await expect(page).toHaveURL(/\/dashboard$/, { timeout: 60_000 })
+  // No recipient was named, so the link is named for the client and this
+  // lands on the proposal's page with it — the same branch the desktop test
+  // takes.
+  await expect(page).toHaveURL(/\/proposals\/[0-9a-f-]{36}\?sent=true$/, {
+    timeout: 60_000,
+  })
+  await expect(
+    page.getByText('Now send this link to Harbour Row'),
+  ).toBeVisible()
   await expect(page.getByText('Roof replacement')).toBeVisible()
 
   // The point of the upload is the PDF being read on *this* device: pdfjs runs

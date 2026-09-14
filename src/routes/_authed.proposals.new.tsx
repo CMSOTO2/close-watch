@@ -253,20 +253,25 @@ function NewProposal() {
         // is in, and the only thing missing is the thing the free plan actually
         // limits. Folding the two together would put the wall back in front of
         // the upload, which is exactly what the send_cap migration moved it off.
-        const recipient = value.recipientName.trim()
+        //
+        // Every upload comes back with a link, named for the person when they
+        // typed one and for the client when they did not. Blank used to mean a
+        // draft with no link, which left the send step a page away. That was
+        // protecting the free cap, and the cap now counts proposals a client
+        // has read, not links cut (cap_counts_opened), so a link costs nothing
+        // until somebody opens it.
+        const recipient = value.recipientName.trim() || value.clientName.trim()
         let link: { url: string } | null = null
         let capped = false
-        if (recipient) {
-          try {
-            link = await createShareLink({
-              data: { proposalId: id, recipientName: recipient },
-            })
-          } catch (err) {
-            // Any failure here leaves a usable draft, so it is reported as the
-            // milder thing it is rather than as a failed upload.
-            capped = true
-            console.error('[upload] could not create the first link', err)
-          }
+        try {
+          link = await createShareLink({
+            data: { proposalId: id, recipientName: recipient },
+          })
+        } catch (err) {
+          // Any failure here leaves a usable draft, so it is reported as the
+          // milder thing it is rather than as a failed upload.
+          capped = true
+          console.error('[upload] could not create the first link', err)
         }
 
         // Fired before the navigation, not after: the provider lives above the
@@ -425,19 +430,16 @@ function NewProposal() {
               )}
             </form.Field>
 
-            {/* Optional, and it has to stay optional. A required recipient
-                would cut a link on every upload, which makes every upload a
-                send, which puts the free plan's live cap back in front of
-                someone still working out what this does. Blank keeps today's
-                behaviour exactly: a draft that costs nothing. */}
+            {/* Optional. Blank names the link for the client, so every upload
+                still comes back with a link to send. */}
             <form.Field name="recipientName">
               {(field) => (
                 <Field
                   label="Send to"
                   hint={
                     entitlements.canSendProposal
-                      ? 'Optional. Name them and you get the link straight away.'
-                      : 'Leave blank for now — you are at your live proposal limit.'
+                      ? 'Optional. Leave it blank and the link is named for the client.'
+                      : 'You are at your live proposal limit, so this saves as a draft for now.'
                   }
                   field={field}
                 >
