@@ -633,12 +633,14 @@ function NewProposal() {
                   ? 'Next, you get the link to send, straight away.'
                   : 'At your live limit, so this saves as a draft.'}
               </p>
-              <div className="flex items-center gap-2">
+              {/* On a phone the two stack full width, Create on top where the
+                  thumb reaches first; from sm they sit side by side. */}
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => router.navigate({ to: '/dashboard' })}
-                  className="min-h-11 sm:min-h-9"
+                  className="min-h-11 w-full sm:min-h-9 sm:w-auto"
                 >
                   Cancel
                 </Button>
@@ -652,7 +654,7 @@ function NewProposal() {
                       /* min-h-11 is Apple's 44px, and it only applies on the
                          narrow layout: at sm and up this keeps the 36px the
                          rest of the app's buttons are. */
-                      className="min-h-11 flex-1 sm:min-h-9 sm:flex-none"
+                      className="min-h-11 w-full sm:min-h-9 sm:w-auto"
                     >
                       {isSubmitting ? (
                         <>
