@@ -94,7 +94,7 @@ const DEATHS = [
 const QUESTIONS = [
   {
     q: 'We run nine deals across six clients. Does it stay legible?',
-    a: 'Proposals group under the client they belong to, so the dashboard reads as accounts rather than a folder of files. Search runs across all of them, the list can be filtered by heat, and closing a deal moves it out of the pipeline without losing anything it recorded.',
+    a: 'File proposals in folders, by client or by service, and look at one folder at a time. Search runs across all of them, the list can be filtered by heat, and closing a deal moves it out of the pipeline without losing anything it recorded.',
   },
   {
     q: 'Different people at the client read it. Can we tell them apart?',
@@ -114,7 +114,7 @@ const QUESTIONS = [
   },
   {
     q: 'Will our clients know the proposal is tracked?',
-    a: 'Yes. Every Closewatch link shows one line above the first page saying the document is tracked and what the sender is told, with a link to exactly what is recorded. Being told up front costs a client nothing. Finding out later costs you their trust.',
+    a: 'Only if you tell them. The Closewatch viewer shows your proposal and nothing else, so it is your call, and one sentence in the covering email does it. Being told up front costs a client nothing. Finding out later costs you their trust.',
   },
   {
     q: 'Does it work with proposals over 20 pages, or with photography?',
@@ -246,11 +246,11 @@ function AgenciesPage() {
                 quietly stops being used.
               </p>
               <p className="text-[15px] leading-relaxed text-ink-2">
-                Closewatch is built around the pipeline instead. Everything
-                rolls up under the client, the list orders itself by intent
-                rather than by date, and a &ldquo;since you last looked&rdquo;
-                diff tells you what moved while you were doing the actual work.
-                The question it answers is not &ldquo;how is this proposal
+                Closewatch is built around the pipeline instead. Proposals sit
+                in folders you choose, the list orders itself by intent rather
+                than by date, and a &ldquo;since you last looked&rdquo; diff
+                tells you what moved while you were doing the actual work. The
+                question it answers is not &ldquo;how is this proposal
                 doing&rdquo; but &ldquo;who should I call today&rdquo;, which is
                 the only version of the question anyone has time for.
               </p>
@@ -265,8 +265,8 @@ function AgenciesPage() {
             <dl className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
               {[
                 {
-                  k: 'Grouped by client',
-                  v: 'Six accounts rather than nine files, so a client with three proposals in flight reads as one relationship.',
+                  k: 'Folders',
+                  v: 'File proposals by client or by service, then look at one folder at a time instead of nine loose files.',
                 },
                 {
                   k: 'Since you last looked',

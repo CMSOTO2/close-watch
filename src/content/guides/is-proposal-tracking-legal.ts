@@ -22,10 +22,10 @@ export const guide: Guide = {
     'Tracking views of a proposal you sent is standard practice and generally lawful. What varies is disclosure and data handling, under the GDPR in the UK and EU.',
   dek: 'The question every tracking tool avoids. What is recorded, what the client is told, and where the law actually bites.',
   datePublished: '2026-09-11',
-  dateModified: '2026-09-11',
-  body: `Generally, yes: seeing when a proposal you sent was opened is standard sales practice. What varies is how the data is handled and whether readers are told, and in the UK and EU the GDPR applies. Closewatch tells every reader on the page and stores IP addresses only as a salted hash. This is not legal advice.
+  dateModified: '2026-09-14',
+  body: `Generally, yes: seeing when a proposal you sent was opened is standard sales practice. What varies is how the data is handled and whether readers are told, and in the UK and EU the GDPR applies. Closewatch stores IP addresses only as a salted hash and leaves telling the reader to the sender. This is not legal advice.
 
-Many tools answer "does the client know?" with a reassuring no. That is the wrong thing to be proud of, and it is the part of this question that matters most.
+Most tools, Closewatch included, leave "does the client know?" to the sender. That makes it the part of this question worth getting right yourself.
 
 ## The tracking is not the legal question. The data is.
 
@@ -41,7 +41,7 @@ The GDPR, and the UK's version of it, applies when you process personal data abo
 
 **You need a lawful basis.** For tracking engagement with a business proposal sent to a business contact, senders commonly rely on legitimate interests. Whether that fits your situation is for you, or your adviser, to decide.
 
-**People should be told.** Transparency is a core principle, which is the strongest argument for disclosing tracking on the document itself.
+**People should be told.** Transparency is a core principle, which is the strongest argument for telling readers about tracking, in the email that carries the link if not on the document itself.
 
 **Cookies have their own rules.** Separate laws (the ePrivacy rules in the EU, PECR in the UK) govern storing identifiers on someone's device. Closewatch sets one first-party cookie on a reader's browser, holding a random identifier, so that a return visit is counted as the same reader rather than a new one. It lasts a year and cannot be read by JavaScript. Whether a cookie like that needs consent in your circumstances is a question for your own advice.
 
@@ -49,11 +49,11 @@ Some industries, including legal, healthcare and the public sector, may carry st
 
 ## Does the client know?
 
-On most tracking tools, not unless you tell them. The link opens a document, and nothing on the page mentions that the visit is being recorded.
+On most tracking tools, Closewatch included, not unless you tell them. The link opens the document, and nothing on the page mentions that the visit is being recorded.
 
-Closewatch does it differently, and on every link: one line above the first page reads "This document is tracked. The sender is told when it is opened, which pages are read, and whether it is downloaded or printed", followed by a link to exactly what is recorded. It is a single line that scrolls away with the page, not a banner, and there is no setting that hides it.
+That makes disclosure yours to do, and it is easy: one sentence in the email that carries the link, such as "I use a tool that tells me when this has been opened and which pages were read." If you want to point at the detail, the [privacy policy](/privacy) lists exactly what is recorded.
 
-The reasoning is simple. A reader who finds out later that they were tracked without being told stops trusting the sender. A reader told up front mostly does not mind, because a view count on a document they were sent is not private in the way their email is.
+The reasoning for doing it is simple. A reader who finds out later that they were tracked without being told stops trusting the sender. A reader told up front mostly does not mind, because a view count on a document they were sent is not private in the way their email is.
 
 ## What Closewatch records, exactly
 
@@ -76,7 +76,7 @@ They can ask the sender to revoke the link, which stops any further recording im
 
 Tracked document links have been standard in sales for over a decade, and being told that a document you received was opened is not a privacy harm in the way reading someone's messages would be. Where it goes wrong is secrecy: tracking that is hidden, then revealed by a follow-up that knows too much.
 
-The honest version costs almost nothing. Say it on the page, keep less than you could, and never mention the data in the follow-up. "I saw you spent four minutes on pricing" is the sentence that makes tracking feel creepy; offering payment terms without saying why does not.
+The honest version costs almost nothing. Say it in the email, keep less than you could, and never mention the data in the follow-up. "I saw you spent four minutes on pricing" is the sentence that makes tracking feel creepy; offering payment terms without saying why does not.
 
 ## Where this answer runs out
 
@@ -84,7 +84,7 @@ This is a general explanation, not legal advice, and privacy law differs by coun
 
 ## Where Closewatch fits
 
-Closewatch tracks the proposal PDF you already send and shows you opens, time per page, return visits and new readers, with scanner and bot visits filtered out. It tells every reader that the document is tracked, stores IP addresses only as a hash, and deletes everything recorded against a proposal when you delete it. It is $19 a month, flat.
+Closewatch tracks the proposal PDF you already send and shows you opens, time per page, return visits and new readers, with scanner and bot visits filtered out. It stores IP addresses only as a hash, and deletes everything recorded against a proposal when you delete it. It is $19 a month, flat.
 
 For what the reading data means once you have it, see [how to know if a client read your proposal](/guides/how-to-know-if-client-read-proposal).
 
@@ -96,7 +96,7 @@ In most places, tracking views of a document you sent is lawful and common in sa
 
 ### Does the client know if I track my proposal?
 
-On most tracking tools, no, unless you tell them. On Closewatch, yes: every link shows a line at the top saying the document is tracked and what the sender is told, with a link to exactly what is recorded. There is no setting to hide it.
+Not unless you tell them, on most tools including Closewatch: the viewer shows the proposal and nothing else. One sentence in the covering email is enough to disclose it, and Closewatch's privacy policy lists exactly what is recorded.
 
 ### Do I need consent to track a proposal under the GDPR?
 
@@ -108,7 +108,7 @@ Typically when the document was opened, time spent on each page, return visits, 
 
 ### Is it ethical to track proposals without telling the client?
 
-It is common, but it is the version most likely to backfire. A client who later realises they were tracked without being told tends to trust the sender less. Disclosing it on the document costs almost nothing, and most readers accept it without comment.
+It is common, but it is the version most likely to backfire. A client who later realises they were tracked without being told tends to trust the sender less. Saying so in the covering email costs almost nothing, and most readers accept it without comment.
 
 ### Can a client stop their proposal views being tracked?
 

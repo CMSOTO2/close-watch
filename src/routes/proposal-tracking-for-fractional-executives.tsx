@@ -79,7 +79,7 @@ const QUESTIONS = [
   },
   {
     q: 'Is it obvious to the client that I am tracking it?',
-    a: 'Yes, deliberately. The viewer carries one quiet line saying the sender is told when it was opened and which pages were read, with a link to exactly what is recorded. For this audience that matters more than most: you are selling judgement to people who will be your colleagues, and a tool they discovered later would cost more than it earned.',
+    a: 'Only if you tell them. The viewer shows the proposal and nothing else, so disclosure is your call. For this audience it is usually worth one line in the covering email: you are selling judgement to people who will be your colleagues, and a tool they discovered later would cost more than it earned.',
   },
   {
     q: 'What if they print it for a board meeting?',

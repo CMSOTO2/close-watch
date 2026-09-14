@@ -8,7 +8,7 @@ export const guide: Guide = {
     'Four ways to tell if a client opened your proposal, ranked. A tracked link shows opens, time spent, pages read and return visits. An emailed PDF shows nothing.',
   dek: 'Four methods, ranked by what actually works, and why an emailed PDF gives you nothing at all.',
   datePublished: '2026-09-10',
-  dateModified: '2026-09-11',
+  dateModified: '2026-09-14',
   body: `Send the proposal as a tracked link instead of an email attachment. A tracking tool then shows when the client opened it, how long they spent, which pages they read, whether they reached pricing, and how many times they came back. An emailed PDF shows none of this: once sent, it is a file on someone else's computer.
 
 Everything else is guesswork, and most of it is worse guesswork than people realize.
@@ -75,9 +75,9 @@ Knowing it was opened is the boring part. The useful information is in the patte
 
 ## Should you tell the client you can see they read it?
 
-Closewatch's answer is yes, and it does this for you by default: the viewer carries one quiet line above the first page saying the sender is told when the document is opened, which pages were read, and whether it was downloaded or printed, with a link to exactly what is recorded. It is a disclosure, not a banner, and it is on by default rather than something you have to remember to add.
+It is your call, and Closewatch leaves it to you: the viewer shows the proposal and nothing else. If you want to be upfront, one sentence in the covering email does it, such as "I use a tool that lets me see when this has been opened."
 
-The reasoning holds beyond this one product. Tracked document links are standard practice in sales and have been for a decade. Nothing about a view count is private to the recipient in the way message content would be. But recipients increasingly notice, and being upfront about it costs nothing. It also changes the conversation for the better: "let me know if the pricing page needs work" is a conversation you would have had anyway, just from the other end.
+The case for saying so holds whatever tool you use. Tracked document links are standard practice in sales and have been for a decade. Nothing about a view count is private to the recipient in the way message content would be. But recipients increasingly notice, and being upfront about it costs nothing. It also changes the conversation for the better: "let me know if the pricing page needs work" is a conversation you would have had anyway, just from the other end.
 
 ## How Closewatch tells a real read from a scanner
 

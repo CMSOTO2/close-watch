@@ -39,7 +39,8 @@ src/
       alerts.ts               which reads earn an email, and its wording (pure, tested)
       proposal-activity.ts    reads, claims and sends those emails from the ingest endpoint
       resend.ts               the Resend HTTP call every email goes through
-    profile.ts                server fns: read/update the sender's display name
+    profile.ts                server fns: read/update the name clients see (required)
+    folders.ts                server fns: folders, and moving a proposal between them
     auth.ts                   session lookup (verified with getUser)
     auth-redirect.ts          `next` through sign-in: safeNext is the open-redirect boundary
     seo.ts                    canonical, social tags, JSON-LD; FOUNDER (Carlos Soto) is here
@@ -61,14 +62,17 @@ src/
     site-footer.tsx           the public footer: comparison, audience, hub and legal links
     app-footer.tsx            the slim footer under every signed-in page
     pdf-viewer.tsx            client-side pdfjs renderer + download/print toolbar
-    proposal-activity.tsx     per-proposal activity panel
+    share-viewer.tsx          the public viewer page, shared by both share-link routes
+    proposal-activity.tsx     per-proposal activity panel, incl. the owner's own preview
+    folders-section.tsx       Settings: rename folders, set the name clients see for one
     auth/                     sign-in form, Google button, field, zod schemas
     dashboard/                the proposal list, split by concern:
-                                sorting / search / grouping / totals   pure, tested
+                                sorting / search / totals   pure, tested
                                 since-last-visit  what moved since you last left
                                 use-list-keys     j/k navigation
-                                proposal-row, closed-row, client-group, list-controls,
-                                summary-strip, heat-meter, copy-link-button
+                                folder-bar, folder-tag   the folders row, and the tag under All
+                                proposal-row, closed-row, row-menu (incl. Move to),
+                                list-controls, summary-strip, heat-meter, copy-link-button
     landing/                  product shots, FAQ, pricing, site-header (shows Dashboard
                                 when signed in), scroll-into-view hook
     guides/guide-markdown.tsx renders guide bodies with `prose`; tables, blockquotes
@@ -90,10 +94,13 @@ src/
     auth.callback.ts          PKCE code exchange (magic link and OAuth)
     _authed.tsx              auth guard + app header and AppFooter
     _authed.dashboard.tsx     proposal list
-    _authed.settings.tsx      profile: sender name shown to recipients
+    _authed.settings.tsx      profile (the name clients see) and folders
+    _authed.welcome.tsx       asks for the name clients see, once, before anything else
     _authed.proposals.new.tsx     upload + create
     _authed.proposals.$id.tsx     proposal detail, share links, activity
-    p.$token.tsx              public viewer
+    p.$slug.$token.tsx        public viewer at /p/{sender}/{token}; any other name in the URL
+                                redirects to the sender's real one before a visit is recorded
+    p.$token.tsx              the older unnamed form, redirected to the named one
     api/track.$visitId.ts     engagement ingest (+ fires the activity emails)
 public/                       favicon.svg (theme-aware) + PNG fallbacks
 scripts/generate-icons.py     redraws the PNG icons from the mark's geometry
@@ -103,18 +110,24 @@ scripts/indexnow.mjs          pushes the live sitemap's URLs to Bing after every
 scripts/check-guides.mjs      the guide content rules, checked; run before deploying content
 supabase/migrations/          schema, RLS, ingest fn, share-link lock, bucket limit,
                               first-open flag, definer-function lockdown,
-                              open-counted free cap, activity-email claims
+                              open-counted free cap, activity-email claims,
+                              folders (+ move_proposal_to_folder)
 ```
 
 ## How tracking works
 
-1. A client opens `/p/:token`. The route loader calls `beginVisit`, which runs server-side.
+1. A client opens `/p/:sender/:token` (links sent as `/p/:token` still work). The route
+   loader calls `beginVisit`, which runs server-side and first redirects to the sender's
+   current name if the URL carries any other one. The name is the proposal's folder's name
+   for clients when it has one, otherwise the account's `company_name`.
 2. `beginVisit` validates the token, sets an httpOnly visitor cookie, and creates a `visits`
    row. If the same visitor was here in the last thirty minutes it resumes that row instead
    of creating a new one, so a refresh does not read as a second visit.
 3. The user agent is checked against known email gateways and preview bots. A match sets
    `is_bot` but still records the row, because "your email gateway scanned it" is useful
-   context and silently dropping data makes debugging impossible.
+   context and silently dropping data makes debugging impossible. The signed-in owner
+   opening their own link is stored the same way, with `bot_reason = 'owner-preview'`, so
+   it never counts as a client read but still shows back to them as their preview.
 4. The viewer renders each page to a canvas and hands those elements to the tracker.
 5. The tracker accrues time in 500ms ticks, but only while the tab is visible, the window
    has focus, and there has been input within the last sixty seconds. An IntersectionObserver

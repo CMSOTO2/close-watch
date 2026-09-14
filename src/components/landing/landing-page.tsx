@@ -253,8 +253,8 @@ export function LandingPage() {
             <dl className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3">
               {[
                 {
-                  k: 'Grouped by client',
-                  v: 'Every proposal rolls up under the client it belongs to, so you read an account rather than a folder of files.',
+                  k: 'Folders you choose',
+                  v: 'File proposals by service or business line and look at one folder at a time. A folder can even send under its own name.',
                 },
                 {
                   k: 'One link per stakeholder',

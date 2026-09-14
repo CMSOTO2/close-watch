@@ -124,7 +124,7 @@ Closewatch starts where Proposify's editor would. You export the proposal as a P
 
 ![The Closewatch new-proposal form, with a title, a client name, the person it is going to, a deal value and the proposal PDF](/images/closewatch-upload-proposal-pdf.webp "Setting up a proposal in Closewatch. Sample data.")
 
-When the client opens the link, the PDF shows in their browser exactly as you designed it, with one line above the first page saying the document is tracked. Closewatch records the time spent on every page. It reads the text of each page when you upload, so it knows which one is pricing without you tagging it.
+When the client opens the link, the PDF shows in their browser exactly as you designed it. Closewatch records the time spent on every page. It reads the text of each page when you upload, so it knows which one is pricing without you tagging it.
 
 ![Closewatch attention report for a sample proposal, showing ten minutes on the pricing page, two minutes on scope, and three readers](/images/closewatch-attention-report-time-per-page-pricing.webp "Time on each page of a tracked proposal, with the pricing page highlighted. Sample data.")
 
@@ -237,9 +237,7 @@ For a three-person agency that wants PandaDoc's analytics, that is $147 a month.
 
 ## How Closewatch tracks a proposal without the platform
 
-With PandaDoc, the document is built in PandaDoc. With Closewatch, it is built wherever you build it now. Export the PDF, upload it, and send each person their own link. When they open it, the PDF appears as you designed it, with a line saying it is tracked, and Closewatch records the visit.
-
-![What a client sees when they open a Closewatch link: the proposal as designed, download and print buttons, and a line saying the document is tracked](/images/closewatch-tracked-proposal-viewer-disclosure.webp "What the client sees. The tracking is disclosed above the first page. Sample data.")
+With PandaDoc, the document is built in PandaDoc. With Closewatch, it is built wherever you build it now. Export the PDF, upload it, and send each person their own link. When they open it, the PDF appears as you designed it, and Closewatch records the visit.
 
 Every visit feeds a score. Closewatch combines repeat opens, new readers, time per page, time on pricing, a return on a later day, and downloads and prints into one number from 0 to 100, labelled cold, warm or hot, with the reasons written next to it. The dashboard sorts every open proposal by that score, so the one to follow up today is at the top. The whole model, weights included, is in [how to score proposal engagement](/guides/how-to-score-proposal-engagement).
 
@@ -324,7 +322,7 @@ If you are choosing between several tools rather than these two, [DocSend altern
       {
         row: 'How the list is ordered',
         them: 'By document',
-        us: 'By intent, grouped under the client',
+        us: 'By intent, in folders you choose',
       },
       {
         row: 'Data rooms and NDA gating',

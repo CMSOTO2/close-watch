@@ -22,18 +22,14 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     q: 'Will they know they are being tracked?',
     a: (
       <>
-        Yes. The viewer carries a line saying the sender is told when the
-        document was opened, which pages were read, and whether it was
-        downloaded or printed, with a link to exactly what is recorded. It is
-        one quiet line above the first page, not a banner.
+        Only if you tell them. The viewer shows your proposal and nothing else:
+        no banner, no notice on the page.
         <br />
         <br />
-        That is deliberate. A proposal you are proud of does not need to be read
-        in secret, and the conversation it opens &mdash; &ldquo;let me know if
-        the pricing page needs work&rdquo; &mdash; is the same one you would
-        have had anyway, from the other end. It is also the difference between a
-        tool a client would shrug at and one they would resent finding out about
-        later.
+        Whether to say so is your call, and one line in the covering email does
+        it. A proposal you are proud of does not need to be read in secret, and
+        telling them up front is the difference between a tool a client would
+        shrug at and one they would resent finding out about later.
       </>
     ),
   },
@@ -80,11 +76,10 @@ const QUESTIONS: Array<{ q: string; a: React.ReactNode }> = [
     q: 'Does it work across all my clients, or one deal at a time?',
     a: (
       <>
-        All of them. The dashboard groups proposals under the client they belong
-        to, so an agency running nine deals across six clients reads six
-        accounts rather than nine files, and search, heat filtering and sorting
-        work across the lot. Seats for a team are still to come; today one
-        account holds the whole pipeline.
+        All of them. Proposals go into folders you choose, by client, by service
+        or by business, and you can look at one folder or all of them at once.
+        Search, heat filtering and sorting work across the lot. Seats for a team
+        are still to come; today one account holds the whole pipeline.
       </>
     ),
   },

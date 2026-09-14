@@ -8,7 +8,7 @@ export const guide: Guide = {
     'Send a link to see what happens after you hit send; attach a PDF if the client asks or files everything. What each one costs, and the middle path between them.',
   dek: 'The choice decides what you can know about the proposal once it leaves your outbox. Most people make it by habit.',
   datePublished: '2026-09-11',
-  dateModified: '2026-09-11',
+  dateModified: '2026-09-14',
   body: `Send a link if you want to know what happens after you hit send; attach a PDF if the client asks for one. A link shows whether it was read, can be revoked, and dodges mail servers' 20-25 MB attachment limits. An attachment cannot be tracked but works offline. For most senders, a link with a download option wins.
 
 Most people send a PDF because it is what they have always done. That is a reasonable default, but it is a choice with a cost, and the cost only shows up later, when the client goes quiet and you have no idea why.
@@ -50,8 +50,6 @@ Most people send a PDF because it is what they have always done. That is a reaso
 
 You do not have to choose between tracking and giving the client a file. Send the link in the email, and let the viewer offer a download button. Most clients read it in the browser; the ones who want a copy take one.
 
-![What a client sees when they open a Closewatch link: the proposal as designed, download and print buttons, and a line saying the document is tracked](/images/closewatch-tracked-proposal-viewer-disclosure.webp "A proposal sent as a link, with the PDF one click away. Sample data.")
-
 A download is itself a useful signal: someone wanted to keep it, print it or share it. See [can you tell if someone downloaded your proposal](/guides/can-you-tell-if-someone-downloaded-a-proposal). Closewatch records downloads and prints alongside reads. After that the copy on their machine is as untracked as any attachment, which is the honest trade.
 
 ## What can go wrong with a link
@@ -74,7 +72,7 @@ Keep the link near the top and say what it is, so it does not look like a market
 
 ## Where Closewatch fits
 
-Closewatch turns the PDF you already have into a tracked link. Upload a proposal up to 25 MB, send the link instead of the attachment, and see opens, time per page, return visits, new readers, downloads and prints. The client needs no account and no plugin, and the viewer says in one line that the sender can see opens and pages read. Links last 60 days and can be revoked at any time. It is $19 a month, flat. It does not build the proposal or collect signatures.
+Closewatch turns the PDF you already have into a tracked link. Upload a proposal up to 25 MB, send the link instead of the attachment, and see opens, time per page, return visits, new readers, downloads and prints. The client needs no account and no plugin, and the viewer shows the proposal with nothing added, so telling them it is tracked is your call. Links last 60 days and can be revoked at any time. It is $19 a month, flat. It does not build the proposal or collect signatures.
 
 For the technical detail on why an attached PDF cannot be tracked, see [how to track a PDF proposal](/guides/track-pdf-proposals).
 

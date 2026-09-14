@@ -5,7 +5,7 @@ avoid.
 
 ## The viewer is not negotiable
 
-`/p/:token` is opened by someone else's client, on whatever they happen to be holding,
+`/p/:sender/:token` is opened by someone else's client, on whatever they happen to be holding,
 usually from an email, often on a phone. They did not choose this product and will not
 install anything for it. A proposal that does not open is a deal the sender loses, and they
 will blame the tool that promised to tell them who read it.

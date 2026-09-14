@@ -8,7 +8,7 @@ export const guide: Guide = {
     'An emailed PDF cannot be tracked, and nothing embedded in the file changes that. Send it as a link instead. Three ways to do that, and what each one can see.',
   dek: 'You cannot track a PDF attachment. You can track a PDF you send as a link, and the three ways of doing that see very different amounts.',
   datePublished: '2026-09-11',
-  dateModified: '2026-09-11',
+  dateModified: '2026-09-14',
   body: `You cannot track a PDF proposal sent as an email attachment, and nothing you embed in the file changes that reliably. To track a PDF proposal, send it as a link: upload it to a tracking tool such as Closewatch ($19 a month), DocSend or Papermark, and the tool records opens, time per page and return visits.
 
 The mistake most people make is trying to change what is inside the PDF. What has to change is how the PDF is delivered.
@@ -91,7 +91,7 @@ Tracking also cannot see what happens off the page. A proposal printed and discu
 
 ![The Closewatch new-proposal form, with a title, a client name, the person it is going to, a deal value and the proposal PDF](/images/closewatch-upload-proposal-pdf.webp "Uploading a PDF proposal to track it. Sample data.")
 
-Closewatch only counts a visit after three seconds of visible attention, and excludes known bots and link-preview fetchers, so a security gateway opening every link on arrival is not reported as your client. The recipient needs no account and no plugin. The viewer tells them in one line that the sender can see opens and pages read.
+Closewatch only counts a visit after three seconds of visible attention, and excludes known bots and link-preview fetchers, so a security gateway opening every link on arrival is not reported as your client. The recipient needs no account and no plugin, and the viewer shows the proposal with nothing added, so telling them it is tracked is your call.
 
 It is $19 a month, flat, and two read proposals can be live at once on the free plan. It does not build proposals or collect signatures; if you need those as well, a builder like Proposify or PandaDoc will suit you better.
 
@@ -111,7 +111,7 @@ Only in limited cases, and only views, not reading. Drive's activity view depend
 
 ### Will the client know the PDF is being tracked?
 
-With a tracking tool, the client opens a web page instead of a file, which most people notice. Closewatch goes further and says so in one line on the viewer, with a link to exactly what is recorded. Being upfront costs nothing, and tracked document links have been standard in sales for years.
+With a tracking tool, the client opens a web page instead of a file, which most people notice. Closewatch does not add a notice to the document, so whether to say more is up to you; one line in the covering email does it. Tracked document links have been standard in sales for years.
 
 ### Does the client need an account to open a tracked PDF?
 

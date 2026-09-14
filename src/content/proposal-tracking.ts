@@ -20,7 +20,7 @@ export const pillar: Omit<Guide, 'slug' | 'stage'> = {
     'Proposal tracking shows when a client opens your proposal, which pages they read, how long they spend and whether they come back. How it works, and its limits.',
   dek: 'What proposal tracking is, what it can and cannot tell you, and what to look for in a tool. Written by the people who make one, so read the limits section first.',
   datePublished: '2026-09-11',
-  dateModified: '2026-09-11',
+  dateModified: '2026-09-14',
   body: `Proposal tracking replaces the email attachment with a link you control. When the client opens it, you see when, how long they spent, which pages they read, whether they reached your pricing, and how often they came back. Closewatch does this for $19 a month, flat, with proposals you have already made.
 
 ## What proposal tracking is
@@ -77,7 +77,7 @@ Email open tracking fires a hidden image when the email renders. It tells you ab
 - **Scanner and bot filtering.** Ask how the tool tells a scan from a read. If the vendor has no answer, the open counts are not worth much.
 - **No account for the client.** Anything that makes a client sign up to read your proposal costs you replies.
 - **Your format, as it is.** If your proposals are designed PDFs, check they are shown as designed rather than converted.
-- **A clear answer on what the client is told.** Closewatch tells every reader, in one line above the first page, that the document is tracked.
+- **A clear answer on what is recorded.** Ask what the tool stores about the reader and for how long. Closewatch keeps IP addresses only as a salted hash and lists everything in its [privacy policy](/privacy).
 - **Pricing shape.** Per-user pricing gets expensive for a small team in a way flat pricing does not.
 
 For the tools themselves, see [the best proposal tracking software in 2026](/guides/best-proposal-tracking-software).
@@ -98,7 +98,7 @@ You upload your proposal to a tracking tool and send the link it creates instead
 
 ### Can the client tell the proposal is being tracked?
 
-On Closewatch, yes, by design: a line above the first page says the document is tracked and what the sender is told, with a link to exactly what is recorded. On many other tools nothing on the page mentions it, so the client only knows if the sender tells them.
+Not from the page. On Closewatch, as on most tools in the category, the viewer shows the proposal and nothing else, so the client knows if the sender tells them. Many senders do, in one line of the email that carries the link.
 
 ### Does proposal tracking work with PDFs?
 

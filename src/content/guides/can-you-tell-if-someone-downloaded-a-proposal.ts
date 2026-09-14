@@ -8,7 +8,7 @@ export const guide: Guide = {
     'You cannot see downloads of an emailed attachment. A tracked link can record them. What a download means, what it hides, and whether you can stop one.',
   dek: 'Only if you sent a link. What a download tells you, and what it stops telling you once the copy leaves the browser.',
   datePublished: '2026-09-11',
-  dateModified: '2026-09-11',
+  dateModified: '2026-09-14',
   body: `Not if you emailed it as an attachment: the file is already on their device, so there is no download to see. If you sent a link, a tracking tool can record it. Closewatch records every download and print from its viewer, including the browser's own print command, and treats either as a buying signal.
 
 ## An attachment has nothing to download
@@ -26,8 +26,6 @@ Dropbox did offer file tracking through a feature called Send and Track, and dis
 When a proposal is sent as a tracked link, the document is shown in the browser by the tool, and saving a copy goes through the tool too, so it can be recorded.
 
 Closewatch shows a download button and a print button on its viewer and records every use of either. It also records printing from the browser's own print command, not only from its button. Both appear on the proposal's activity, and both feed its engagement score: a download adds 15 points, a print 18, and both together 20.
-
-![What a client sees when they open a Closewatch link: the proposal as designed, download and print buttons, and a line saying the document is tracked](/images/closewatch-tracked-proposal-viewer-disclosure.webp "The download and print buttons on a tracked proposal. Using either is recorded. Sample data.")
 
 ## What a download usually means
 

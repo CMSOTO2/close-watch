@@ -39,10 +39,10 @@ import { cn } from '#/lib/utils'
  * Solo points at Settings rather than straight at a checkout: the subscription
  * has to attach to an account, so signing in comes first either way.
  *
- * Studio has no price behind it and now says so with the only working button a
- * plan that does not exist can have. Hiding the card would have cost the anchor
- * that makes $19 read as cheap; leaving it dead cost a click from everyone who
- * wanted it and told us nothing. See src/lib/waitlist/studio.ts.
+ * Studio is commented out of PLANS until its shape is decided (2026-09-14).
+ * While it was up it was a waitlist, the only working button a plan that does
+ * not exist can have; that form, StudioWaitlist, is kept for when it returns.
+ * See src/lib/waitlist/studio.ts.
  *
  * Solo carries the ring, the lift and the solid button. POSITIONING.md's
  * customer is running a pipeline, and a pipeline is by definition more than two
@@ -87,7 +87,7 @@ const SHARED: Array<Feature> = [
   { text: 'Tracked links and intent scoring' },
   { text: 'Attention page by page' },
   { text: 'Distinct readers, and an email on first open' },
-  { text: 'Grouping by client, search and heat filtering' },
+  { text: 'Folders, search and heat filtering' },
   { text: 'Full history — nothing expires' },
 ]
 
@@ -141,26 +141,29 @@ const PLANS: Array<Plan> = [
     // recommendation, which is a thing a seller is allowed to have.
     badge: 'Recommended',
   },
-  {
-    name: 'Studio',
-    price: '$49',
-    cadence: '/mo',
-    who: 'For an agency team working one pipeline together.',
-    limit: 'Everything in Solo, for a team',
-    // Features that do not exist yet are marked, not omitted. The plan needs
-    // the shape it will have to be worth reading, and a small "soon" is the
-    // difference between a roadmap and a page selling three things nobody can
-    // deliver.
-    features: [
-      { text: ALERTS },
-      { text: '3 seats', soon: true },
-      { text: 'Slack alerts', soon: true },
-      { text: 'Your own domain on share links', soon: true },
-      ...SHARED,
-    ],
-    cta: 'Join the waitlist',
-    badge: 'Not open yet',
-  },
+  // Studio is hidden until its shape is decided (2026-09-14). Uncomment to put
+  // the card back; the waitlist form it uses (StudioWaitlist, below) is kept.
+  //
+  // {
+  //   name: 'Studio',
+  //   price: '$49',
+  //   cadence: '/mo',
+  //   who: 'For an agency team working one pipeline together.',
+  //   limit: 'Everything in Solo, for a team',
+  //   // Features that do not exist yet are marked, not omitted. The plan needs
+  //   // the shape it will have to be worth reading, and a small "soon" is the
+  //   // difference between a roadmap and a page selling three things nobody
+  //   // can deliver.
+  //   features: [
+  //     { text: ALERTS },
+  //     { text: '3 seats', soon: true },
+  //     { text: 'Slack alerts', soon: true },
+  //     { text: 'Your own domain on share links', soon: true },
+  //     ...SHARED,
+  //   ],
+  //   cta: 'Join the waitlist',
+  //   badge: 'Not open yet',
+  // },
 ]
 
 export function Pricing() {
@@ -180,7 +183,9 @@ export function Pricing() {
           Stretch, not `items-start`. Cards sized to their own content is why
           the spacer below could never do its job — a spacer can only push a
           button to the bottom of a card that is already the right height. */}
-      <div className="mt-10 grid gap-4 lg:grid-cols-3">
+      {/* Two cards while Studio is hidden: side by side from md, capped so a
+          wide screen does not stretch two cards across the whole shell. */}
+      <div className="mt-10 grid max-w-4xl gap-4 md:grid-cols-2">
         {PLANS.map((plan) => (
           <div
             key={plan.name}

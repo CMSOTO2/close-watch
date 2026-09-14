@@ -8,7 +8,7 @@ export const guide: Guide = {
     'Wait three to five business days if the proposal was opened, less if the client came back to it, and resend rather than chase if it sits unopened for four days.',
   dek: 'Three to five business days is the default. What the client does with the proposal should move that number, in both directions.',
   datePublished: '2026-09-11',
-  dateModified: '2026-09-11',
+  dateModified: '2026-09-14',
   body: `Wait three to five business days before following up on a proposal the client has opened, and less if they came back to it on a later day. If it has sat unopened for four business days, resend it with a new subject line instead of chasing. Without tracking, default to four business days.
 
 The number matters less than the reason behind it. A follow-up works when it lands while the proposal is still on the client's mind, and fails when it lands before they have read it or after they have moved on.
@@ -99,7 +99,7 @@ That usually means interest without a decision yet. Your contact may like it and
 
 ### Should I tell the client I can see they opened the proposal?
 
-There is no need to mention it in the follow-up. Use the timing and focus it gives you, and write the message you would have written anyway. Closewatch tells the client in a quiet line on the viewer that the sender sees opens and pages read, so the tracking is disclosed without you having to raise it.
+There is no need to mention it in the follow-up. Use the timing and focus it gives you, and write the message you would have written anyway. If you want the tracking disclosed, say so once in the email that carries the link, not in the follow-up.
 
 ### How long should I wait before following up if I sent the proposal on a Friday?
 
