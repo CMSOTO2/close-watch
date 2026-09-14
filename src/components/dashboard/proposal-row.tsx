@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { RowMenu } from './row-menu'
 import { ROW_LINK_ATTR } from './use-list-keys'
 import { HeatMeter } from './heat-meter'
+import { FolderTag } from './folder-tag'
 import { formatDuration } from '#/lib/analytics/intent'
 import { cn, formatMoney } from '#/lib/utils'
 import type { ReactNode } from 'react'
@@ -26,9 +27,12 @@ const REASON = {
 export function ProposalRow({
   proposal,
   delta,
+  folderName = null,
 }: {
   proposal: ProposalSummary
   delta?: Delta
+  /** Set only under All, where the row's folder is not otherwise shown. */
+  folderName?: string | null
 }) {
   const { intent } = proposal
   const reason = reasonFor(intent)
@@ -103,7 +107,10 @@ export function ProposalRow({
                 {proposal.clientName}
               </Link>
             </p>
-            <p className="truncate text-[13px] text-ink-2">{proposal.title}</p>
+            <p className="flex min-w-0 items-center gap-1.5 text-[13px] text-ink-2">
+              <span className="truncate">{proposal.title}</span>
+              {folderName && <FolderTag name={folderName} />}
+            </p>
           </div>
           <div className="xl:hidden">{money}</div>
         </div>

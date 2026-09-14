@@ -1,10 +1,18 @@
 import { Link } from '@tanstack/react-router'
 import { ROW_LINK_ATTR } from './use-list-keys'
+import { FolderTag } from './folder-tag'
 import { formatDay, useTimeZone } from '#/lib/local-date'
 import { cn, formatMoney } from '#/lib/utils'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
 
-export function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
+export function ClosedRow({
+  proposal,
+  folderName = null,
+}: {
+  proposal: ProposalSummary
+  /** Set only under All, where the row's folder is not otherwise shown. */
+  folderName?: string | null
+}) {
   const won = proposal.status === 'won'
   // Filed away rather than resolved, so it carries no outcome and no date. The
   // value is printed plainly: struck through would say the money was lost, and
@@ -56,8 +64,9 @@ export function ClosedRow({ proposal }: { proposal: ProposalSummary }) {
               <p className="truncate text-[15px] font-semibold tracking-[-0.008em]">
                 {proposal.clientName}
               </p>
-              <p className="truncate text-[13px] text-ink-2">
-                {proposal.title}
+              <p className="flex min-w-0 items-center gap-1.5 text-[13px] text-ink-2">
+                <span className="truncate">{proposal.title}</span>
+                {folderName && <FolderTag name={folderName} />}
               </p>
             </div>
             <div className="xl:hidden">{money}</div>

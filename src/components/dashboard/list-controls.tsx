@@ -1,4 +1,3 @@
-import { Rows3 } from 'lucide-react'
 import { HEAT_FILTERS, SORTS } from './sorting'
 import { SearchField } from './search-field'
 import { cn } from '#/lib/utils'
@@ -14,8 +13,6 @@ export function ListControls({
   closedCount,
   query,
   onQuery,
-  grouped,
-  onGrouped,
   sortKey,
   onSort,
   heat,
@@ -27,8 +24,6 @@ export function ListControls({
   closedCount: number
   query: string
   onQuery: (query: string) => void
-  grouped: boolean
-  onGrouped: (grouped: boolean) => void
   sortKey: SortKey
   onSort: (key: SortKey) => void
   heat: HeatFilter
@@ -52,25 +47,6 @@ export function ListControls({
       </div>
 
       <SearchField value={query} onChange={onQuery} />
-
-      <div className="flex shrink-0 items-center gap-2">
-        <button
-          type="button"
-          onClick={() => onGrouped(!grouped)}
-          aria-pressed={grouped}
-          title="Group proposals by client"
-          className={cn(
-            'flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[13px] shadow-sm transition-colors',
-            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
-            grouped
-              ? 'border-brand bg-brand-soft text-ink'
-              : 'border-line-strong bg-surface text-ink-2 hover:border-ink-3 hover:text-ink',
-          )}
-        >
-          <Rows3 aria-hidden className="size-3.5" />
-          Group
-        </button>
-      </div>
 
       {tab === 'active' && activeCount > 0 && (
         <div className="flex shrink-0 items-center gap-2">

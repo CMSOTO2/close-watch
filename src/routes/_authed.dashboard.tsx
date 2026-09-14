@@ -11,8 +11,6 @@ import { queryKeys } from '#/constants'
 import { ClosedRow } from '#/components/dashboard/closed-row'
 import { ListControls } from '#/components/dashboard/list-controls'
 import { ProposalRow } from '#/components/dashboard/proposal-row'
-import { ClientGroup } from '#/components/dashboard/client-group'
-import { groupByClient } from '#/components/dashboard/grouping'
 import { filterByQuery } from '#/components/dashboard/search'
 import { useListKeys } from '#/components/dashboard/use-list-keys'
 import {
@@ -33,8 +31,6 @@ import {
 import type { HeatFilter, SortKey } from '#/components/dashboard/sorting'
 import type { Delta } from '#/components/dashboard/since-last-visit'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
-
-const GROUP_KEYS = ['on', 'off'] as const
 
 // refetchOnMount: 'always' — the first render right after login can run its
 // SSR fetch before the Supabase session is fully in play, caching an empty
@@ -84,13 +80,6 @@ function Dashboard() {
     'all',
     HEAT_KEYS,
   )
-  const [grouping, setGrouping] = usePersistedChoice<'on' | 'off'>(
-    'cw.dashboard.group',
-    'off',
-    GROUP_KEYS,
-  )
-  const grouped = grouping === 'on'
-
   // The open folder: 'all', 'none' for proposals in no folder, or a folder
   // id. Applied before everything else, so the tabs, the counts and the
   // summary all describe the one folder being looked at.
@@ -112,18 +101,13 @@ function Dashboard() {
       : data.filter((p) =>
           folder === 'none' ? p.folderId === null : p.folderId === folder,
         )
-  // Collapsed rather than expanded, so a group never silently hides rows the
-  // owner has not chosen to fold away. Session-only: which groups are shut is
-  // a scratch decision, not a preference worth restoring weeks later.
-  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
-
-  function toggleGroup(key: string) {
-    setCollapsed((prev) => {
-      const next = new Set(prev)
-      if (!next.delete(key)) next.add(key)
-      return next
-    })
-  }
+  // Under All, each row says which folder it is in. Inside a folder that
+  // would only repeat the folder being looked at.
+  const folderNames = new Map(folders.map((f) => [f.id, f.name]))
+  const folderNameOf = (p: ProposalSummary) =>
+    folder === 'all' && p.folderId
+      ? (folderNames.get(p.folderId) ?? null)
+      : null
 
   // Active: open deals. Default is hottest first — the point of this page is who
   // to call — but the owner can re-sort and filter by heat.
@@ -150,9 +134,6 @@ function Dashboard() {
     tab === 'active' ? closedMatched.length : activeMatched.length
   const news = since === null ? null : summarizeNews(deltas, since)
   const limit = entitlements.liveProposalLimit
-  const entries = grouped
-    ? groupByClient(list)
-    : list.map((proposal) => ({ kind: 'single' as const, proposal }))
 
   return (
     <PageContainer className="py-8 sm:py-9">
@@ -225,8 +206,6 @@ function Dashboard() {
             closedCount={closedMatched.length}
             query={query}
             onQuery={setQuery}
-            grouped={grouped}
-            onGrouped={(next) => setGrouping(next ? 'on' : 'off')}
             sortKey={sortKey}
             onSort={setSortKey}
             heat={heat}
@@ -244,33 +223,15 @@ function Dashboard() {
             />
           ) : (
             <ul className="mt-3.5 flex flex-col gap-2">
-              {entries.map((entry) =>
-                entry.kind === 'single' ? (
-                  <Row
-                    key={entry.proposal.id}
-                    tab={tab}
-                    proposal={entry.proposal}
-                    delta={deltas.get(entry.proposal.id)}
-                  />
-                ) : (
-                  <ClientGroup
-                    key={entry.key}
-                    group={entry}
-                    open={!collapsed.has(entry.key)}
-                    onToggle={() => toggleGroup(entry.key)}
-                    showHeat={tab === 'active'}
-                  >
-                    {entry.proposals.map((p) => (
-                      <Row
-                        key={p.id}
-                        tab={tab}
-                        proposal={p}
-                        delta={deltas.get(p.id)}
-                      />
-                    ))}
-                  </ClientGroup>
-                ),
-              )}
+              {list.map((p) => (
+                <Row
+                  key={p.id}
+                  tab={tab}
+                  proposal={p}
+                  delta={deltas.get(p.id)}
+                  folderName={folderNameOf(p)}
+                />
+              ))}
             </ul>
           )}
         </>
@@ -347,15 +308,17 @@ function Row({
   tab,
   proposal,
   delta,
+  folderName,
 }: {
   tab: 'active' | 'closed'
   proposal: ProposalSummary
   delta?: Delta
+  folderName: string | null
 }) {
   return tab === 'active' ? (
-    <ProposalRow proposal={proposal} delta={delta} />
+    <ProposalRow proposal={proposal} delta={delta} folderName={folderName} />
   ) : (
-    <ClosedRow proposal={proposal} />
+    <ClosedRow proposal={proposal} folderName={folderName} />
   )
 }
 
