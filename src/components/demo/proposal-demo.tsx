@@ -168,7 +168,7 @@ export function ProposalDemo() {
             className="flex aspect-[8.5/11] flex-col rounded-lg border border-line bg-surface px-6 py-7 shadow-sm sm:px-9 sm:py-10"
           >
             <div className="flex items-baseline justify-between gap-4">
-              <p className="kicker text-brand">{page.kicker}</p>
+              <p className="kicker">{page.kicker}</p>
               <p className="font-mono text-[11px] text-ink-3">
                 {page.page} / {SAMPLE_PAGE_COUNT}
               </p>
@@ -176,7 +176,7 @@ export function ProposalDemo() {
 
             <h3
               className={cn(
-                'mt-3 font-display font-semibold tracking-[-0.02em]',
+                'mt-3 font-semibold tracking-[-0.02em]',
                 page.page === 1 ? 'text-2xl sm:text-3xl' : 'text-xl',
               )}
             >
@@ -287,7 +287,7 @@ function SenderPanel({
   if (!revealed) {
     return (
       <div className="rounded-lg border border-line bg-surface p-5 shadow-sm">
-        <p className="kicker text-brand">You are the client</p>
+        <p className="kicker">You are the client</p>
         <p className="mt-3 text-[13px] leading-relaxed text-ink-2">
           Read it the way you would read one that landed in your inbox. Skim,
           stop where you would stop, close the tab if you want.
@@ -295,7 +295,7 @@ function SenderPanel({
 
         <div className="mt-5 rounded-md border border-line bg-canvas px-3.5 py-3">
           <p className="kicker">Time on the page</p>
-          <p className="mt-1 font-display text-2xl font-semibold tnum">
+          <p className="mt-1 text-2xl font-semibold tnum">
             {seconds < 1 ? '0s' : formatDuration(seconds)}
           </p>
           <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-ink-3">
@@ -321,8 +321,8 @@ function SenderPanel({
   return (
     <div className="flex flex-col gap-4">
       <div className="rounded-lg border border-line bg-surface p-5 shadow-sm">
-        <p className="kicker text-brand">What the sender sees</p>
-        <p className="mt-2 font-display text-base font-semibold tracking-tight">
+        <p className="kicker">What the sender sees</p>
+        <p className="mt-2 text-base font-semibold tracking-tight">
           {SAMPLE_CLIENT}
         </p>
         <p className="text-[13px] text-ink-2">{SAMPLE_TITLE}</p>
@@ -350,9 +350,7 @@ function SenderPanel({
               className="rounded-md border border-line bg-canvas px-2.5 py-2"
             >
               <dt className="kicker">{t.label}</dt>
-              <dd className="mt-1 font-display text-base font-semibold tnum">
-                {t.value}
-              </dd>
+              <dd className="mt-1 text-base font-semibold tnum">{t.value}</dd>
             </div>
           ))}
         </dl>
@@ -388,8 +386,8 @@ function SenderPanel({
 
       <div className="rounded-lg border border-line bg-surface p-5 shadow-sm">
         <div className="flex items-baseline justify-between gap-3">
-          <p className="kicker text-brand">Intent</p>
-          <p className="font-display text-2xl font-semibold tnum">
+          <p className="kicker">Intent</p>
+          <p className=" text-2xl font-semibold tnum">
             {intent.score}
             <span className="text-sm font-medium text-ink-3">/100</span>
           </p>
@@ -420,13 +418,13 @@ function SenderPanel({
       <div className="rounded-lg border border-dashed border-line bg-surface/60 p-5">
         <p className="kicker text-ink-3">If it were forwarded</p>
         <div className="mt-2 flex items-baseline gap-2">
-          <p className="font-display text-xl font-semibold tnum text-ink-2">
+          <p className=" text-xl font-semibold tnum text-ink-2">
             {intent.score}
           </p>
           <span aria-hidden className="text-ink-3">
             &rarr;
           </span>
-          <p className="font-display text-xl font-semibold tnum text-brand">
+          <p className=" text-xl font-semibold tnum text-brand">
             {forwarded.score}
           </p>
           <span className="text-[11px] text-ink-3">

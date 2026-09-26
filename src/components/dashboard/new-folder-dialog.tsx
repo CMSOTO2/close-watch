@@ -84,10 +84,7 @@ export function NewFolderDialog({
         onSubmit={submit}
         className="relative w-full max-w-md rounded-lg border border-line bg-surface p-5 shadow-lg"
       >
-        <h2
-          id="new-folder-title"
-          className="font-display text-base font-semibold tracking-tight text-ink"
-        >
+        <h2 id="new-folder-title" className="font-semibold text-base text-ink">
           New folder
         </h2>
         <p className="mt-1 text-[13px] leading-relaxed text-ink-2">

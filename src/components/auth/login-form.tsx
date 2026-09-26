@@ -99,7 +99,7 @@ export function LoginForm({
 
   return (
     <>
-      <h1 className="font-display text-xl font-semibold tracking-tight">
+      <h1 className="font-display text-xl">
         {mode === 'signup'
           ? 'Create your Closewatch account'
           : 'Sign in to Closewatch'}
@@ -123,7 +123,7 @@ export function LoginForm({
             <GoogleButton next={next} onError={setSubmitError} />
           </div>
 
-          <div className="my-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-wide text-ink-3">
+          <div className="my-4 flex items-center gap-3 kicker text-ink-3">
             <span className="h-px flex-1 bg-line" />
             or
             <span className="h-px flex-1 bg-line" />

@@ -51,7 +51,7 @@ export function ShareLinkGone() {
   return (
     <div className="grid min-h-screen place-items-center bg-canvas px-6 text-center">
       <div>
-        <h1 className="font-display text-lg font-semibold tracking-tight">
+        <h1 className="font-display text-xl">
           This link is no longer available
         </h1>
         <p className="mt-2 text-[13px] text-ink-2">
@@ -112,7 +112,7 @@ export function ShareViewer({
         className="sticky top-0 z-20 border-b border-line bg-surface"
       >
         <PageContainer className="flex items-baseline justify-between gap-3 py-3">
-          <span className="min-w-0 truncate font-display text-sm font-semibold tracking-tight">
+          <span className="min-w-0 truncate font-semibold text-sm">
             {title}
           </span>
           {senderName && (

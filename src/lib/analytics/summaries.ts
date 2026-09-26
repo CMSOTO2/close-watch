@@ -1,8 +1,9 @@
+import { queryOptions } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '#/lib/supabase/server'
 import { scoreIntent } from './intent'
 import { intentInputFor } from './intent-input'
-import { senderName, shareUrl } from '#/constants'
+import { queryKeys, senderName, shareUrl } from '#/constants'
 import type { IntentResult } from './intent'
 import type { ProposalStatus } from '#/lib/supabase/types'
 
@@ -65,6 +66,8 @@ export type ProposalSummary = {
   distinctViewers: number
   totalEngagedMs: number
   pricingEngagedMs: number
+  /** Whether any page is tagged pricing, so 0ms can mean "skipped it". */
+  hasPricingPage: boolean
   lastViewedAt: string | null
   /** Newest link that is still live, so the list can offer a one-click copy. */
   shareUrl: string | null
@@ -195,6 +198,7 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
         distinctViewers: input.distinctViewers,
         totalEngagedMs: input.totalEngagedMs,
         pricingEngagedMs: input.pricingEngagedMs,
+        hasPricingPage: pricingPages.has(p.id),
         lastViewedAt: seenTimes.length
           ? new Date(Math.max(...seenTimes)).toISOString()
           : null,
@@ -205,3 +209,14 @@ export const getProposalSummaries = createServerFn({ method: 'GET' }).handler(
     })
   },
 )
+
+// refetchOnMount: 'always' — the first render right after login can run its
+// SSR fetch before the Supabase session is fully in play, caching an empty
+// list that is then served as fresh until a mutation invalidates it. Forcing a
+// mount refetch (which carries the now-present auth cookie) repopulates the
+// list on the client without waiting for the user to create a proposal.
+export const proposalSummariesQuery = queryOptions({
+  queryKey: queryKeys.proposalSummaries,
+  queryFn: () => getProposalSummaries(),
+  refetchOnMount: 'always',
+})

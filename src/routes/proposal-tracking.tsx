@@ -76,7 +76,7 @@ function ProposalTracking() {
       }
       after={
         <div className="mt-14 border-t border-line pt-8">
-          <p className="font-display text-lg font-semibold tracking-[-0.015em]">
+          <p className="font-display text-xl">
             Put a real proposal through Closewatch.
           </p>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-2">

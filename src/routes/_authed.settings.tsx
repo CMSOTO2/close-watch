@@ -77,9 +77,7 @@ function SettingsPage() {
       <div className="max-w-xl">
         <BackLink />
 
-        <h1 className="mt-4 font-display text-2xl font-semibold tracking-tight">
-          Your profile
-        </h1>
+        <h1 className="mt-4 font-display text-2xl">Your profile</h1>
         <p className="mt-1.5 text-[13px] leading-relaxed text-ink-2">
           The name your clients see goes at the top of every proposal and into
           each share link. Change it and your links change with it; ones you

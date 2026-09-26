@@ -25,8 +25,8 @@ import { cn } from '#/lib/utils'
  */
 export const prose = {
   // scroll-mt clears the sticky site header when a contents link jumps here.
-  h2: 'mt-12 scroll-mt-20 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-[26px]',
-  h3: 'mt-8 scroll-mt-20 font-display text-lg font-semibold tracking-[-0.015em]',
+  h2: 'mt-12 scroll-mt-20 font-display text-2xl sm:text-[26px]',
+  h3: 'mt-8 scroll-mt-20 font-display text-xl',
   p: 'text-[15px] leading-relaxed text-ink-2',
   /** A run of paragraphs and lists written as JSX rather than markdown. */
   body: 'flex flex-col gap-4 text-[15px] leading-relaxed text-ink-2',
@@ -96,10 +96,10 @@ export function ContentPage({
             )}
 
             <article ref={article} className={cn(back && 'mt-6')}>
-              {kicker && <p className="kicker text-brand">{kicker}</p>}
+              {kicker && <p className="kicker">{kicker}</p>}
               <h1
                 className={cn(
-                  'font-display text-3xl font-semibold tracking-[-0.03em] sm:text-[34px]',
+                  'font-display text-3xl sm:text-[34px]',
                   kicker && 'mt-3',
                 )}
               >

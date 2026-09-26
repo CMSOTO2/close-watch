@@ -73,6 +73,8 @@ src/
                                 folder-bar, folder-tag   the folders row, and the tag under All
                                 proposal-row, closed-row, row-menu (incl. Move to),
                                 list-controls, summary-strip, heat-meter, copy-link-button
+                                score-ring        the intent score each row leads with
+                                proposal-preview  the right-hand pane on wide screens
     landing/                  product shots, FAQ, pricing, site-header (shows Dashboard
                                 when signed in), scroll-into-view hook
     guides/guide-markdown.tsx renders guide bodies with `prose`; tables, blockquotes
@@ -184,6 +186,30 @@ never call a proposal hot that the dashboard shows as warm.
 tokens point at it with `var()`, so `.dark` redefines only the raw values and every
 primitive follows. Dark is designed rather than inverted: surfaces warm toward brown-black
 and the brass lifts to a legible gold.
+
+The direction, settled on 2026-09-26 after trying five palettes (the others were Forest,
+Navy, Oxblood and Petrol, and none survived a look):
+
+- **Brass.** Dark mode is warm charcoal with gold. Light mode is a near-white page
+  (`#fbfaf8`) under white panels. A grey or stone page read as flat and dated, and pure
+  white read as harsh.
+- **Gold is a mark in light mode, never text.** Gold dark enough to pass AA on white is
+  brown, and brown text is what made the old light theme look muddy. In light mode, links,
+  labels, chip text and primary buttons are ink. Gold is kept for the heat bars, the score
+  ring, the pricing segment and the Solo button, where it can be bright.
+- **Type.** Newsreader for headings, at book weight and 20px or larger. Geist for everything
+  you operate, including every number. The serif goes thin below 20px, so small headings
+  use Geist semibold.
+- **No template chrome.** Labels (`.kicker`) are plain sentence case, not tracked monospace
+  capitals. Rows have no coloured left-edge spine. Heat is shown by the ring, the bars and
+  the one reason chip.
+- **The dashboard row** leads with the intent score ring. Under the name, a bar splits
+  reading time into pricing and everything else. A proposal with no page tagged pricing
+  shows the plain total instead, so "0s on pricing" always means the client skipped it.
+  From 1024px up, the list gets a preview pane (`proposal-preview.tsx`). A first click on a
+  row previews it, and clicking the previewed row opens it. The proposal page shows the same
+  ring and the "why it scores N" breakdown, read from the same summaries, so the two can
+  never disagree.
 
 Two rules that are easy to break:
 

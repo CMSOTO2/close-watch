@@ -66,9 +66,7 @@ export const Route = createFileRoute('/_authed/proposals/$id')({
   component: ProposalDetail,
   notFoundComponent: () => (
     <PageContainer className="py-16 text-center">
-      <h1 className="font-display text-lg font-semibold tracking-tight">
-        Proposal not found
-      </h1>
+      <h1 className="font-display text-xl">Proposal not found</h1>
       <Link
         to="/dashboard"
         className="mt-3 inline-block text-[13px] text-ink-2 transition-colors hover:text-ink"
@@ -132,7 +130,7 @@ function SendHandoff({
 
   return (
     <div className="mt-6 rounded-lg border border-brand-2 bg-brand-soft/60 px-4 py-4">
-      <p className="flex items-center gap-2 font-display text-base font-semibold tracking-tight text-ink">
+      <p className="flex items-center gap-2 font-semibold text-base text-ink">
         <Send aria-hidden className="size-4 text-brand-2" />
         Now send this link to {recipient}
       </p>
@@ -167,7 +165,7 @@ function SendHandoff({
           href={url}
           target="_blank"
           rel="noopener"
-          className="font-medium text-brand underline underline-offset-2 hover:text-ink"
+          className=" text-brand underline underline-offset-2 hover:text-ink"
         >
           Open it yourself
         </a>
@@ -253,9 +251,7 @@ function ProposalDetail() {
           of anything. Now it sits at the same right edge as Delete above it. */}
       <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-3xl">
-          <h1 className="font-display text-2xl font-semibold tracking-tight">
-            {proposal.clientName}
-          </h1>
+          <h1 className="font-semibold text-2xl">{proposal.clientName}</h1>
           <p className="text-[13px] text-ink-2">{proposal.title}</p>
           <p className="mt-2 text-[13px] text-ink-3">
             {proposal.pageCount} pages
@@ -662,9 +658,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
         onCancel={() => setPendingRevoke(null)}
       />
 
-      <h2 className="font-display text-base font-semibold tracking-tight">
-        Share links
-      </h2>
+      <h2 className="font-semibold text-base">Share links</h2>
       <p className="mt-1 text-[13px] text-ink-2">
         One link per recipient. That&rsquo;s how you tell who&rsquo;s reading.
       </p>
@@ -691,7 +685,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
                   </p>
                   {expiry && (
                     <p
-                      className={`text-xs ${expiry.soon ? 'text-warm' : 'text-ink-3'}`}
+                      className={`text-xs ${expiry.soon ? 'font-medium text-danger' : 'text-ink-3'}`}
                     >
                       {expiry.label}
                       {expiry.soon &&
@@ -700,9 +694,7 @@ function ShareLinks({ proposalId }: { proposalId: string }) {
                   )}
                 </div>
                 {isDead ? (
-                  <span className="font-mono text-[10px] uppercase tracking-wide text-ink-3">
-                    {status}
-                  </span>
+                  <span className="kicker text-ink-3">{status}</span>
                 ) : (
                   <>
                     <button
@@ -859,9 +851,7 @@ function PageTags({ proposalId }: { proposalId: string }) {
 
   return (
     <section className="mt-10">
-      <h2 className="font-display text-base font-semibold tracking-tight">
-        Pages
-      </h2>
+      <h2 className="font-semibold text-base">Pages</h2>
       <p className="mt-1 text-[13px] text-ink-2">
         Tag your pricing page so you can see when a client lingers on it.
       </p>

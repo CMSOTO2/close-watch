@@ -40,8 +40,8 @@ function DemoPage() {
       <SiteHeader current="demo" />
 
       <PageContainer asMain className="py-10 sm:py-12">
-        <p className="kicker text-brand">Live demo</p>
-        <h1 className="mt-3 max-w-[24ch] font-display text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
+        <p className="kicker">Live demo</p>
+        <h1 className="mt-3 max-w-[24ch] font-display text-2xl sm:text-3xl">
           Read this proposal. Then see what you just told the sender.
         </h1>
         <p className="mt-4 max-w-[58ch] text-[15px] leading-relaxed text-ink-2">

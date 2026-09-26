@@ -76,9 +76,7 @@ export function FoldersSection({ mainName }: { mainName: string | null }) {
       id="folders"
       className="mt-10 scroll-mt-20 border-t border-line pt-8"
     >
-      <h2 className="font-display text-lg font-semibold tracking-tight">
-        Folders
-      </h2>
+      <h2 className="font-semibold text-lg">Folders</h2>
       <p className="mt-1.5 text-[13px] leading-relaxed text-ink-2">
         Group proposals on your dashboard: web design and coding, or a studio
         and a side practice. A folder can also have its own name clients see.
@@ -103,7 +101,7 @@ export function FoldersSection({ mainName }: { mainName: string | null }) {
       <button
         type="button"
         onClick={() => setCreating(true)}
-        className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-line-strong bg-surface px-3 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:border-ink-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-line-strong bg-surface px-3 py-2 text-sm text-ink shadow-sm transition-colors hover:border-ink-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <FolderPlus aria-hidden className="size-4" />
         New folder

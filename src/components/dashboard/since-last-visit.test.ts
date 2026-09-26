@@ -22,6 +22,7 @@ function proposal(
     distinctViewers,
     totalEngagedMs: 0,
     pricingEngagedMs: 0,
+    hasPricingPage: false,
     lastViewedAt: null,
     shareUrl: null,
     folderId: null,

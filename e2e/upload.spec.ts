@@ -82,26 +82,31 @@ test('an uploaded proposal is stored, tagged and shareable', async ({
   // silently stops finding it, "4 minutes on pricing" quietly becomes fiction.
   expect(pages?.some((p) => p.section === 'pricing')).toBe(true)
 
-  // The row's whole card is one link, laid over the text with a pseudo-element,
-  // so clicking the title itself is intercepted. Click the link.
+  // From the dashboard. On a screen wide enough for the preview pane, the top
+  // row starts out previewed, and clicking the previewed row opens it (any
+  // other row's first click only moves the preview). The row's whole card is
+  // one link laid over the text with a pseudo-element, so click the link.
+  await gotoHydrated(page, '/dashboard', 'a[data-row-link]')
+  await expect(page.getByRole('link', { name: 'Open proposal' })).toBeVisible()
   await page.locator('a[data-row-link]').first().click()
-  await expect(page).toHaveURL(/\/proposals\//)
+  await expect(page).toHaveURL(/\/proposals\/[0-9a-f-]{36}$/)
 
   const recipient = page.getByPlaceholder('Jordan at Acme')
   await awaitReact(recipient)
   await recipient.fill('Jordan at Acme')
   await page.getByRole('button', { name: 'New link' }).click()
 
+  // The upload's own link, named for the client, plus this one.
   await expect
     .poll(
       async () => {
-        const { count } = await db
+        const { data } = await db
           .from('share_links')
-          .select('id', { count: 'exact', head: true })
+          .select('recipient_name')
           .eq('proposal_id', proposal!.id)
-        return count ?? 0
+        return (data ?? []).map((l) => l.recipient_name).sort()
       },
       { timeout: 15_000 },
     )
-    .toBe(1)
+    .toEqual(['Jordan at Acme', 'Northwind Studio'])
 })

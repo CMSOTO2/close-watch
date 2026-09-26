@@ -1,6 +1,8 @@
-import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
+import { queryOptions, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { CornerDownRight } from 'lucide-react'
 import { getProposalAnalytics } from '#/lib/analytics/proposal-analytics'
+import { proposalSummariesQuery } from '#/lib/analytics/summaries'
+import { ScoreRing } from '#/components/dashboard/score-ring'
 import { formatDuration } from '#/lib/analytics/intent'
 import { SECTION_LABELS, queryKeys } from '#/constants'
 import { formatDay, useTimeZone } from '#/lib/local-date'
@@ -20,7 +22,7 @@ export const proposalAnalyticsQuery = (id: string) =>
     queryFn: () => getProposalAnalytics({ data: { id } }),
   })
 
-function formatRelative(iso: string | null, timeZone: string): string {
+export function formatRelative(iso: string | null, timeZone: string): string {
   if (!iso) return '—'
   const diff = Date.now() - new Date(iso).getTime()
   const min = Math.floor(diff / 60000)
@@ -55,12 +57,10 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
 
   return (
     <section className="mt-10">
-      <h2 className="font-display text-base font-semibold tracking-tight">
-        Activity
-      </h2>
+      <h2 className="font-semibold text-base">Activity</h2>
 
       {delta !== null && since !== null && (
-        <p className="mt-1 flex items-center gap-1.5 text-[13px] font-medium text-brand">
+        <p className="mt-1 flex items-center gap-1.5 text-[13px] text-brand">
           <span aria-hidden className="size-1.5 rounded-full bg-brand-2" />
           {summarizeDelta(delta)} {sinceLabel(since)}
         </p>
@@ -74,6 +74,7 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
         </p>
       ) : (
         <>
+          <IntentScore proposalId={proposalId} />
           <StatTiles totals={totals} delta={delta} />
           <PageAttentionChart pages={data.pages} />
           <RecentVisits visits={data.visits} since={since} />
@@ -82,6 +83,56 @@ export function ProposalActivity({ proposalId }: { proposalId: string }) {
 
       {data.ownerPreview && <OwnerPreviewPanel preview={data.ownerPreview} />}
     </section>
+  )
+}
+
+/**
+ * The same score the dashboard row leads with, and the reasons that add up to
+ * it. Clicking through from "Acme, 86" used to land on a page with no 86 on
+ * it; the number is only worth trusting next to its working.
+ *
+ * Read from the dashboard's summaries rather than scored again here, so the
+ * two can never disagree. Not suspense-backed: the activity below must not
+ * wait on it, and a cold visit straight to this page fills it in a moment
+ * later. Client reads only — the owner's preview never reaches the score.
+ */
+function IntentScore({ proposalId }: { proposalId: string }) {
+  const { data } = useQuery(proposalSummariesQuery)
+  const proposal = data?.find((p) => p.id === proposalId)
+  if (!proposal) return null
+
+  const { intent } = proposal
+  const signals = intent.signals.filter((s) => s.points > 0)
+  const band = { hot: 'Hot', warm: 'Warm', cold: 'Cold' }[intent.band]
+
+  return (
+    <div className="mt-4 flex flex-col gap-5 rounded-xl border border-line bg-surface px-5 py-5 shadow-sm sm:flex-row sm:items-start">
+      <div className="flex shrink-0 items-center gap-4">
+        <ScoreRing score={intent.score} band={intent.band} opened size={72} />
+        <div>
+          <p className="font-display text-2xl leading-none">{band}</p>
+          <p className="mt-1 text-[13px] text-ink-3">
+            Intent score, out of 100
+          </p>
+        </div>
+      </div>
+      {signals.length > 0 && (
+        <div className="min-w-0 flex-1 sm:border-l sm:border-line sm:pl-5">
+          <h3 className="kicker">Why it scores {intent.score}</h3>
+          <ul className="mt-1.5 divide-y divide-line-soft">
+            {signals.map((s) => (
+              <li
+                key={s.label}
+                className="flex justify-between gap-3 py-1.5 text-[13px]"
+              >
+                <span className="text-ink">{s.label}</span>
+                <span className="tnum text-ink-3">+{s.points}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -177,7 +228,7 @@ function StatTiles({
           className="rounded-md border border-line bg-surface px-3 py-2.5 shadow-sm"
         >
           <dt className="kicker">{t.label}</dt>
-          <dd className="mt-1 flex items-baseline gap-1.5 font-display text-lg font-semibold tracking-tight tnum text-ink">
+          <dd className="mt-1 flex items-baseline gap-1.5 text-lg font-semibold tracking-tight tnum text-ink">
             {t.value}
             {(t.upLabel ?? (t.up ? `+${t.up}` : null)) && (
               <span className="text-[12px] font-medium text-brand">
@@ -191,11 +242,17 @@ function StatTiles({
   )
 }
 
-function PageAttentionChart({ pages }: { pages: Array<PageAttention> }) {
+export function PageAttentionChart({
+  pages,
+  className = 'mt-8',
+}: {
+  pages: Array<PageAttention>
+  className?: string
+}) {
   const max = Math.max(1, ...pages.map((p) => p.engagedMs))
 
   return (
-    <div className="mt-8">
+    <div className={className}>
       <h3 className="kicker">Attention by page</h3>
       <ul className="mt-3 space-y-2">
         {pages.map((page) => {
@@ -316,9 +373,7 @@ function Badge({
   children: React.ReactNode
 }) {
   return (
-    <span
-      className={`ml-2 rounded-full px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide ${className}`}
-    >
+    <span className={`ml-2 rounded-full px-1.5 py-0.5 kicker ${className}`}>
       {children}
     </span>
   )

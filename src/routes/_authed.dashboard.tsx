@@ -1,15 +1,16 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { OPEN_FOLDER_KEY, foldersQuery } from '#/lib/folders'
 import { FolderBar } from '#/components/dashboard/folder-bar'
 import {
-  getProposalSummaries,
   getSecuredTotals,
+  proposalSummariesQuery,
 } from '#/lib/analytics/summaries'
 import { queryKeys } from '#/constants'
 import { ClosedRow } from '#/components/dashboard/closed-row'
 import { ListControls } from '#/components/dashboard/list-controls'
+import { ProposalPreview } from '#/components/dashboard/proposal-preview'
 import { ProposalRow } from '#/components/dashboard/proposal-row'
 import { filterByQuery } from '#/components/dashboard/search'
 import { useListKeys } from '#/components/dashboard/use-list-keys'
@@ -32,16 +33,7 @@ import type { HeatFilter, SortKey } from '#/components/dashboard/sorting'
 import type { Delta } from '#/components/dashboard/since-last-visit'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
 
-// refetchOnMount: 'always' — the first render right after login can run its
-// SSR fetch before the Supabase session is fully in play, caching an empty
-// list that is then served as fresh until a mutation invalidates it. Forcing a
-// mount refetch (which carries the now-present auth cookie) repopulates the
-// list on the client without waiting for the user to create a proposal.
-const summariesQuery = queryOptions({
-  queryKey: queryKeys.proposalSummaries,
-  queryFn: () => getProposalSummaries(),
-  refetchOnMount: 'always',
-})
+const summariesQuery = proposalSummariesQuery
 
 const securedQuery = queryOptions({
   queryKey: queryKeys.securedTotals,
@@ -135,21 +127,28 @@ function Dashboard() {
   const otherTabMatches =
     tab === 'active' ? closedMatched.length : activeMatched.length
   const news = since === null ? null : summarizeNews(deltas, since)
+
+  // The preview pane: open deals on a wide screen only. The selection follows
+  // the list, so a filter that hides the selected row falls back to the top.
+  const wide = useWideScreen()
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const preview =
+    wide && tab === 'active' && list.length > 0
+      ? (list.find((p) => p.id === selectedId) ?? list[0])
+      : null
   const limit = entitlements.liveProposalLimit
 
   return (
     <PageContainer className="py-8 sm:py-9">
       <div>
-        <h1 className="font-display text-2xl font-semibold tracking-tight">
-          Proposals
-        </h1>
+        <h1 className="font-display text-2xl">Proposals</h1>
         <p className="mt-0.5 text-[13px] text-ink-2">
           {activeAll.length === 0
             ? 'Nothing open right now.'
             : `${activeAll.length} open ${activeAll.length === 1 ? 'deal' : 'deals'} \u00b7 ${hotCount} running hot`}
         </p>
         {news !== null && (
-          <p className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-brand">
+          <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-brand">
             <span aria-hidden className="size-1.5 rounded-full bg-brand-2" />
             {news}
           </p>
@@ -175,9 +174,7 @@ function Dashboard() {
 
       {data.length === 0 ? (
         <div className="mt-10 rounded-lg border border-line bg-surface px-6 py-10 text-center shadow-sm">
-          <p className="font-display text-lg font-semibold tracking-tight">
-            No proposals yet
-          </p>
+          <p className="font-display text-xl">No proposals yet</p>
           {/* Every real signup so far stopped here, with no proposal. The
               first step used to read as "put this in front of a client",
               which is a big ask of a tool you have not seen work. Now it is a
@@ -225,22 +222,54 @@ function Dashboard() {
               onSwitchTab={() => setTab(tab === 'active' ? 'closed' : 'active')}
             />
           ) : (
-            <ul className="mt-3.5 flex flex-col gap-2">
-              {list.map((p) => (
-                <Row
-                  key={p.id}
-                  tab={tab}
-                  proposal={p}
-                  delta={deltas.get(p.id)}
-                  folderName={folderNameOf(p)}
-                />
-              ))}
-            </ul>
+            <div
+              className={
+                preview
+                  ? 'mt-3.5 grid grid-cols-[minmax(0,1fr)_minmax(340px,0.72fr)] items-start gap-5'
+                  : 'mt-3.5'
+              }
+            >
+              <ul className="@container flex flex-col gap-2">
+                {list.map((p) => (
+                  <Row
+                    key={p.id}
+                    tab={tab}
+                    proposal={p}
+                    delta={deltas.get(p.id)}
+                    folderName={folderNameOf(p)}
+                    selected={preview?.id === p.id}
+                    onSelect={preview ? setSelectedId : undefined}
+                  />
+                ))}
+              </ul>
+              {preview && (
+                <div className="sticky top-20">
+                  <ProposalPreview proposal={preview} />
+                </div>
+              )}
+            </div>
           )}
         </>
       )}
     </PageContainer>
   )
+}
+
+/**
+ * Whether the preview pane has room. Off during SSR and the first client
+ * render, so the server's HTML and hydration agree; the pane appears a frame
+ * later on a wide screen, and never on a phone.
+ */
+function useWideScreen(): boolean {
+  const [wide, setWide] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const sync = () => setWide(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+  return wide
 }
 
 /**
@@ -271,7 +300,7 @@ function EmptyList({
         {query ? (
           <>
             No {tab} proposals match{' '}
-            <span className="font-medium text-ink">“{query}”</span>.
+            <span className=" text-ink">“{query}”</span>.
           </>
         ) : tab === 'active' ? (
           hasOpenDeals ? (
@@ -287,7 +316,7 @@ function EmptyList({
       {query && otherTabMatches > 0 && (
         <button
           onClick={onSwitchTab}
-          className="mt-2 text-[13px] font-medium text-brand hover:underline"
+          className="mt-2 text-[13px] text-brand hover:underline"
         >
           {otherTabMatches} {other}{' '}
           {otherTabMatches === 1 ? 'proposal matches' : 'proposals match'} —
@@ -298,7 +327,7 @@ function EmptyList({
       {query && otherTabMatches === 0 && (
         <button
           onClick={onClearQuery}
-          className="mt-2 text-[13px] font-medium text-brand hover:underline"
+          className="mt-2 text-[13px] text-brand hover:underline"
         >
           Clear search
         </button>
@@ -312,14 +341,24 @@ function Row({
   proposal,
   delta,
   folderName,
+  selected,
+  onSelect,
 }: {
   tab: 'active' | 'closed'
   proposal: ProposalSummary
   delta?: Delta
   folderName: string | null
+  selected: boolean
+  onSelect?: (id: string) => void
 }) {
   return tab === 'active' ? (
-    <ProposalRow proposal={proposal} delta={delta} folderName={folderName} />
+    <ProposalRow
+      proposal={proposal}
+      delta={delta}
+      folderName={folderName}
+      selected={selected}
+      onSelect={onSelect}
+    />
   ) : (
     <ClosedRow proposal={proposal} folderName={folderName} />
   )

@@ -94,9 +94,7 @@ export function DashboardShot() {
     <Frame label="Closewatch · Proposals">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-display text-lg font-semibold tracking-tight">
-            Proposals
-          </p>
+          <p className=" text-lg font-semibold tracking-tight">Proposals</p>
           <p className="mt-0.5 text-xs text-ink-2">
             3 open deals · 1 running hot
           </p>
@@ -111,15 +109,7 @@ export function DashboardShot() {
         {ROWS.map((row) => (
           <li
             key={row.client}
-            className={cn(
-              'group relative overflow-hidden rounded-md border border-line bg-surface px-3 py-2.5 shadow-sm',
-              'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:content-[""]',
-              row.band === 'hot'
-                ? 'before:bg-hot-2'
-                : row.band === 'warm'
-                  ? 'before:bg-warm-2'
-                  : 'before:bg-transparent',
-            )}
+            className="group relative overflow-hidden rounded-md border border-line bg-surface px-3 py-2.5 shadow-sm"
           >
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -129,9 +119,7 @@ export function DashboardShot() {
                 <p className="truncate text-xs text-ink-2">{row.title}</p>
               </div>
               <div className="flex shrink-0 items-center gap-2.5">
-                <span className="font-display text-sm font-semibold tnum">
-                  {row.value}
-                </span>
+                <span className=" text-sm font-semibold tnum">{row.value}</span>
                 <HeatMeter band={row.band} score={row.score} />
               </div>
             </div>
@@ -140,7 +128,7 @@ export function DashboardShot() {
               {row.flag && (
                 <span
                   className={cn(
-                    'rounded px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide',
+                    'rounded px-1.5 py-0.5 kicker',
                     row.flagTone === 'hot'
                       ? 'border border-hot-line bg-hot-soft text-hot'
                       : 'border border-warm-line bg-warm-soft text-warm',
@@ -267,7 +255,7 @@ export function ForwardShot() {
                 {visit.badges.map((b) => (
                   <span
                     key={b}
-                    className="rounded-full border border-warm-line bg-warm-soft px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-warm"
+                    className="rounded-full border border-warm-line bg-warm-soft px-1.5 py-0.5 kicker text-warm"
                   >
                     {b}
                   </span>
@@ -302,9 +290,7 @@ export function IntentShot() {
     <Frame label="Northwind Studio · Why this is hot">
       <div className="flex items-center justify-between gap-3">
         <HeatMeter band="hot" score={86} />
-        <span className="font-display text-sm font-semibold tnum text-ink-2">
-          86 / 100
-        </span>
+        <span className=" text-sm font-semibold tnum text-ink-2">86 / 100</span>
       </div>
       <ul className="mt-3 space-y-1.5 border-t border-line-soft pt-3">
         {SIGNALS.map((s) => (

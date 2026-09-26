@@ -53,7 +53,7 @@ function WelcomePage() {
   return (
     <PageContainer className="py-12 sm:py-16">
       <div className="mx-auto max-w-md">
-        <h1 className="font-display text-2xl font-semibold tracking-tight">
+        <h1 className="font-display text-2xl">
           What name should your clients see?
         </h1>
         <p className="mt-2 text-[13px] leading-relaxed text-ink-2">

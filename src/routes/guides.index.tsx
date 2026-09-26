@@ -41,8 +41,8 @@ function GuidesIndex() {
 
       <main>
         <PageContainer asMain className="py-14 sm:py-16">
-          <p className="kicker text-brand">Guides</p>
-          <h1 className="mt-3 max-w-[22ch] font-display text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
+          <p className="kicker">Guides</p>
+          <h1 className="mt-3 max-w-[22ch] font-display text-3xl sm:text-4xl">
             What happens after you send a proposal.
           </h1>
           <p className="mt-5 max-w-[58ch] text-[17px] leading-relaxed text-ink-2">
@@ -78,7 +78,7 @@ function GuidesIndex() {
                 <section key={stage.key} aria-labelledby={`stage-${stage.key}`}>
                   <h2
                     id={`stage-${stage.key}`}
-                    className="font-display text-xl font-semibold tracking-[-0.02em]"
+                    className="font-display text-xl"
                   >
                     {stage.label}
                   </h2>
@@ -93,7 +93,7 @@ function GuidesIndex() {
                           params={{ slug: g.slug }}
                           className="group flex w-full flex-col rounded-lg border border-line bg-surface p-5 transition-colors hover:border-line-strong hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                         >
-                          <h3 className="font-display text-[17px] leading-snug font-semibold tracking-[-0.015em] text-ink group-hover:text-brand">
+                          <h3 className="font-semibold text-[17px] leading-snug text-ink group-hover:text-brand">
                             {g.title}
                           </h3>
                           <p className="mt-2 text-[14px] leading-relaxed text-ink-2">

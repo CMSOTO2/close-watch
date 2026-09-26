@@ -66,8 +66,8 @@ export function ComparisonPage({ c }: { c: Competitor }) {
 
       <main>
         <PageContainer className="pt-12 pb-14 sm:pt-16">
-          <p className="kicker text-brand">{c.kicker}</p>
-          <h1 className="mt-3 max-w-[22ch] font-display text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
+          <p className="kicker">{c.kicker}</p>
+          <h1 className="mt-3 max-w-[22ch] font-display text-3xl sm:text-4xl">
             {c.h1}
           </h1>
           <p className="mt-5 max-w-[56ch] text-[17px] leading-relaxed text-ink-2">
@@ -90,7 +90,7 @@ export function ComparisonPage({ c }: { c: Competitor }) {
         {/* The argument */}
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-14 sm:py-16">
-            <h2 className="max-w-[26ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <h2 className="max-w-[26ch] font-display text-2xl sm:text-3xl">
               What {c.name} is, and what Closewatch is instead
             </h2>
             <div className="mt-2 max-w-[64ch]">
@@ -102,8 +102,8 @@ export function ComparisonPage({ c }: { c: Competitor }) {
         {/* Both cases, side by side. Theirs first, and not softened. */}
         <section>
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">The honest version</p>
-            <h2 className="mt-3 max-w-[28ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">The honest version</p>
+            <h2 className="mt-3 max-w-[28ch] font-display text-2xl sm:text-3xl">
               {c.name} is the better buy for plenty of people.
             </h2>
             <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
@@ -126,8 +126,8 @@ export function ComparisonPage({ c }: { c: Competitor }) {
         {/* The table */}
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Side by side</p>
-            <h2 className="mt-3 max-w-[26ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">Side by side</p>
+            <h2 className="mt-3 max-w-[26ch] font-display text-2xl sm:text-3xl">
               {c.name} vs Closewatch: the differences that do not change next
               quarter.
             </h2>
@@ -143,7 +143,7 @@ export function ComparisonPage({ c }: { c: Competitor }) {
               <table className="w-full min-w-[34rem] border-collapse bg-canvas text-left">
                 <thead>
                   <tr className="border-b border-line">
-                    <th className="sticky left-0 z-10 w-[26%] bg-canvas px-4 py-3 text-[11px] font-medium tracking-wider text-ink-3 uppercase after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line sm:after:hidden">
+                    <th className="sticky left-0 z-10 w-[26%] bg-canvas px-4 py-3 kicker after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line sm:after:hidden">
                       <span className="sr-only">Compared on</span>
                     </th>
                     <th className="px-4 py-3 text-[13px] font-semibold">
@@ -217,8 +217,8 @@ export function ComparisonPage({ c }: { c: Competitor }) {
         {/* The questions people type about the other product. */}
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Questions</p>
-            <h2 className="mt-3 max-w-[28ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">Questions</p>
+            <h2 className="mt-3 max-w-[28ch] font-display text-2xl sm:text-3xl">
               What people ask about {c.name} and Closewatch.
             </h2>
             <QuestionList
@@ -233,7 +233,7 @@ export function ComparisonPage({ c }: { c: Competitor }) {
         {/* Close */}
         <section>
           <PageContainer className="py-16 text-center sm:py-20">
-            <h2 className="mx-auto max-w-[24ch] font-display text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
+            <h2 className="mx-auto max-w-[24ch] font-display text-2xl sm:text-3xl">
               Send one real proposal through it and decide.
             </h2>
             <p className="mx-auto mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
@@ -267,9 +267,7 @@ function Case({
 }) {
   return (
     <div className="bg-surface px-5 py-6 sm:px-6">
-      <h3 className="font-display text-base font-semibold tracking-tight">
-        {title}
-      </h3>
+      <h3 className="font-semibold text-base">{title}</h3>
       <ul className="mt-5 flex flex-col gap-3">
         {items.map((item) => (
           <li

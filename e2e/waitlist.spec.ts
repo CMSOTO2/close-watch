@@ -27,7 +27,16 @@ test.afterAll(async () => {
 })
 
 async function join(page: Page, address: string) {
-  await gotoHydrated(page, '/#pricing', 'text=Join the waitlist')
+  // Studio is commented out of the pricing page until its shape is decided
+  // (see PLANS in components/landing/pricing.tsx), and its waitlist form goes
+  // with it. Skip rather than fail while it is hidden, and run again on their
+  // own the day the card comes back — no second edit to remember.
+  await gotoHydrated(page, '/#pricing', '#pricing')
+  test.skip(
+    (await page.getByRole('button', { name: 'Join the waitlist' }).count()) ===
+      0,
+    'Studio is hidden from the pricing page',
+  )
 
   // Collapsed to a button until pressed, so the card keeps the shape of the
   // two beside it. The field only exists after this click.

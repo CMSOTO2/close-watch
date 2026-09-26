@@ -168,9 +168,7 @@ function useIsWebkit(): boolean {
 function SafariNotice() {
   return (
     <p className="mt-2 flex items-start gap-2 rounded-md bg-surface-2 px-3 py-2 text-[13px] leading-relaxed text-ink-2">
-      <span className="mt-px shrink-0 font-mono text-[10px] tracking-wider text-ink-3 uppercase">
-        Safari
-      </span>
+      <span className="mt-px shrink-0 kicker">Safari</span>
       <span>
         Pages may not be tagged automatically here. Everything else works the
         same &mdash; you can set each page&rsquo;s section after uploading.
@@ -399,9 +397,7 @@ function NewProposal() {
       <div className="mx-auto max-w-2xl">
         <BackLink />
 
-        <h1 className="mt-4 font-display text-2xl font-semibold tracking-tight">
-          New proposal
-        </h1>
+        <h1 className="mt-4 font-semibold text-2xl">New proposal</h1>
         <p className="mt-1.5 text-[13px] leading-relaxed text-ink-2">
           Upload the PDF you already send. You get a tracked link to paste into
           your own email.
@@ -428,7 +424,7 @@ function NewProposal() {
             {/* The file first: it is the one thing this page cannot do
                 without, and the only field that needs a confirmation. */}
             <section className="px-5 py-5 sm:px-6 sm:py-6">
-              <h2 className="text-sm font-medium text-ink">Proposal PDF</h2>
+              <h2 className="text-sm text-ink">Proposal PDF</h2>
               <form.Field
                 name="file"
                 validators={{

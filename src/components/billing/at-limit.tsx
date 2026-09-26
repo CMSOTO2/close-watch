@@ -17,8 +17,8 @@ import { FREE_DRAFT_PROPOSALS, FREE_LIVE_PROPOSALS } from '#/constants'
 export function AtLimitPanel({ liveProposals }: { liveProposals: number }) {
   return (
     <div className="mt-6 rounded-lg border border-line bg-surface p-6 shadow-sm">
-      <p className="kicker text-brand">Free plan</p>
-      <h2 className="mt-3 font-display text-lg font-semibold tracking-tight">
+      <p className="kicker">Free plan</p>
+      <h2 className="mt-3 font-display text-xl">
         {liveProposals} of your proposals are being read right now.
       </h2>
       <p className="mt-2 max-w-[52ch] text-[13px] leading-relaxed text-ink-2">
@@ -57,8 +57,8 @@ export function DraftLimitPanel({
 }) {
   return (
     <div className="mt-6 rounded-lg border border-line bg-surface p-6 shadow-sm">
-      <p className="kicker text-brand">Free plan</p>
-      <h2 className="mt-3 font-display text-lg font-semibold tracking-tight">
+      <p className="kicker">Free plan</p>
+      <h2 className="mt-3 font-display text-xl">
         {draftProposals} drafts are waiting to be sent.
       </h2>
       <p className="mt-2 max-w-[52ch] text-[13px] leading-relaxed text-ink-2">

@@ -201,9 +201,7 @@ export function RowMenu({ proposal }: { proposal: ProposalSummary }) {
             {(destinations.length > 0 || proposal.folderId) && (
               <>
                 <div className="my-1 border-t border-line-soft" />
-                <p className="px-3 pt-1 pb-0.5 font-mono text-[10px] tracking-wider text-ink-3 uppercase">
-                  Move to
-                </p>
+                <p className="px-3 pt-1 pb-0.5 kicker">Move to</p>
                 {/* Scrolls rather than growing past the screen for someone
                     with a long list of folders. */}
                 <div className="max-h-48 overflow-y-auto">

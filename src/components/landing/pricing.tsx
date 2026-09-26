@@ -185,7 +185,7 @@ export function Pricing() {
           button to the bottom of a card that is already the right height. */}
       {/* Two cards while Studio is hidden: side by side from md, capped so a
           wide screen does not stretch two cards across the whole shell. */}
-      <div className="mt-10 grid max-w-4xl gap-4 md:grid-cols-2">
+      <div className="mx-auto mt-12 grid max-w-3xl gap-4 md:grid-cols-2">
         {PLANS.map((plan) => (
           <div
             key={plan.name}
@@ -197,13 +197,11 @@ export function Pricing() {
             )}
           >
             <div className="flex items-baseline justify-between gap-2">
-              <p className="font-display text-base font-semibold tracking-tight">
-                {plan.name}
-              </p>
+              <p className="font-semibold text-base">{plan.name}</p>
               {plan.badge && (
                 <span
                   className={cn(
-                    'shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase',
+                    'shrink-0 rounded-full px-2 py-0.5 kicker',
                     plan.featured
                       ? 'bg-brand-fill text-brand-fill-ink'
                       : 'bg-surface-2 text-ink-2',
@@ -215,9 +213,7 @@ export function Pricing() {
             </div>
 
             <p className="mt-4 flex items-baseline gap-0.5">
-              <span className="font-display text-4xl font-semibold tracking-[-0.03em]">
-                {plan.price}
-              </span>
+              <span className="font-display text-4xl">{plan.price}</span>
               {plan.cadence && (
                 <span className="text-[13px] text-ink-2">{plan.cadence}</span>
               )}
@@ -282,7 +278,7 @@ export function Pricing() {
 
       {/* The cap explained where a visitor meets it, rather than only in the
           panel they hit after signing up. */}
-      <p className="mt-6 text-[13px] leading-relaxed text-ink-3">
+      <p className="mx-auto mt-8 max-w-3xl text-[13px] leading-relaxed text-ink-3">
         What counts toward the free two: a proposal from the moment a client
         opens it, not from when you send it, so sending costs nothing until
         somebody reads. Mark a deal won or lost, or archive one still in play,
@@ -297,7 +293,7 @@ export function Pricing() {
           themselves — see src/lib/auth-redirect.ts. Settings is where the
           upgrade lives either way, and it is the page that knows whether
           Stripe is switched on. */}
-      <p className="mt-4 text-[13px] leading-relaxed text-ink-3">
+      <p className="mx-auto mt-4 max-w-3xl text-[13px] leading-relaxed text-ink-3">
         Choosing Solo asks you to sign in first, because a subscription has to
         attach to an account, and then takes you straight to checkout. You can
         also start free and upgrade later the day two proposals stop being

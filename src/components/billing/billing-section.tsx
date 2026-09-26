@@ -54,7 +54,7 @@ function DiscountNote({
 
   return (
     <p className="mt-2 rounded-md border border-brand-2 bg-brand-soft px-3 py-2 text-[13px] leading-relaxed text-ink">
-      <strong className="font-semibold">{label}</strong>
+      <strong className="">{label}</strong>
       {discount.code && (
         <>
           {' '}
@@ -121,9 +121,7 @@ export function BillingSection({
 
   return (
     <section className="mt-10 border-t border-line pt-8">
-      <h2 className="font-display text-lg font-semibold tracking-tight">
-        Plan
-      </h2>
+      <h2 className="font-display text-xl">Plan</h2>
 
       {justManaged && (
         <p className="mt-3 rounded-md border border-line bg-surface-2 px-3 py-2 text-[13px] text-ink-2">
@@ -144,9 +142,7 @@ export function BillingSection({
 
       <p className="mt-3 text-[13px] leading-relaxed text-ink-2">
         You are on{' '}
-        <strong className="font-semibold text-ink">
-          {PLAN_NAMES[entitlements.plan]}
-        </strong>
+        <strong className=" text-ink">{PLAN_NAMES[entitlements.plan]}</strong>
         {entitlements.liveProposalLimit === null
           ? ', with no limit on how many proposals are live at once. '
           : `, which carries ${entitlements.liveProposalLimit} at a time, counted from when a client opens one. `}

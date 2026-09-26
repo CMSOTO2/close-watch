@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Builds scripts/og-fonts.css: the card's three webfonts, base64 inside the file.
+Builds scripts/og-fonts.css: the card's two webfonts, base64 inside the file.
 
 The card used to pull them off Google Fonts at render time, and headless Chrome
 photographed the page before they landed — with `display: block` that produced a
@@ -20,9 +20,8 @@ from pathlib import Path
 
 API = (
     "https://fonts.googleapis.com/css2"
-    "?family=Instrument+Sans:wght@600"
-    "&family=Inter:wght@400;450;500"
-    "&family=JetBrains+Mono:wght@400;500"
+    "?family=Newsreader:opsz,wght@6..72,400"
+    "&family=Geist:wght@400;500;600"
     "&display=swap"
 )
 # Google serves woff2 only to a browser it recognises; curl's own agent gets ttf.

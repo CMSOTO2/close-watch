@@ -78,7 +78,7 @@ function Cell({
       <p className={good ? 'kicker text-good/75' : 'kicker'}>{kicker}</p>
       <p
         className={[
-          'mt-1.5 font-display font-semibold tracking-tight tnum leading-tight',
+          'mt-1.5 font-semibold tracking-tight tnum leading-tight',
           small ? 'truncate text-base' : 'text-2xl',
           good ? 'text-good' : 'text-ink',
         ].join(' ')}

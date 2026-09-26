@@ -142,7 +142,7 @@ function Chip({
       )}
     >
       <span className="truncate">{label}</span>
-      <span className="font-mono text-[11px] tnum text-ink-3">{count}</span>
+      <span className="text-[12px] tnum text-ink-3">{count}</span>
     </button>
   )
 }

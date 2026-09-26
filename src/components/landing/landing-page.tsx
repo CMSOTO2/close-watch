@@ -87,10 +87,8 @@ export function LandingPage() {
         <PageContainer className="pb-16 pt-14 sm:pb-20 sm:pt-20">
           <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14">
             <div>
-              <p className="kicker text-brand">
-                Proposal tracking for agencies
-              </p>
-              <h1 className="mt-4 max-w-[15ch] font-display text-4xl font-semibold leading-[1.03] tracking-[-0.035em] sm:text-5xl lg:text-[3.4rem]">
+              <p className="kicker">Proposal tracking for agencies</p>
+              <h1 className="mt-4 max-w-[15ch] font-display text-4xl leading-[1.03] sm:text-5xl lg:text-[3.4rem]">
                 Stop guessing whether they read it.
               </h1>
               <p className="mt-5 max-w-[54ch] text-[17px] leading-relaxed text-ink-2">
@@ -133,7 +131,7 @@ export function LandingPage() {
           <PageContainer className="py-14 sm:py-16">
             <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
               <div>
-                <h2 className="max-w-[20ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+                <h2 className="max-w-[20ch] font-display text-2xl sm:text-3xl">
                   &ldquo;Just following up on that proposal&rdquo;
                 </h2>
                 <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
@@ -179,20 +177,16 @@ export function LandingPage() {
         {/* How it works */}
         <section id="how" className="scroll-mt-16">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">How it works</p>
-            <h2 className="mt-3 max-w-[22ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">How it works</p>
+            <h2 className="mt-3 max-w-[22ch] font-display text-2xl sm:text-3xl">
               Three steps, and none of them change how your agency sells.
             </h2>
 
             <ol className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
               {STEPS.map((s) => (
                 <li key={s.n} className="bg-surface px-5 py-6">
-                  <p className="font-mono text-[11px] tracking-wider text-brand">
-                    {s.n}
-                  </p>
-                  <p className="mt-3 font-display text-base font-semibold tracking-tight">
-                    {s.title}
-                  </p>
+                  <p className="kicker text-brand">{s.n}</p>
+                  <p className="mt-3 font-display text-base">{s.title}</p>
                   <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
                     {s.body}
                   </p>
@@ -239,8 +233,8 @@ export function LandingPage() {
             anyone asks before looking at what it costs. */}
         <section id="agencies" className="scroll-mt-16">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">For agencies</p>
-            <h2 className="mt-3 max-w-[24ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">For agencies</p>
+            <h2 className="mt-3 max-w-[24ch] font-display text-2xl sm:text-3xl">
               Built for a pipeline with a dozen clients in it.
             </h2>
             <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
@@ -280,11 +274,11 @@ export function LandingPage() {
             already a surface block, and the cards carry their own. */}
         <section id="pricing" className="scroll-mt-16">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Pricing</p>
-            <h2 className="mt-3 max-w-[24ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker text-center">Pricing</p>
+            <h2 className="mx-auto mt-3 max-w-[24ch] text-center font-display text-3xl text-balance sm:text-4xl">
               One recovered deal pays for a decade of this.
             </h2>
-            <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
+            <p className="mx-auto mt-4 max-w-[52ch] text-center text-[15px] leading-relaxed text-ink-2">
               Start free and send a real proposal through it. If the first one
               tells you something you did not know, the rest is nineteen
               dollars.
@@ -300,8 +294,8 @@ export function LandingPage() {
             any authority, which is most of why it earns the space. */}
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Weighing it up</p>
-            <h2 className="mt-3 max-w-[26ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">Weighing it up</p>
+            <h2 className="mt-3 max-w-[26ch] font-display text-2xl sm:text-3xl">
               How this compares to what you were going to buy.
             </h2>
             <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
@@ -317,13 +311,13 @@ export function LandingPage() {
                     to={c.to}
                     className="flex h-full flex-col px-5 py-6 transition-colors hover:bg-surface-2 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                   >
-                    <p className="font-display text-base font-semibold tracking-tight">
+                    <p className="font-display text-base">
                       Closewatch vs {c.name}
                     </p>
                     <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
                       {c.wedge}
                     </p>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-brand">
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-brand">
                       Read the comparison
                       <ArrowRight aria-hidden className="size-3.5" />
                     </span>
@@ -375,8 +369,8 @@ export function LandingPage() {
         {/* FAQ */}
         <section id="faq" className="scroll-mt-16">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Questions</p>
-            <h2 className="mt-3 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">Questions</p>
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl">
               The things people ask first.
             </h2>
             {/* Held to a readable measure. Left to the full container, the
@@ -391,7 +385,7 @@ export function LandingPage() {
         {/* Closing CTA */}
         <section className="border-t border-line bg-surface">
           <PageContainer className="py-16 text-center sm:py-20">
-            <h2 className="mx-auto max-w-[20ch] font-display text-3xl font-semibold tracking-[-0.025em] sm:text-4xl">
+            <h2 className="mx-auto max-w-[20ch] font-display text-3xl sm:text-4xl">
               Your next follow-up could be an informed one.
             </h2>
             <p className="mx-auto mt-4 max-w-[50ch] text-[15px] leading-relaxed text-ink-2">
@@ -435,8 +429,8 @@ function Feature({
   return (
     <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
       <div className={cn('min-w-0', reverse && 'lg:order-2')}>
-        <p className="kicker text-brand">{kicker}</p>
-        <h3 className="mt-3 max-w-[20ch] font-display text-xl font-semibold tracking-[-0.02em] sm:text-2xl">
+        <p className="kicker">{kicker}</p>
+        <h3 className="mt-3 max-w-[20ch] font-display text-xl sm:text-2xl">
           {title}
         </h3>
         <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">

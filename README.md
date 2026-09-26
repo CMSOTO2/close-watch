@@ -88,6 +88,12 @@ mostly empty margin.
 The account it photographs is fabricated: a demo owner under
 `@demo.closewatch.test` is created, seeded with proposals and the reading
 activity behind their intent scores, shot, and deleted. Nothing survives the run.
+The client-view frame is shot signed out, with its tracking beacon blocked, so it
+shows what a client sees and records no read.
+
+The site's in-page screenshots, `public/images/closewatch-*.webp` and their
+`-dark` twins, are these cards scaled to 1600x900. Re-export them after a run
+whenever the UI changes. The filenames stay the same, so no page needs editing.
 
 Once your project exists, replace the hand-written schema types:
 

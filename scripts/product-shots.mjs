@@ -760,14 +760,14 @@ async function sessionCookies(owner) {
 const THEMES = {
   light: {
     ink: '#1a1815',
-    kicker: '#8f6203',
+    kicker: '#68625a',
     grid: '#1a1815',
     gridOpacity: 0.03,
     background: `
       radial-gradient(1200px 620px at 50% -8%, #ffffff 0%, rgba(255,255,255,0) 62%),
-      radial-gradient(900px 700px at 88% 108%, #eae7e0 0%, rgba(234,231,224,0) 60%),
-      linear-gradient(168deg, #f7f6f3 0%, #f1efea 58%, #e7e4dd 100%)`,
-    chrome: 'linear-gradient(#f7f6f3, #eeebe5)',
+      radial-gradient(900px 700px at 88% 108%, #f1efeb 0%, rgba(241,239,235,0) 60%),
+      linear-gradient(168deg, #fdfcfb 0%, #f8f7f4 58%, #f2f0ec 100%)`,
+    chrome: 'linear-gradient(#fbfaf8, #f4f2ee)',
     chromeEdge: 'rgba(26,24,21,.10)',
     windowEdge: 'rgba(26,24,21,.12)',
     windowFill: '#ffffff',
@@ -781,7 +781,7 @@ const THEMES = {
   },
   dark: {
     ink: '#f0ede7',
-    kicker: '#dfa954',
+    kicker: '#a39c90',
     grid: '#f0ede7',
     gridOpacity: 0.035,
     background: `
@@ -823,12 +823,13 @@ function card({ kicker, headline, image, chrome, width, height, theme }) {
   const h = Math.round(height * scale)
 
   return `
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400&display=block">
 <style>
   * { box-sizing: border-box; margin: 0 }
   body {
     width: 1920px; height: 1080px; overflow: hidden;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-family: 'Instrument Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Geist', 'Helvetica Neue', Arial, sans-serif;
     color: ${t.ink};
     background: ${t.background};
   }
@@ -843,11 +844,13 @@ function card({ kicker, headline, image, chrome, width, height, theme }) {
     opacity: ${t.gridOpacity};
   }
   .caption { position: relative; text-align: center; margin-bottom: 26px }
-  .kicker {
-    font-size: 12px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
-    color: ${t.kicker}; margin-bottom: 10px;
+  /* Matches the app: a plain sentence-case label, and the headline in the
+     serif the site's headings use. */
+  .kicker { font-size: 15px; font-weight: 500; color: ${t.kicker}; margin-bottom: 8px }
+  .headline {
+    font-family: 'Newsreader', Georgia, serif; font-weight: 400;
+    font-size: 40px; letter-spacing: -.012em; line-height: 1.15;
   }
-  .headline { font-size: 31px; font-weight: 600; letter-spacing: -.022em; line-height: 1.2 }
   .window {
     position: relative; width: ${w}px; border-radius: 13px; overflow: hidden;
     background: ${t.windowFill}; border: 1px solid ${t.windowEdge};
@@ -861,8 +864,7 @@ function card({ kicker, headline, image, chrome, width, height, theme }) {
   .url {
     margin: 0 auto; padding: 3px 14px; border-radius: 999px;
     background: ${t.pillFill}; border: 1px solid ${t.pillEdge};
-    font-size: 11.5px; color: ${t.pillInk}; letter-spacing: .01em;
-    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12px; color: ${t.pillInk};
   }
   .shot { display: block; width: ${w}px; height: ${h}px }
 </style>
@@ -913,7 +915,7 @@ function shotList(flagship, unopened) {
       chrome: 'getclosewatch.com/proposals/northwind-studio',
       kicker: 'Per-proposal activity',
       headline: 'Which pages they read, and how long they stayed on pricing',
-      scroll: 210,
+      scrollTo: 'Activity',
     },
     {
       file: '3-visits.png',
@@ -923,20 +925,22 @@ function shotList(flagship, unopened) {
       chrome: 'getclosewatch.com/proposals/northwind-studio',
       kicker: 'Reader-level detail',
       headline: 'One link per recipient, so a forward shows up as a new reader',
-      scroll: 690,
+      scrollTo: 'Recent visits',
     },
     {
       file: '4-viewer.png',
       path: `/p/${flagship.token}`,
       wait: 'canvas',
-      // No scroll, and a short viewport: the disclosure strip is the point of
-      // this frame, and an A4 page is taller than any viewport at this width,
-      // so scrolling for a fuller page would scroll the disclosure off the top.
+      // No scroll, and a short viewport: the top of the first page is the
+      // point of this frame, and an A4 page is taller than any viewport here.
       viewport: { width: 1440, height: 780 },
+      // As the client: signed in, the owner gets the "this is your preview"
+      // banner, which no client ever sees.
+      signedOut: true,
       chrome: 'getclosewatch.com/p/9fZk…',
       kicker: 'What the client sees',
       headline:
-        'The PDF you already send, with the tracking disclosed up front',
+        'The PDF you already send, with nothing to install or sign up for',
     },
     {
       file: '5-upload.png',
@@ -1044,6 +1048,13 @@ try {
 
     for (const shot of shots) {
       await page.setViewportSize(shot.viewport)
+      if (shot.signedOut) {
+        await context.clearCookies()
+        // Signed out, this is a client read as far as the app knows. Keep it
+        // from reaching the tracker so the frames shot after it — the dark
+        // set included — show the same numbers as the ones before it.
+        await page.route('**/api/track/**', (route) => route.abort())
+      }
       await page.goto(`${BASE}${shot.path}`, { waitUntil: 'domcontentloaded' })
       await ready(shot.wait)
 
@@ -1062,13 +1073,13 @@ try {
         // By placeholder rather than by label: each label wraps its hint text
         // as well as its name, so an accessible-name match is fragile here.
         await page
-          .getByPlaceholder('Brand identity — Q3')
+          .getByPlaceholder('Brand identity, Q3')
           .fill('Website redesign — Q4')
         await page.getByPlaceholder('Acme Studio').fill('Northwind Studio')
         // The optional recipient. Filled, because a named one is what makes the
         // form hand back a link on submit, and the shot after this is that link.
         await page.getByPlaceholder('Jordan at Acme').fill('Jordan Reyes')
-        await page.getByPlaceholder('12000').fill('39000')
+        await page.getByPlaceholder('12,000').fill('39000')
         await writeFile(pdfPath, pdf)
         await page.locator('input[type="file"]').setInputFiles(pdfPath)
         // The last field filled keeps its focus ring and, being a number input,
@@ -1095,12 +1106,34 @@ try {
         }
       })
 
+      // By heading rather than by pixel offset, so a section added above
+      // one of these does not silently push it out of frame.
+      if (shot.scrollTo) {
+        await page.evaluate((text) => {
+          const heading = [...document.querySelectorAll('h2, h3')].find(
+            (el) => el.textContent?.trim() === text,
+          )
+          if (heading) {
+            window.scrollTo(
+              0,
+              heading.getBoundingClientRect().top + window.scrollY - 88,
+            )
+          }
+        }, shot.scrollTo)
+        await page.waitForTimeout(500)
+      }
+
       if (shot.scroll) {
         await page.evaluate((y) => window.scrollTo(0, y), shot.scroll)
         await page.waitForTimeout(500)
       }
 
       const raw = await page.screenshot({ type: 'png' })
+
+      if (shot.signedOut) {
+        await page.unroute('**/api/track/**')
+        await context.addCookies(cookies)
+      }
 
       await framer.setContent(
         card({
@@ -1114,6 +1147,7 @@ try {
         }),
         { waitUntil: 'load' },
       )
+      await framer.evaluate(() => document.fonts.ready)
       await framer.screenshot({
         path: `${OUT}/${theme}/${shot.file}`,
         type: 'png',

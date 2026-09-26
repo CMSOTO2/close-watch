@@ -129,10 +129,7 @@ function TabButton({
     >
       {label}{' '}
       <span
-        className={cn(
-          'font-mono text-[11px] tnum',
-          active ? 'text-brand' : 'text-ink-3',
-        )}
+        className={cn('text-[12px] tnum', active ? 'text-brand' : 'text-ink-3')}
       >
         {count}
       </span>

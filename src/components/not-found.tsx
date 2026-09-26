@@ -41,7 +41,7 @@ export function NotFound() {
       <PageContainer asMain className="flex-1 py-16 sm:py-24">
         <div className="mx-auto max-w-xl">
           <p className="kicker">404 · never opened</p>
-          <h1 className="mt-3 font-display text-3xl font-semibold tracking-[-0.025em] sm:text-4xl">
+          <h1 className="mt-3 font-display text-3xl sm:text-4xl">
             This one went cold.
           </h1>
           <p className="mt-4 text-ink-2">
@@ -54,7 +54,7 @@ export function NotFound() {
               rather than a picture of one, so it stays right when the row or
               the meter changes. The cold spine is transparent in the list too:
               a deal nobody has opened does not earn a mark. */}
-          <div className="relative mt-8 overflow-hidden rounded-md border border-line bg-surface px-4 py-3.5 shadow-sm before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-transparent before:content-['']">
+          <div className="relative mt-8 overflow-hidden rounded-md border border-line bg-surface px-4 py-3.5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="truncate font-mono text-[13px] font-medium">

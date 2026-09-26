@@ -43,7 +43,7 @@ export function canonical(path: string) {
  * scrapers key their copy on the URL, so a redesign at the same path can sit
  * unseen behind the old one for weeks. v3 is the agency card.
  */
-export const OG_IMAGE = `${origin}/og.png?v=3`
+export const OG_IMAGE = `${origin}/og.png?v=4`
 
 /** Describes the card itself, so it has to match what the PNG actually shows. */
 const OG_ALT =

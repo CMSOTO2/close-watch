@@ -167,8 +167,8 @@ function AgenciesPage() {
 
       <main>
         <PageContainer className="pt-12 pb-14 sm:pt-16">
-          <p className="kicker text-brand">For agencies</p>
-          <h1 className="mt-3 max-w-[18ch] font-display text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
+          <p className="kicker">For agencies</p>
+          <h1 className="mt-3 max-w-[18ch] font-display text-3xl sm:text-4xl">
             Proposal tracking for agencies.
           </h1>
           <p className="mt-5 max-w-[58ch] text-[17px] leading-relaxed text-ink-2">
@@ -194,7 +194,7 @@ function AgenciesPage() {
 
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-14 sm:py-16">
-            <h2 className="max-w-[26ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <h2 className="max-w-[26ch] font-display text-2xl sm:text-3xl">
               Three places an agency proposal goes quiet.
             </h2>
             <p className="mt-4 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
@@ -206,12 +206,8 @@ function AgenciesPage() {
             <ol className="mt-10 grid gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
               {DEATHS.map((d) => (
                 <li key={d.n} className="flex flex-col bg-surface px-5 py-6">
-                  <p className="font-mono text-[11px] tracking-wider text-brand">
-                    {d.n}
-                  </p>
-                  <p className="mt-3 font-display text-base font-semibold tracking-tight">
-                    {d.title}
-                  </p>
+                  <p className="kicker text-brand">{d.n}</p>
+                  <p className="mt-3 font-semibold text-base">{d.title}</p>
                   <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
                     {d.body}
                   </p>
@@ -232,8 +228,8 @@ function AgenciesPage() {
 
         <section>
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Running a book of clients</p>
-            <h2 className="mt-3 max-w-[28ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">Running a book of clients</p>
+            <h2 className="mt-3 max-w-[28ch] font-display text-2xl sm:text-3xl">
               What changes when it is nine proposals and not one.
             </h2>
 
@@ -292,8 +288,8 @@ function AgenciesPage() {
 
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Questions agencies ask</p>
-            <h2 className="mt-3 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">Questions agencies ask</p>
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl">
               Proposal tracking for agencies, the questions that come up.
             </h2>
 
@@ -303,7 +299,7 @@ function AgenciesPage() {
 
         <section>
           <PageContainer className="py-16 text-center sm:py-20">
-            <h2 className="mx-auto max-w-[22ch] font-display text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
+            <h2 className="mx-auto max-w-[22ch] font-display text-2xl sm:text-3xl">
               Put your next proposal through it.
             </h2>
             <p className="mx-auto mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">

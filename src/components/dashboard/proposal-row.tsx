@@ -1,22 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { RowMenu } from './row-menu'
 import { ROW_LINK_ATTR } from './use-list-keys'
-import { HeatMeter } from './heat-meter'
+import { ScoreRing } from './score-ring'
 import { FolderTag } from './folder-tag'
 import { formatDuration } from '#/lib/analytics/intent'
 import { cn, formatMoney } from '#/lib/utils'
-import type { ReactNode } from 'react'
 import type { Delta } from './since-last-visit'
 import type { IntentResult, IntentSignal } from '#/lib/analytics/intent'
 import type { ProposalSummary } from '#/lib/analytics/summaries'
-
-// A 3px spine on the left edge marks hot and warm deals, so the list is
-// scannable in peripheral vision without reading a single label.
-const SPINE = {
-  hot: 'before:bg-hot-2',
-  warm: 'before:bg-warm-2',
-  cold: 'before:bg-transparent',
-} as const
 
 const REASON = {
   hot: 'border-hot-line bg-hot-soft text-hot',
@@ -28,132 +19,204 @@ export function ProposalRow({
   proposal,
   delta,
   folderName = null,
+  selected = false,
+  onSelect,
 }: {
   proposal: ProposalSummary
   delta?: Delta
   /** Set only under All, where the row's folder is not otherwise shown. */
   folderName?: string | null
+  /** Shown in the dashboard's preview pane. */
+  selected?: boolean
+  /**
+   * Given only where a preview pane is on screen. A plain click on a row that
+   * is not yet selected previews it instead of navigating; clicking it again,
+   * or any modified click, opens the proposal as before.
+   */
+  onSelect?: (id: string) => void
 }) {
   const { intent } = proposal
   const reason = reasonFor(intent)
-
-  // One line of plain facts, with what is new since the last visit leading it
-  // in the brand colour. It used to be a second chip, in a second colour, in
-  // capitals, which made two badges fighting over one row.
-  const facts: Array<{ key: string; node: ReactNode }> = [
-    ...(delta
-      ? [
-          {
-            key: 'delta',
-            node: (
-              <span className="font-medium text-brand">
-                {describeDelta(delta)}
-              </span>
-            ),
-          },
-        ]
-      : []),
-    ...readMetrics(proposal).map((m) => ({ key: m, node: <span>{m}</span> })),
-  ]
-
-  // Rendered at one breakpoint or the other, never both — so the markup lives
-  // here once instead of being duplicated into each branch.
-  const money = (
-    <div className="flex shrink-0 items-center justify-end gap-3">
-      {proposal.dealValueCents != null && (
-        <span className="font-display text-base font-semibold tracking-tight tnum">
-          {formatMoney(proposal.dealValueCents, proposal.currency)}
-        </span>
-      )}
-      <HeatMeter band={intent.band} score={intent.score} />
-      <RowMenu proposal={proposal} />
-    </div>
-  )
+  const opened = proposal.qualifiedVisits > 0
 
   return (
     <li
       className={cn(
-        'row-enter group relative overflow-hidden rounded-md border border-line bg-surface px-4 py-3.5 shadow-sm transition-[border-color,box-shadow]',
-        'before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:content-[""]',
-        'hover:border-ink-3 hover:shadow-md',
+        'row-enter group relative rounded-xl border border-line bg-surface px-4 py-4 shadow-sm transition-[border-color,box-shadow] sm:px-5',
+        'hover:border-line-strong hover:shadow-md',
+        selected && 'border-ink shadow-md hover:border-ink',
         // The focus ring belongs to the whole card even though focus lands on
         // the stretched link inside it.
         'has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-ring',
         'has-[a[data-row-nav]]:outline-2 has-[a[data-row-nav]]:outline-offset-2 has-[a[data-row-nav]]:outline-ring',
-        SPINE[intent.band],
       )}
     >
-      {/* One line only at xl, where the shell is at its full 1280 and the
-            signal column has room without wrapping. Below that it stacks, with
-            money riding alongside the client name. */}
-      <div className="flex flex-col gap-2 xl:grid xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)_auto] xl:items-center xl:gap-6">
-        <div className="flex items-start justify-between gap-4 xl:block">
-          <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-[15px] font-semibold tracking-[-0.008em]">
-              {delta && (
-                <span
-                  aria-hidden
-                  className="size-1.5 shrink-0 rounded-full bg-brand-2"
-                />
-              )}
-              {/* after:inset-0 stretches the hit area over the whole card,
-                    so the row still opens from anywhere the menu is not. */}
-              <Link
-                to="/proposals/$id"
-                params={{ id: proposal.id }}
-                {...{ [ROW_LINK_ATTR]: '' }}
-                className="truncate outline-none after:absolute after:inset-0 after:content-['']"
-              >
-                {proposal.clientName}
-              </Link>
-            </p>
-            <p className="flex min-w-0 items-center gap-1.5 text-[13px] text-ink-2">
-              <span className="truncate">{proposal.title}</span>
-              {folderName && <FolderTag name={folderName} />}
-            </p>
-          </div>
-          <div className="xl:hidden">{money}</div>
+      {/* Ring, then who and how they read, then money and the one reason. The
+          third column drops under the other two when the list is narrow. */}
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 @2xl:grid-cols-[auto_minmax(0,1fr)_auto] @2xl:gap-x-5">
+        <ScoreRing score={intent.score} band={intent.band} opened={opened} />
+
+        <div className="min-w-0">
+          <p className="flex min-w-0 items-baseline gap-2">
+            {delta && (
+              <span
+                aria-hidden
+                className="size-1.5 shrink-0 self-center rounded-full bg-brand-2"
+              />
+            )}
+            {/* after:inset-0 stretches the hit area over the whole card, so
+                the row still opens from anywhere the menu is not. */}
+            <Link
+              to="/proposals/$id"
+              params={{ id: proposal.id }}
+              {...{ [ROW_LINK_ATTR]: '' }}
+              aria-current={selected || undefined}
+              // Keyboard focus only (j/k, Tab). A mouse press focuses the link
+              // before its click lands, and selecting there would make the
+              // click see a selected row and navigate on the first press.
+              onFocus={(e) => {
+                if (e.currentTarget.matches(':focus-visible'))
+                  onSelect?.(proposal.id)
+              }}
+              onClick={(e) => {
+                if (
+                  !onSelect ||
+                  selected ||
+                  e.metaKey ||
+                  e.ctrlKey ||
+                  e.shiftKey ||
+                  e.altKey ||
+                  e.button !== 0
+                )
+                  return
+                e.preventDefault()
+                onSelect(proposal.id)
+              }}
+              className="shrink-0 truncate text-base font-semibold tracking-[-0.01em] outline-none after:absolute after:inset-0 after:rounded-xl after:content-['']"
+            >
+              {proposal.clientName}
+            </Link>
+            <span className="truncate text-[13px] text-ink-3">
+              {proposal.title}
+            </span>
+            {folderName && <FolderTag name={folderName} />}
+          </p>
+
+          <ReadingLine proposal={proposal} delta={delta} />
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[13px] text-ink-2">
-          {facts.map((fact, i) => (
-            <span key={fact.key} className="flex items-center gap-2">
-              {i > 0 && (
-                <span
-                  aria-hidden
-                  className="size-[3px] rounded-full bg-ink-3"
-                />
-              )}
-              {fact.node}
-            </span>
-          ))}
-          {reason && (
+        <div className="col-span-2 flex items-center justify-between gap-3 @2xl:col-span-1 @2xl:flex-col @2xl:items-end @2xl:justify-center @2xl:gap-1.5">
+          <div className="flex items-center gap-1.5">
+            {proposal.dealValueCents != null && (
+              <span className="text-lg font-semibold tracking-tight tnum">
+                {formatMoney(proposal.dealValueCents, proposal.currency)}
+              </span>
+            )}
+            <RowMenu proposal={proposal} />
+          </div>
+          {reason ? (
             <span
               className={cn(
-                'ml-1 rounded-full border px-2 py-px text-[12px] font-medium',
+                'rounded-full border px-2.5 py-0.5 text-[12px] font-medium',
                 REASON[intent.band],
               )}
             >
               {reason.label}
             </span>
+          ) : (
+            !opened && <span className="text-[12px] text-ink-3">Waiting</span>
           )}
         </div>
-
-        <div className="hidden xl:block">{money}</div>
       </div>
     </li>
   )
 }
 
 /**
- * Signals the metrics line already states: how many times, how many readers,
- * how long. "Opened by 3 readers" beside "3 readers" was the same fact twice.
+ * How it was read, as a bar: time on pricing against everything else, which
+ * is the one split a sender acts on. A proposal with no page tagged pricing
+ * gets a plain total instead, so "0s on pricing" only ever means skipped it.
  */
-const RESTATES_METRICS = /^(Opened|Read (closely|it properly))/
+function ReadingLine({
+  proposal: p,
+  delta,
+}: {
+  proposal: ProposalSummary
+  delta?: Delta
+}) {
+  const news = delta && (
+    <span className="font-medium text-ink">{describeDelta(delta)}</span>
+  )
+
+  if (p.qualifiedVisits === 0 || p.totalEngagedMs === 0) {
+    return (
+      <p className="mt-1 text-[13px] text-ink-3">
+        {news ? <>{news}, </> : null}Not opened yet
+      </p>
+    )
+  }
+
+  const total = p.totalEngagedMs
+  const pricing = p.hasPricingPage ? Math.min(p.pricingEngagedMs, total) : 0
+  const share = (pricing / total) * 100
+  const readers = `${p.distinctViewers} ${p.distinctViewers === 1 ? 'reader' : 'readers'}`
+  const opens = `${p.qualifiedVisits} ${p.qualifiedVisits === 1 ? 'open' : 'opens'}`
+
+  return (
+    <div className="mt-2.5 max-w-md">
+      <div
+        aria-hidden
+        className="flex h-1.5 overflow-hidden rounded-full bg-surface-3"
+      >
+        {p.hasPricingPage && (
+          <span
+            className="h-full bg-warm-2"
+            style={{ width: `${pricing > 0 ? Math.max(share, 2) : 0}%` }}
+          />
+        )}
+        <span className="h-full flex-1 bg-line-strong/60" />
+      </div>
+      <div className="mt-1.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 text-[12px] text-ink-3">
+        <span>
+          {p.hasPricingPage ? (
+            <>
+              <b className="text-[13px] font-semibold text-ink tnum">
+                {formatDuration(pricing / 1000)}
+              </b>{' '}
+              on pricing of{' '}
+              <b className="text-[13px] font-semibold text-ink tnum">
+                {formatDuration(total / 1000)}
+              </b>
+            </>
+          ) : (
+            <>
+              <b className="text-[13px] font-semibold text-ink tnum">
+                {formatDuration(total / 1000)}
+              </b>{' '}
+              reading
+            </>
+          )}
+        </span>
+        <span className="tnum">
+          {news ? <>{news}, </> : null}
+          {readers}, {opens}
+        </span>
+      </div>
+    </div>
+  )
+}
 
 /**
- * The one reason worth a chip: the strongest signal the facts beside it do not
- * already say — time on pricing, a print, a return on a later day.
+ * Signals the reading line already states: opens, readers, time reading, and
+ * time on pricing, which the bar spells out. "Opened by 3 readers" beside
+ * "3 readers" was the same fact twice, and so was a "10m 3s on pricing" chip
+ * under a bar captioned "10m 3s on pricing".
+ */
+const RESTATES_METRICS = /^(Opened|Read (closely|it properly))|on pricing$/
+
+/**
+ * The one reason worth a chip: the strongest signal the reading line does not
+ * already say — a print, a forward, a return on a later day.
  */
 function reasonFor(intent: IntentResult): IntentSignal | null {
   return (
@@ -161,20 +224,6 @@ function reasonFor(intent: IntentResult): IntentSignal | null {
       (s) => s.points > 0 && !RESTATES_METRICS.test(s.label),
     ) ?? null
   )
-}
-
-/** Signals, not sentences: the same information in a third of the reading time. */
-function readMetrics(p: ProposalSummary): Array<string> {
-  if (p.qualifiedVisits === 0) return ['Not opened yet']
-
-  const metrics = [
-    `Viewed ${p.qualifiedVisits} ${p.qualifiedVisits === 1 ? 'time' : 'times'}`,
-  ]
-  if (p.totalEngagedMs > 0) {
-    metrics.push(`${formatDuration(p.totalEngagedMs / 1000)} engaged`)
-  }
-  if (p.distinctViewers > 1) metrics.push(`${p.distinctViewers} readers`)
-  return metrics
 }
 
 /** "2 new opens" / "1 new reader" — what actually moved, not a generic badge. */
@@ -186,5 +235,5 @@ function describeDelta(delta: Delta): string {
   if (delta.readers > 0) {
     parts.push(`${delta.readers} new reader${delta.readers === 1 ? '' : 's'}`)
   }
-  return parts.join(' · ')
+  return parts.join(', ')
 }

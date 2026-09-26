@@ -35,7 +35,7 @@ export function LongFormSections({
                   the sticky site header. */}
               <h2
                 id={headingId(s.title)}
-                className="max-w-[22ch] scroll-mt-20 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl lg:sticky lg:top-24 lg:self-start"
+                className="max-w-[22ch] scroll-mt-20 font-display text-2xl sm:text-3xl lg:sticky lg:top-24 lg:self-start"
               >
                 {s.title}
               </h2>

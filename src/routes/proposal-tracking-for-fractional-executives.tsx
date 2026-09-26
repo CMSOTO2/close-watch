@@ -136,8 +136,8 @@ function FractionalPage() {
 
       <main>
         <PageContainer className="pt-12 pb-14 sm:pt-16">
-          <p className="kicker text-brand">For fractional executives</p>
-          <h1 className="mt-3 max-w-[22ch] font-display text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
+          <p className="kicker">For fractional executives</p>
+          <h1 className="mt-3 max-w-[22ch] font-display text-3xl sm:text-4xl">
             You pitch one person. Someone else decides.
           </h1>
           <p className="mt-5 max-w-[58ch] text-[17px] leading-relaxed text-ink-2">
@@ -164,7 +164,7 @@ function FractionalPage() {
           <PageContainer className="py-14 sm:py-16">
             <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
               <div>
-                <h2 className="max-w-[22ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+                <h2 className="max-w-[22ch] font-display text-2xl sm:text-3xl">
                   The forward is the whole signal.
                 </h2>
                 <p className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">
@@ -199,8 +199,8 @@ function FractionalPage() {
 
         <section>
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Why the timing changes</p>
-            <h2 className="mt-3 max-w-[30ch] font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">Why the timing changes</p>
+            <h2 className="mt-3 max-w-[30ch] font-display text-2xl sm:text-3xl">
               The follow-up you send after a forward is a different email.
             </h2>
 
@@ -234,8 +234,8 @@ function FractionalPage() {
 
         <section className="border-y border-line bg-surface">
           <PageContainer className="py-16 sm:py-20">
-            <p className="kicker text-brand">Questions</p>
-            <h2 className="mt-3 font-display text-2xl font-semibold tracking-[-0.02em] sm:text-3xl">
+            <p className="kicker">Questions</p>
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl">
               What fractional operators ask about proposal tracking.
             </h2>
 
@@ -245,7 +245,7 @@ function FractionalPage() {
 
         <section>
           <PageContainer className="py-16 text-center sm:py-20">
-            <h2 className="mx-auto max-w-[24ch] font-display text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
+            <h2 className="mx-auto max-w-[24ch] font-display text-2xl sm:text-3xl">
               Find out where your next proposal actually went.
             </h2>
             <p className="mx-auto mt-4 max-w-[52ch] text-[15px] leading-relaxed text-ink-2">

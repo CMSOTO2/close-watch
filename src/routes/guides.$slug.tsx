@@ -61,9 +61,7 @@ export const Route = createFileRoute('/guides/$slug')({
   notFoundComponent: () => (
     <div className="grid min-h-screen place-items-center bg-canvas px-6 text-center">
       <div>
-        <h1 className="font-display text-lg font-semibold tracking-tight">
-          That guide doesn&rsquo;t exist
-        </h1>
+        <h1 className="font-display text-xl">That guide doesn&rsquo;t exist</h1>
         <p className="mt-2 text-[13px] text-ink-2">
           <Link to="/guides" className="text-brand hover:underline">
             See every guide
@@ -98,7 +96,7 @@ function GuidePage() {
       }
       after={
         <div className="mt-14 border-t border-line pt-8">
-          <p className="font-display text-lg font-semibold tracking-[-0.015em]">
+          <p className="font-display text-xl">
             Put a real proposal through Closewatch.
           </p>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-2">

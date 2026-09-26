@@ -43,47 +43,44 @@
      read as a cream. The ladder still runs surface #ffffff > canvas >
      surface-2 > surface-3, so a card is the lightest thing on screen and the
      page sits under it — the same direction dark runs in, and the reason
-     nothing here needed restructuring. The page itself is never pure white. */
-  --canvas: #f7f6f3;
+     nothing here needed restructuring. The page itself is never pure white.
+
+     2026-09-26: the page moved up to near-white. A stone ground (#eeebe5 and
+     #f4f3f0 were both tried) read as grey and flat under the white panels,
+     and all-white read as harsh, so the panels now carry the structure with
+     their borders and shadow rather than by sitting on a darker page. */
+  --canvas: #fbfaf8;
   --surface: #ffffff;
-  --surface-2: #f1efea;
-  --surface-3: #e7e4dd;
-  --ink: #1a1815;
-  --ink-2: #57534c;
-  --ink-3: #726b62;
+  --surface-2: #f5f4f1;
+  --surface-3: #ebe9e4;
+  --ink: #15130f;
+  --ink-2: #4a463f;
+  --ink-3: #68625a;
 
   /* Three border weights, because they do three jobs. --line-soft is a hairline
      inside a card, --line is a real divider, and --line-strong is the edge of a
      control: an outline button or an input has to be findable by its border
      when its fill matches the card it sits on. --line-strong is held at 2.18:1
      on a card, within a hair of the 2.03 dark gives the same job. */
-  --line: #e9e6e0;
-  --line-strong: #b5afa5;
-  --line-soft: #f0ede8;
+  --line: #e4e1db;
+  --line-strong: #a59e93;
+  --line-soft: #efede9;
 
-  /* Brand amber, at dark's own hue this time.
+  /* Brand, in light, is ink. (2026-09-26)
 
-     The old value was #984800, and the note here used to argue that amber has
-     to go brown to clear AA on white. Only half of that was true. Lightness
-     does have to drop — but the old token had also rotated 25deg toward red
-     while it fell, which no other token in the theme did (every one of the
-     others tracks its dark counterpart within 7deg). That rotation is what
-     made it brown rather than dark: it had stopped being the same colour as
-     the gold in the other theme.
-
-     Holding hue 77deg and taking the most chroma sRGB will give at a legible
-     lightness lands here — dark brass, and at C=0.110 against dark's 0.120,
-     essentially as saturated as the gold it matches. It clears 4.5:1 on all
-     three grounds it is ever set on, including its own chip.
-
-     The fill stays a separate token, because a fill and a text colour want
-     opposite things: a solid brand button is bright amber with near-black on
-     it, exactly as dark has always done it. */
-  --brand: #8f6203;
-  --brand-2: #bf8306;
-  --brand-soft: #f8f0de;
+     Every attempt at a gold text colour on white landed on brown, because
+     gold dark enough to clear 4.5:1 is brown: #984800 rotated toward red,
+     #8f6203 held the hue and was still read as mud. So in light the brand is
+     not a text colour at all. --brand, which links, labels and the "new"
+     markers use, is ink. Gold lives on as a mark (--brand-2, the heat bars,
+     the score ring, the pricing segment) and as a fill (--brand-fill, Choose
+     Solo), where it can be bright and carry near-black text, exactly as dark
+     has always done it. */
+  --brand: #1a1815;
+  --brand-2: #cc8d12;
+  --brand-soft: #fbefd3;
   --brand-fill: #e39a12;
-  --brand-fill-ink: #1a1815;
+  --brand-fill-ink: #15130f;
 
   /* Money secured. */
   --good: #007a48;
@@ -143,20 +140,21 @@
      light theme nobody has complained about. These are the same offset from
      their own soft that it has from good-soft. --cold-line is held to a tenth
      the chroma so the neutral chip stays neutral rather than turning beige. */
-  --brand-line: #f0d8b6;
-  --hot-line: #f7cfbf;
-  --warm-line: #f0d7b4;
+  --brand-line: #ebd09a;
+  --hot-line: #f3c3a6;
+  --warm-line: #ebd09a;
   --cold-line: #dedad3;
 
-  /* Intent bands. Hot and warm are adjacent on the wheel and co-occur in a
-     proposal row, so they are separated by hue rather than by lightness: hot
-     is orange-red at 43deg, warm the same brass as the brand at 77deg. Dark
-     separates them by the identical 34deg and lets warm and brand be the one
-     colour, so this is that theme's structure rather than a second scheme. */
-  --hot: #b44500;
-  --hot-soft: #fceae0;
-  --warm: #8f6203;
-  --warm-soft: #f9efdc;
+  /* Intent bands. In light, the chip's text is ink and the band lives in its
+     tinted ground and edge, for the same reason --brand is ink: an orange or
+     amber dark enough to read as text on white reads as brown. The bright
+     versions are the mark tier above (--hot-2, --warm-2), which is what the
+     score ring and heat bars use. Dark keeps coloured chip text; its accents
+     sit high enough in lightness to afford it. */
+  --hot: #1a1815;
+  --hot-soft: #fde8db;
+  --warm: #1a1815;
+  --warm-soft: #fbefd3;
   --cold: #6b655c;
   --cold-soft: #f1efea;
 
@@ -198,16 +196,16 @@
      AA as text, and a bar that dark stops receding and starts shouting. Both
      clear 3:1 on --surface so neither is a ghost on white. */
   --bar: #948d84;
-  --bar-lead: #c87d0e;
+  --bar-lead: #cc8d12;
 
   /* Warm-neutral, to match the ground they fall on: a cool shadow on a warm
      page is the same mismatch the accents had, and it greys the paper. Kept
      shallow — on a light theme a shadow is there to lift a card off the page
      by a millimetre, and anything heavier reads as a smudge rather than
      as height. */
-  --shadow-sm: 0 1px 2px rgba(41, 33, 24, 0.05);
+  --shadow-sm: 0 1px 2px rgba(41, 33, 24, 0.08);
   --shadow-md:
-    0 1px 2px rgba(41, 33, 24, 0.04), 0 8px 20px -12px rgba(41, 33, 24, 0.18);
+    0 1px 2px rgba(41, 33, 24, 0.07), 0 10px 24px -12px rgba(41, 33, 24, 0.22);
   --shadow-lg:
     0 1px 2px rgba(41, 33, 24, 0.04), 0 20px 48px -24px rgba(41, 33, 24, 0.24);
 
@@ -332,10 +330,9 @@
 }
 
 @theme inline {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-display:
-    'Instrument Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Newsreader', Georgia, ui-serif, serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
 
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
@@ -539,14 +536,21 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Small uppercase mono label — the one typographic flourish the system uses.
-     In components so a `text-*` utility beside it still wins. */
+  /* Small label above a heading or a figure. Sentence case in the interface
+     face: tracked mono capitals were the loudest "generated" tell on the
+     site, and a label only has to be findable, not announced. */
   .kicker {
-    font-family: var(--font-mono);
-    font-size: 0.64rem;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+    font-size: 0.8125rem;
+    font-weight: 500;
     color: var(--ink-3);
+  }
+
+  /* The serif is set at book weight with gentle tracking wherever it is used.
+     The headings were written for a tight semibold grotesk; the class strings
+     keep their sizes and this settles weight and spacing in one place. */
+  .font-display {
+    font-weight: 400;
+    letter-spacing: -0.012em;
   }
 }
 

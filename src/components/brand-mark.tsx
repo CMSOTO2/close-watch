@@ -42,9 +42,7 @@ export function Wordmark({ className }: { className?: string }) {
   return (
     <span className={cn('flex items-center gap-2.5', className)}>
       <BrandMark />
-      <b className="font-display text-[15px] font-semibold tracking-[-0.015em]">
-        Closewatch
-      </b>
+      <b className="font-display text-[18px] font-normal">Closewatch</b>
     </span>
   )
 }
