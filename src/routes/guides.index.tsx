@@ -7,12 +7,13 @@ import { GUIDES, STAGES } from '#/content/guides'
 import {
   breadcrumbJsonLd,
   canonical,
+  collectionJsonLd,
   jsonLdScript,
   socialMeta,
 } from '#/lib/seo'
 
 const PATH = '/guides'
-const TITLE = 'Guides | Closewatch'
+const TITLE = 'Proposal Tracking and Follow-Up Guides | Closewatch'
 const DESCRIPTION =
   'Straight answers on what happens after you send a proposal: whether it was read or forwarded, how long to wait, what silence means, and how to follow up.'
 
@@ -24,12 +25,25 @@ export const Route = createFileRoute('/guides/')({
       ...socialMeta({ title: TITLE, description: DESCRIPTION, path: PATH }),
     ],
     links: canonical(PATH),
-    scripts: jsonLdScript(
-      breadcrumbJsonLd([
-        { name: 'Closewatch', path: '/' },
-        { name: 'Guides', path: PATH },
-      ]),
-    ),
+    scripts: [
+      ...jsonLdScript(
+        breadcrumbJsonLd([
+          { name: 'Closewatch', path: '/' },
+          { name: 'Guides', path: PATH },
+        ]),
+      ),
+      ...jsonLdScript(
+        collectionJsonLd({
+          title: TITLE,
+          description: DESCRIPTION,
+          path: PATH,
+          items: GUIDES.map((g) => ({
+            name: g.title,
+            path: `/guides/${g.slug}`,
+          })),
+        }),
+      ),
+    ],
   }),
   component: GuidesIndex,
 })

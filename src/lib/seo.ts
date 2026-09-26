@@ -16,9 +16,20 @@ const origin = publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')
  */
 export const FOUNDER_LINKEDIN = 'https://www.linkedin.com/in/carlos-m-soto/'
 
+/**
+ * Stable ids for the two entities every page talks about, so the blocks on
+ * different pages describe one company and one person rather than a dozen
+ * look-alikes a crawler has to reconcile by name. A name is ambiguous here in
+ * both directions (see above); an @id is not.
+ */
+const ORG_ID = `${origin}/#organization`
+const FOUNDER_ID = `${origin}/about#founder`
+
 const FOUNDER = {
   '@type': 'Person',
+  '@id': FOUNDER_ID,
   name: 'Carlos Soto',
+  jobTitle: 'Founder',
   url: `${origin}/about`,
   sameAs: [FOUNDER_LINKEDIN],
 }
@@ -121,6 +132,20 @@ export function productJsonLd() {
     description:
       'Proposal tracking software for agencies. Turn the proposal PDF you already send into a tracked link and see who opened it, how long they spent on pricing, and whether it reached the person who signs.',
     image: `${origin}/og.png`,
+    // The same list llms.txt gives, and only things the product records
+    // today. An assistant asked "what does Closewatch track" quotes this.
+    featureList: [
+      'Proposal open tracking',
+      'Time spent on each page',
+      'Time spent on the pricing page',
+      'Return visit tracking',
+      'Forward detection: new readers on the same link',
+      'Per-recipient tracked links',
+      'Download and print tracking',
+      'Bot and link-scanner filtering',
+      'Intent score (cold, warm, hot) with the reasons listed',
+      'Email alerts on first open, return visits and new readers',
+    ],
     audience: {
       '@type': 'BusinessAudience',
       audienceType:
@@ -128,6 +153,7 @@ export function productJsonLd() {
     },
     publisher: {
       '@type': 'Organization',
+      '@id': ORG_ID,
       name: 'Closewatch',
       url: `${origin}/`,
       logo: `${origin}/android-chrome-512x512.png`,
@@ -209,6 +235,7 @@ export function articleJsonLd({
     author: FOUNDER,
     publisher: {
       '@type': 'Organization',
+      '@id': ORG_ID,
       name: 'Closewatch',
       url: `${origin}/`,
       logo: `${origin}/android-chrome-512x512.png`,
@@ -233,7 +260,7 @@ export function organizationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    '@id': `${origin}/#organization`,
+    '@id': ORG_ID,
     name: 'Closewatch',
     url: `${origin}/`,
     logo: `${origin}/android-chrome-512x512.png`,
@@ -242,6 +269,85 @@ export function organizationJsonLd() {
     email: 'hello@getclosewatch.com',
     founder: FOUNDER,
     sameAs: [PRODUCT_HUNT],
+  }
+}
+
+/**
+ * The site itself, on / only. This is where Google reads the site name it
+ * shows above a result instead of the bare domain: `name` first, then
+ * `alternateName`. It matters more than usual here because "Closewatch" alone
+ * is also a farm-camera company and a police tip app, and the alternate name
+ * is the version that says which one this is.
+ */
+export function websiteJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${origin}/#website`,
+    name: 'Closewatch',
+    alternateName: ['Closewatch proposal tracking', 'getclosewatch.com'],
+    url: `${origin}/`,
+    inLanguage: 'en',
+    publisher: { '@id': ORG_ID },
+  }
+}
+
+/**
+ * /about as what it is: the page about the company and the person behind it.
+ * The entities themselves are the Organization block on the same page; this
+ * points at them by id rather than describing them a second time.
+ */
+export function aboutPageJsonLd({
+  path,
+  dateModified,
+}: {
+  path: string
+  dateModified: string
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    url: `${origin}${path}`,
+    dateModified,
+    mainEntity: { '@id': ORG_ID },
+    about: [{ '@id': ORG_ID }, FOUNDER],
+  }
+}
+
+/**
+ * The guides index as a list, in the order it is shown. An assistant pulling
+ * the page gets every guide's address and title without parsing the layout,
+ * and a search engine reads it as a hub rather than a page of links.
+ */
+export function collectionJsonLd({
+  title,
+  description,
+  path,
+  items,
+}: {
+  title: string
+  description: string
+  path: string
+  items: Array<{ name: string; path: string }>
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description,
+    url: `${origin}${path}`,
+    isPartOf: { '@id': `${origin}/#website` },
+    publisher: { '@id': ORG_ID },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: items.length,
+      itemListElement: items.map((item, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: item.name,
+        url: `${origin}${item.path}`,
+      })),
+    },
   }
 }
 

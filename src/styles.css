@@ -1,12 +1,17 @@
-/* The webfonts are requested from the document head in routes/__root.tsx, not
-   with an @import here. An @import is discovered only after this stylesheet has
-   been fetched and parsed, and it then costs two more serialised round trips —
-   one to fonts.googleapis.com for the face declarations, another to
-   fonts.gstatic.com for the files — none of which the browser can start early
-   because it does not know they exist. All of it is render-blocking. In the
-   head they are in the initial HTML, so preconnect and the fetch begin with
-   everything else. */
+/* The webfonts are self-hosted from the @fontsource-variable packages, which
+   ship the same woff2 files Google Fonts serves (Newsreader with its opsz axis,
+   Geist and Geist Mono as wght variables). They used to come from a
+   fonts.googleapis.com stylesheet in the document head. That stylesheet was
+   render-blocking and cross-origin: two extra connections (googleapis for the
+   declarations, gstatic for the files) before the first paint. Lighthouse on a
+   throttled phone put it at 0.9 s of a 6.2 s LCP. Bundled here, the
+   declarations ride in our own stylesheet and the files come from our origin
+   with hashed, immutable URLs. Only the unicode ranges a page actually uses
+   are downloaded. */
 @import 'tailwindcss';
+@import '@fontsource-variable/geist/wght.css';
+@import '@fontsource-variable/geist-mono/wght.css';
+@import '@fontsource-variable/newsreader/opsz.css';
 @plugin '@tailwindcss/typography';
 
 @import 'tw-animate-css';
@@ -330,9 +335,10 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Newsreader', Georgia, ui-serif, serif;
-  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: 'Geist Variable', 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Newsreader Variable', 'Newsreader', Georgia, ui-serif, serif;
+  --font-mono:
+    'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
 
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);

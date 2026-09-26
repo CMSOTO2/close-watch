@@ -23,8 +23,8 @@ const origin = publicEnv.VITE_PUBLIC_URL.replace(/\/$/, '')
  * commit.
  */
 const PAGES: Array<{ path: string; lastmod: string }> = [
-  { path: '/', lastmod: '2026-09-04' },
-  { path: '/demo', lastmod: '2026-09-03' },
+  { path: '/', lastmod: '2026-09-13' },
+  { path: '/demo', lastmod: '2026-09-13' },
   { path: '/proposal-tracking-for-agencies', lastmod: '2026-09-11' },
   {
     path: '/proposal-tracking-for-fractional-executives',
@@ -33,9 +33,9 @@ const PAGES: Array<{ path: string; lastmod: string }> = [
   { path: '/vs/proposify', lastmod: '2026-09-11' },
   { path: '/vs/pandadoc', lastmod: '2026-09-11' },
   { path: '/vs/docsend', lastmod: '2026-09-11' },
-  { path: '/about', lastmod: '2026-09-09' },
+  { path: '/about', lastmod: '2026-09-26' },
   { path: '/proposal-tracking', lastmod: '2026-09-11' },
-  { path: '/guides', lastmod: '2026-09-11' },
+  { path: '/guides', lastmod: '2026-09-26' },
   {
     path: '/guides/how-to-follow-up-on-a-proposal',
     lastmod: '2026-09-11',

@@ -14,6 +14,7 @@ import { ToastProvider } from '#/components/toast'
 import { publicEnv } from '#/env'
 
 import appCss from '../styles.css?url'
+import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -40,29 +41,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         rel: 'stylesheet',
         href: appCss,
       },
-      // Fonts, in the head rather than behind an @import in styles.css. An
-      // @import is only discovered once our own stylesheet has been fetched and
-      // parsed, and it then costs two more serialised round trips before a
-      // glyph exists — googleapis for the declarations, gstatic for the files —
-      // all of it blocking the render. Declared here they start with everything
-      // else.
-      //
-      // React hoists every precedence-managed stylesheet above these, so the
-      // preconnects end up a few hundred bytes further down the head than they
-      // read here. That is not worth fighting: the preload scanner takes the
-      // head in one bite, and the round trip these save was the expensive part.
-      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-      // crossOrigin because font files are fetched anonymously; without it the
-      // browser opens a second connection to the same host and the preconnect
-      // has warmed the wrong one.
+      // The fonts are self-hosted and declared in styles.css (see the comment
+      // there). A face declared in CSS is only fetched once a rule on the page
+      // uses it, so the one every page's body copy is set in is preloaded here
+      // and starts downloading with the stylesheet. Newsreader is left to be
+      // discovered: it is 130 KB and only sets headings, which have a Georgia
+      // fallback to swap from. crossOrigin because fonts are always fetched in
+      // CORS mode; without it the preload is not reused and the file comes
+      // down twice.
       {
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
+        rel: 'preload',
+        href: geistLatin,
+        as: 'font',
+        type: 'font/woff2',
         crossOrigin: 'anonymous',
-      },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap',
       },
       // The SVG is the real one: it is the only format that can answer
       // prefers-color-scheme, which the mark needs so its tile does not sit as

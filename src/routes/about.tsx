@@ -4,6 +4,7 @@ import { ContentPage, prose } from '#/components/content-page'
 import { Button } from '#/components/ui/button'
 import {
   FOUNDER_LINKEDIN,
+  aboutPageJsonLd,
   canonical,
   jsonLdScript,
   organizationJsonLd,
@@ -11,24 +12,27 @@ import {
 } from '#/lib/seo'
 import { cn } from '#/lib/utils'
 
+const PATH = '/about'
+// The title answers the two searches this page is for: the brand, and the
+// founder's name. The H1 is still the pitch.
+const TITLE = 'About Closewatch: Proposal Tracking by Carlos Soto'
+const DESCRIPTION =
+  'Closewatch is proposal tracking software built and run by one person, Carlos Soto. Why it exists, what it records, and who reads the email when you write in.'
+
 export const Route = createFileRoute('/about')({
   head: () => ({
     meta: [
-      { title: 'About · Closewatch' },
-      {
-        name: 'description',
-        content:
-          'Why Closewatch exists and what it does with the data it collects.',
-      },
-      ...socialMeta({
-        title: 'About · Closewatch',
-        description:
-          'Why Closewatch exists and what it does with the data it collects.',
-        path: '/about',
-      }),
+      { title: TITLE },
+      { name: 'description', content: DESCRIPTION },
+      ...socialMeta({ title: TITLE, description: DESCRIPTION, path: PATH }),
     ],
-    links: canonical('/about'),
-    scripts: jsonLdScript(organizationJsonLd()),
+    links: canonical(PATH),
+    scripts: [
+      ...jsonLdScript(organizationJsonLd()),
+      ...jsonLdScript(
+        aboutPageJsonLd({ path: PATH, dateModified: '2026-09-26' }),
+      ),
+    ],
   }),
   component: About,
 })

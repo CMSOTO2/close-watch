@@ -56,3 +56,19 @@ export function redirectFromWww(
 export function wwwRedirect(requestUrl: string): string | null {
   return redirectFromWww(requestUrl, CANONICAL_HOST)
 }
+
+/**
+ * The same page without its trailing slash, or null if there is none to strip.
+ *
+ * The router already sends `/about/` to `/about`, but with a 307, which says
+ * "temporary": a search engine keeps the slashed URL on its books and splits
+ * whatever links point at it from the page they mean. A 301 folds them into
+ * the canonical one. The root keeps its slash, since `/` is the path.
+ */
+export function redirectTrailingSlash(requestUrl: string): string | null {
+  const url = new URL(requestUrl)
+  if (url.pathname === '/' || !url.pathname.endsWith('/')) return null
+
+  url.pathname = url.pathname.replace(/\/+$/, '') || '/'
+  return url.toString()
+}

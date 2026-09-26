@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { CANONICAL_HOST, redirectFromWww, wwwRedirect } from './www-redirect'
+import {
+  CANONICAL_HOST,
+  redirectFromWww,
+  redirectTrailingSlash,
+  wwwRedirect,
+} from './www-redirect'
 
 // The host is passed in rather than read from the environment. These assertions
 // used to run against whatever VITE_PUBLIC_URL happened to be, which meant they
@@ -78,5 +83,24 @@ describe('wwwRedirect', () => {
 
   it('leaves the configured host alone', () => {
     expect(wwwRedirect(`https://${CANONICAL_HOST}/terms`)).toBeNull()
+  })
+})
+
+describe('redirectTrailingSlash', () => {
+  it('strips the slash and keeps the query string', () => {
+    expect(
+      redirectTrailingSlash('https://getclosewatch.com/guides/?ref=x'),
+    ).toBe('https://getclosewatch.com/guides?ref=x')
+  })
+
+  it('strips a run of slashes', () => {
+    expect(redirectTrailingSlash('https://getclosewatch.com/about//')).toBe(
+      'https://getclosewatch.com/about',
+    )
+  })
+
+  it('leaves the root and unslashed paths alone', () => {
+    expect(redirectTrailingSlash('https://getclosewatch.com/')).toBeNull()
+    expect(redirectTrailingSlash('https://getclosewatch.com/about')).toBeNull()
   })
 })

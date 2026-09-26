@@ -5,6 +5,7 @@ import {
   jsonLdScript,
   organizationJsonLd,
   productJsonLd,
+  websiteJsonLd,
 } from '#/lib/seo'
 
 export const Route = createFileRoute('/')({
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/')({
     scripts: [
       ...jsonLdScript(productJsonLd()),
       ...jsonLdScript(organizationJsonLd()),
+      ...jsonLdScript(websiteJsonLd()),
     ],
   }),
   component: LandingPage,
