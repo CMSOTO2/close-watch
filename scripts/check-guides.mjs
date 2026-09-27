@@ -25,7 +25,11 @@ const SITEMAP = 'src/routes/sitemap[.]xml.ts'
 const SUFFIX = ' | Closewatch'
 
 const files = readdirSync(DIR)
-  .filter((f) => f.endsWith('.ts') && f !== 'index.ts' && f !== 'types.ts')
+  // Everything else in the folder is a guide. load.ts is the lazy loader.
+  .filter(
+    (f) =>
+      f.endsWith('.ts') && !['index.ts', 'types.ts', 'load.ts'].includes(f),
+  )
   .map((f) => DIR + f)
 files.push(PILLAR)
 

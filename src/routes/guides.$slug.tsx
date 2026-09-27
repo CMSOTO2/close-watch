@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { ContentPage, prose } from '#/components/content-page'
 import { ArticleBody } from '#/components/guides/guide-markdown'
 import { Button } from '#/components/ui/button'
-import { getGuide } from '#/content/guides'
+import { loadGuide } from '#/content/guides/load'
 import {
   AUTHOR_LINK,
   AUTHOR_META,
@@ -15,8 +15,8 @@ import {
 } from '#/lib/seo'
 
 export const Route = createFileRoute('/guides/$slug')({
-  loader: ({ params }) => {
-    const guide = getGuide(params.slug)
+  loader: async ({ params }) => {
+    const guide = await loadGuide(params.slug)
     if (!guide) throw notFound()
     return guide
   },

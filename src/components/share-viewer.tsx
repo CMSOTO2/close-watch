@@ -1,9 +1,7 @@
-import { notFound, redirect } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { Eye } from 'lucide-react'
 import { PdfViewer } from '#/components/pdf-viewer'
 import { PageContainer } from '#/components/page-container'
-import { beginVisit } from '#/lib/analytics/begin-visit'
 import type { VisitContext } from '#/lib/analytics/begin-visit'
 
 /**
@@ -11,41 +9,6 @@ import type { VisitContext } from '#/lib/analytics/begin-visit'
  * /p/{sender}/{token}, which every link issued now takes, and /p/{token},
  * which every link sent before names were added still is.
  */
-
-/**
- * Loads a share link for either route. A link at the wrong address, which
- * means an old unnamed one, a sender who has since been renamed, or a name
- * someone typed in, is sent to the right one before anything is recorded.
- */
-export async function loadShare(
-  token: string,
-  slug: string | undefined,
-): Promise<VisitContext> {
-  const result = await beginVisit({ data: { token, slug } })
-  if (!result) throw notFound()
-  if (result.kind === 'redirect') {
-    throw result.slug
-      ? redirect({
-          to: '/p/$slug/$token',
-          params: { slug: result.slug, token },
-          replace: true,
-        })
-      : redirect({ to: '/p/$token', params: { token }, replace: true })
-  }
-  return result.visit
-}
-
-export function shareHead(title: string | undefined) {
-  return {
-    meta: [
-      { title: title ?? 'Proposal' },
-      // Keep share links out of search results.
-      { name: 'robots', content: 'noindex, nofollow' },
-      // Never put the secret token in a Referer header sent to another origin.
-      { name: 'referrer', content: 'no-referrer' },
-    ],
-  }
-}
 
 export function ShareLinkGone() {
   return (

@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { PageContainer } from '#/components/page-container'
 import { SiteHeader } from '#/components/landing/site-header'
 import { SiteFooter } from '#/components/site-footer'
-import { GUIDES, STAGES } from '#/content/guides'
+import { loadGuideIndex } from '#/content/guides/load'
 import {
   breadcrumbJsonLd,
   canonical,
@@ -18,7 +18,10 @@ const DESCRIPTION =
   'Straight answers on what happens after you send a proposal: whether it was read or forwarded, how long to wait, what silence means, and how to follow up.'
 
 export const Route = createFileRoute('/guides/')({
-  head: () => ({
+  // A loader rather than an import, so the guides stay out of the entry chunk.
+  // See content/guides/load.ts.
+  loader: () => loadGuideIndex(),
+  head: ({ loaderData }) => ({
     meta: [
       { title: TITLE },
       { name: 'description', content: DESCRIPTION },
@@ -37,7 +40,7 @@ export const Route = createFileRoute('/guides/')({
           title: TITLE,
           description: DESCRIPTION,
           path: PATH,
-          items: GUIDES.map((g) => ({
+          items: (loaderData?.guides ?? []).map((g) => ({
             name: g.title,
             path: `/guides/${g.slug}`,
           })),
@@ -49,6 +52,7 @@ export const Route = createFileRoute('/guides/')({
 })
 
 function GuidesIndex() {
+  const { guides: GUIDES, stages: STAGES } = Route.useLoaderData()
   return (
     <div className="min-h-screen bg-canvas">
       <SiteHeader />

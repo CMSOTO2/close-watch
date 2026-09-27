@@ -1,8 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  ComparisonPage,
-  comparisonHead,
-} from '#/components/compare/comparison-page'
+import { ComparisonPage } from '#/components/compare/comparison-page'
+import { comparisonHead } from '#/components/compare/comparison-head'
 import { COMPETITORS } from '#/components/compare/competitors'
 
 const c = COMPETITORS.pandadoc

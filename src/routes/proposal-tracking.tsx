@@ -3,8 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { ContentPage, prose } from '#/components/content-page'
 import { ArticleBody } from '#/components/guides/guide-markdown'
 import { Button } from '#/components/ui/button'
-import { GUIDES, STAGES } from '#/content/guides'
-import { pillar } from '#/content/proposal-tracking'
+import { loadGuideIndex } from '#/content/guides/load'
 import {
   AUTHOR_LINK,
   AUTHOR_META,
@@ -19,36 +18,49 @@ import { cn } from '#/lib/utils'
 const PATH = '/proposal-tracking'
 
 export const Route = createFileRoute('/proposal-tracking')({
-  head: () => ({
-    meta: [
-      { title: `${pillar.metaTitle ?? pillar.title} | Closewatch` },
-      { name: 'description', content: pillar.description },
-      AUTHOR_META,
-      ...socialMeta({
-        title: pillar.title,
-        description: pillar.dek,
-        path: PATH,
-      }),
-    ],
-    links: [...canonical(PATH), AUTHOR_LINK],
-    scripts: [
-      ...jsonLdScript(
-        breadcrumbJsonLd([
-          { name: 'Closewatch', path: '/' },
-          { name: 'Proposal tracking', path: PATH },
-        ]),
-      ),
-      ...jsonLdScript(
-        articleJsonLd({
+  // A loader rather than imports, so the pillar and the guides stay out of the
+  // entry chunk. See content/guides/load.ts.
+  loader: async () => {
+    const [{ pillar }, index] = await Promise.all([
+      import('#/content/proposal-tracking'),
+      loadGuideIndex(),
+    ])
+    return { pillar, ...index }
+  },
+  head: ({ loaderData }) => {
+    if (!loaderData) return {}
+    const { pillar } = loaderData
+    return {
+      meta: [
+        { title: `${pillar.metaTitle ?? pillar.title} | Closewatch` },
+        { name: 'description', content: pillar.description },
+        AUTHOR_META,
+        ...socialMeta({
           title: pillar.title,
-          description: pillar.description,
+          description: pillar.dek,
           path: PATH,
-          datePublished: pillar.datePublished,
-          dateModified: pillar.dateModified,
         }),
-      ),
-    ],
-  }),
+      ],
+      links: [...canonical(PATH), AUTHOR_LINK],
+      scripts: [
+        ...jsonLdScript(
+          breadcrumbJsonLd([
+            { name: 'Closewatch', path: '/' },
+            { name: 'Proposal tracking', path: PATH },
+          ]),
+        ),
+        ...jsonLdScript(
+          articleJsonLd({
+            title: pillar.title,
+            description: pillar.description,
+            path: PATH,
+            datePublished: pillar.datePublished,
+            dateModified: pillar.dateModified,
+          }),
+        ),
+      ],
+    }
+  },
   component: ProposalTracking,
 })
 
@@ -59,6 +71,7 @@ export const Route = createFileRoute('/proposal-tracking')({
  * new guide appears here without anyone remembering to add it.
  */
 function ProposalTracking() {
+  const { pillar, guides: GUIDES, stages: STAGES } = Route.useLoaderData()
   return (
     <ContentPage
       readingProgress

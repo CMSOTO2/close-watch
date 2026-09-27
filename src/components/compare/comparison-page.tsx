@@ -9,35 +9,6 @@ import { LongFormSections, QuestionList } from '#/components/long-form'
 import { splitAtHeadings } from '#/lib/markdown-text'
 import { PRICES_CHECKED } from '#/components/compare/competitors'
 import type { Competitor } from '#/components/compare/competitors'
-import {
-  breadcrumbJsonLd,
-  canonical,
-  jsonLdScript,
-  socialMeta,
-} from '#/lib/seo'
-
-/** The head for a /vs/… route. Shared so the three routes cannot drift. */
-export function comparisonHead(c: Competitor) {
-  const path = `/vs/${c.slug}`
-  return {
-    meta: [
-      { title: c.title },
-      { name: 'description', content: c.description },
-      ...socialMeta({
-        title: c.socialTitle,
-        description: c.wedge,
-        path,
-      }),
-    ],
-    links: canonical(path),
-    scripts: jsonLdScript(
-      breadcrumbJsonLd([
-        { name: 'Closewatch', path: '/' },
-        { name: `Closewatch vs ${c.name}`, path },
-      ]),
-    ),
-  }
-}
 
 /**
  * The page behind every /vs/… route.

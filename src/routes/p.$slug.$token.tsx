@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  ShareLinkGone,
-  ShareViewer,
-  loadShare,
-  shareHead,
-} from '#/components/share-viewer'
+import { ShareLinkGone, ShareViewer } from '#/components/share-viewer'
+import { loadShare, shareHead } from '#/components/share-route'
 
 /**
  * A share link with the sender's name in it: /p/25-dials/{token}. The name is

@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { LandingPage, landingMeta } from '#/components/landing/landing-page'
+import { LandingPage } from '#/components/landing/landing-page'
+import { landingMeta } from '#/components/landing/landing-meta'
 import {
   canonical,
   jsonLdScript,

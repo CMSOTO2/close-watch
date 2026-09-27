@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { LandingPage, landingMeta } from '#/components/landing/landing-page'
+import { LandingPage } from '#/components/landing/landing-page'
+import { landingMeta } from '#/components/landing/landing-meta'
 import { publicEnv } from '#/env'
 
 // The landing page again, under a path that names where the visitor came from:

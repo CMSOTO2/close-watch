@@ -126,21 +126,30 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             data-cf-beacon={JSON.stringify({ token: beaconToken })}
           />
         )}
+        {/* The queue is set up at once, so the page view is stamped with
+            the real arrival time, but the 150 KB library is only fetched
+            after the load event. Loaded async from the start it still went
+            out alongside our own scripts and fonts and split a phone's
+            bandwidth with them before first paint. gtag.js drains whatever
+            is already in dataLayer when it arrives, so nothing is lost
+            except for a visitor who leaves before the page has loaded. */}
         {googleAdsId && (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `window.dataLayer = window.dataLayer || [];
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', '${googleAdsId}');`,
-              }}
-            />
-          </>
+gtag('config', '${googleAdsId}');
+addEventListener('load', function () {
+  setTimeout(function () {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=${googleAdsId}';
+    document.head.appendChild(s);
+  }, 0);
+});`,
+            }}
+          />
         )}
       </body>
     </html>
