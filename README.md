@@ -6,8 +6,7 @@ Proposal tracking for agencies. Upload the proposal PDF you already send. Get a 
 tells you when the client opened it, how long they spent on pricing, and whether they
 forwarded it to someone else.
 
-Live at [getclosewatch.com](https://getclosewatch.com). The name is settled; the
-alternatives that were considered are in [docs/NAMING.md](docs/NAMING.md).
+Live at [getclosewatch.com](https://getclosewatch.com).
 
 ## Setup
 
@@ -111,9 +110,8 @@ pnpm run deploy   # build, then wrangler deploy
 reach the script.
 
 `wrangler.jsonc` points the Worker at the `getclosewatch.com` custom domain, so a deploy
-serves both the app and `/p/:token` from it. It publishes the working tree, not a branch:
-see [docs/PRODUCTION.md](docs/PRODUCTION.md) for the secrets that have to exist on the
-Worker first.
+serves both the app and `/p/:token` from it. It publishes the working tree, not a branch,
+and the Worker's secrets have to exist before the first deploy.
 
 ## Traffic
 
@@ -185,11 +183,8 @@ still preparing are free.
 Public surface: a landing page, a live demo, an about page, three comparison pages and two
 audience pages, the `/proposal-tracking` pillar and twenty-two guides under `/guides`, a
 privacy policy, terms and a DPA (the first two linked from Google's OAuth consent screen),
-and the brand mark and favicons. What each public page claims about search is in
-[docs/SEO.md](docs/SEO.md); run `node scripts/check-guides.mjs` before deploying a guide.
-
-See [docs/PRODUCTION.md](docs/PRODUCTION.md) for what is still operational rather than
-built.
+and the brand mark and favicons. Run `node scripts/check-guides.mjs` before deploying a
+guide.
 
 Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing anything under
 `src/lib/analytics/`. The tracking rules there are the reason the numbers can be trusted,
@@ -197,15 +192,5 @@ and they are easy to break by accident.
 
 ## Docs
 
-- [Positioning](docs/POSITIONING.md) — market, competitors, target customer, pricing
-- [SEO](docs/SEO.md) — which query each public page answers, and the rules for adding one
-- [GEO / AEO](docs/geo:aeo/README.md) — the guides: which questions get one, the template, the
-  starting baseline, and how appearing in AI answers gets measured
-- [Metrics](docs/METRICS.md) — the SQL for the numbers worth watching, all of it runnable
-- [Browsers](docs/BROWSERS.md) — what the viewer owes every reader, and where the app degrades
-- [MVP](docs/MVP.md) — scope, what is deliberately excluded, sequencing
 - [Architecture](docs/ARCHITECTURE.md) — stack, tracking design, security model
-- [Production](docs/PRODUCTION.md) — the checklist before a real launch
-- [Launch](docs/LAUNCH.md) — validation, first hundred users, failure modes
-- [Launch replies](docs/LAUNCH-REPLIES.md) — prepared answers for the questions a tracking product always gets
-- [Naming](docs/NAMING.md) — candidates and how to rename
+- [Browsers](docs/BROWSERS.md) — what the viewer owes every reader, and where the app degrades
