@@ -62,14 +62,14 @@ function LoginPage() {
           By continuing you agree to our{' '}
           <Link
             to="/terms"
-            className="text-ink-2 hover:text-ink hover:underline"
+            className="text-ink-2 underline underline-offset-2 hover:text-ink"
           >
             terms
           </Link>{' '}
           and{' '}
           <Link
             to="/privacy"
-            className="text-ink-2 hover:text-ink hover:underline"
+            className="text-ink-2 underline underline-offset-2 hover:text-ink"
           >
             privacy policy
           </Link>

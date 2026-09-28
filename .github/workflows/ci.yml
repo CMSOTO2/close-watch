@@ -66,3 +66,18 @@ jobs:
       # Last because it is the slowest, and because a type or lint error is a
       # more useful thing to be told than a build that fell over for it.
       - run: pnpm build
+
+      # axe against every signed-out page and the demo, in light and dark, served
+      # from the build above. Needs no secrets, so unlike e2e.yml it runs on
+      # every push: an accessibility regression fails the same check a type
+      # error does. Chromium only; contrast and ARIA do not vary by engine.
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - run: pnpm test:a11y
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: a11y-report
+          path: test-results/
+          retention-days: 7

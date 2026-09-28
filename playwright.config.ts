@@ -52,7 +52,8 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      testIgnore: /upload\.mobile\.spec\.ts/,
+      // a11y/ has its own config (playwright.a11y.config.ts) that needs no secrets.
+      testIgnore: [/upload\.mobile\.spec\.ts/, /a11y\//],
       use: { ...devices['Desktop Chrome'] },
     },
     // Most arrivals are phones — the launch traffic ran 16 mobile to 6 desktop,
