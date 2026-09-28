@@ -6,7 +6,58 @@ Proposal tracking for agencies. Upload the proposal PDF you already send. Get a 
 tells you when the client opened it, how long they spent on pricing, and whether they
 forwarded it to someone else.
 
-Live at [getclosewatch.com](https://getclosewatch.com).
+Live at [getclosewatch.com](https://getclosewatch.com), with a
+[no-signup demo](https://getclosewatch.com/demo).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="public/images/closewatch-proposal-dashboard-ranked-by-intent-dark.webp">
+  <img src="public/images/closewatch-proposal-dashboard-ranked-by-intent.webp" alt="The Closewatch dashboard: open proposals ranked by an intent score out of 100, each row showing time spent on pricing, readers and opens, with a side panel explaining why Northwind Studio scores 100">
+</picture>
+
+<table>
+  <tr>
+    <td width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="public/images/closewatch-attention-report-time-per-page-pricing-dark.webp">
+        <img src="public/images/closewatch-attention-report-time-per-page-pricing.webp" alt="A proposal's activity page: intent score, opens, viewers and total time, and a bar per page showing the reader spent 10 minutes on the pricing page">
+      </picture>
+    </td>
+    <td width="50%">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="public/images/closewatch-forwarded-proposal-new-readers-dark.webp">
+        <img src="public/images/closewatch-forwarded-proposal-new-readers.webp" alt="Recent visits on a proposal: the original recipient plus two new readers marked as forwarded from them, with device, location and whether they printed or downloaded it">
+      </picture>
+    </td>
+  </tr>
+</table>
+
+## Stack
+
+- **App:** TanStack Start (React 19, TypeScript) with TanStack Query, Tailwind CSS,
+  PDF.js for the viewer
+- **Hosting:** Cloudflare Workers, one Worker serving the app, the API and the tracked
+  links
+- **Data:** Supabase Postgres with row-level security on every table. The free-plan cap
+  is enforced by an RLS policy, not application code. Storage holds the PDFs, and auth is
+  magic link plus Google
+- **Billing:** Stripe Checkout, the billing portal, and a webhook that is the only writer
+  of the table the paywall reads
+- **Email:** Resend
+
+## Quality
+
+- **Unit tests** (Vitest) for the tracking, scoring, bot filtering and billing logic:
+  `pnpm test`
+- **End-to-end tests** (Playwright) for the paths where a break is silent and expensive:
+  sending a proposal, recording a read, and the free-plan limit. The upload form also runs
+  on iPhone Safari and Android Chrome, because most readers arrive on a phone:
+  `pnpm test:e2e`
+- **Accessibility tests** (axe + Playwright) scan every signed-out page and the demo
+  against WCAG 2.2 A/AA in both light and dark mode, on every push in CI:
+  `pnpm test:a11y`
+- **Accessible by default:** semantic landmarks, visible focus, keyboard navigation on the
+  dashboard, `prefers-reduced-motion` respected, and a light/dark theme that follows the
+  system setting
 
 ## Setup
 
