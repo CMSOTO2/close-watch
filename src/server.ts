@@ -2,6 +2,8 @@ import {
   createStartHandler,
   defaultStreamHandler,
 } from '@tanstack/react-start/server'
+import { publicEnv } from '#/env'
+import { pingDatabase } from '#/lib/keep-alive'
 import { redirectTrailingSlash, wwwRedirect } from '#/lib/www-redirect'
 import type { ServerEntry } from '@tanstack/react-start/server-entry'
 
@@ -25,7 +27,20 @@ import type { ServerEntry } from '@tanstack/react-start/server-entry'
  */
 const handler = createStartHandler(defaultStreamHandler)
 
-const entry: ServerEntry = {
+/**
+ * Start's ServerEntry only knows about `fetch`. The Worker runtime also calls
+ * `scheduled` for the cron triggers in wrangler.jsonc, and the only one today
+ * is the keep-alive ping (see lib/keep-alive).
+ */
+type WorkerEntry = ServerEntry & {
+  scheduled: (
+    controller: unknown,
+    env: unknown,
+    ctx: { waitUntil: (promise: Promise<unknown>) => void },
+  ) => void
+}
+
+const entry: WorkerEntry = {
   async fetch(request, ...rest) {
     const fromWww = wwwRedirect(request.url)
     const isRead = request.method === 'GET' || request.method === 'HEAD'
@@ -34,6 +49,18 @@ const entry: ServerEntry = {
     if (target) return Response.redirect(target, 301)
 
     return handler(request, ...rest)
+  },
+
+  scheduled(_controller, _env, ctx) {
+    ctx.waitUntil(
+      pingDatabase(
+        publicEnv.VITE_SUPABASE_URL,
+        publicEnv.VITE_SUPABASE_PUBLISHABLE_KEY,
+      ).then(
+        (status) => console.log(`keep-alive: database answered ${status}`),
+        (error: unknown) => console.error(error),
+      ),
+    )
   },
 }
 

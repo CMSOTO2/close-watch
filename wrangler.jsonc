@@ -33,4 +33,9 @@
   // they are queryable in the dashboard under Workers & Pages -> Logs, and a
   // tracking failure leaves a trace somebody can find days later.
   "observability": { "enabled": true },
+  // Four times a day, the keep-alive ping in src/lib/keep-alive.ts. Supabase
+  // pauses Free plan projects after a quiet week and asks for "a few requests
+  // a day"; with no users, this is those requests. The minute is odd on purpose
+  // so it does not land on the hour with everyone else's crons.
+  "triggers": { "crons": ["17 */6 * * *"] },
 }
